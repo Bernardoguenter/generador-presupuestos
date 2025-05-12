@@ -11,6 +11,7 @@ import { useAuthContext } from "../../../common/context/AuthContext/AuthContext"
 
 export const FormChangePassword = () => {
   const { handleLogout } = useAuthContext();
+
   const handleSubmit = async (formData: ChangePasswordFormData) => {
     const { password, confirmPassword } = formData;
     if (password !== confirmPassword) {
