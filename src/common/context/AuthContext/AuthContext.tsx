@@ -8,6 +8,7 @@ interface AuthContextInterface {
   setId: React.Dispatch<React.SetStateAction<string | undefined>>;
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  handleLogout: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextInterface | undefined>(

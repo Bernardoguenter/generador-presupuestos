@@ -8,6 +8,7 @@ import DefaultLayout from "../layout/DefaultLayout";
 
 // Páginas públicas (account)
 const Login = lazy(() => import("../pages/account/Login"));
+const ChangePassword = lazy(() => import("../pages/account/ChangePassword"));
 
 // Páginas privadas
 const MainComponent = lazy(() => import("../pages/main/mainComponent"));
@@ -41,6 +42,16 @@ export default function AppRoutes() {
           element={<Login />}
         />
       </Route>
+      {authUser && (
+        <Route
+          path="account/"
+          element={<DefaultLayout />}>
+          <Route
+            path="change-password"
+            element={<ChangePassword />}
+          />
+        </Route>
+      )}
 
       {/* Rutas privadas */}
       {authUser && (
@@ -51,6 +62,7 @@ export default function AppRoutes() {
             index
             element={<MainComponent />}
           />
+
           {/* Presupuestos */}
           <Route path="budgets/*">
             <Route
@@ -64,20 +76,22 @@ export default function AppRoutes() {
           </Route>
 
           {/* Usuarios */}
-          <Route path="users/*">
-            <Route
-              path="create-user"
-              element={<CreateUser />}
-            />
-            <Route
-              path="preferences"
-              element={<Preferences />}
-            />
-            <Route
-              index
-              element={<ListUsers />}
-            />
-          </Route>
+          {authUser.role === "superadmin" && (
+            <Route path="users/*">
+              <Route
+                path="create-user"
+                element={<CreateUser />}
+              />
+              <Route
+                path="preferences"
+                element={<Preferences />}
+              />
+              <Route
+                index
+                element={<ListUsers />}
+              />
+            </Route>
+          )}
 
           {/* Redirección en caso de ruta no encontrada */}
           <Route
