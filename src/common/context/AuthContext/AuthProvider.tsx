@@ -2,25 +2,32 @@ import { useEffect, useState, type ReactNode } from "react";
 import { supabase } from "../../../utils/supabase";
 import type { User } from "../../../helpers/types";
 import { AuthContext } from "./AuthContext";
+import { useNavigate } from "react-router";
+import { LogoutToast } from "../../../utils/alerts";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [id, setId] = useState<string | undefined>(undefined);
   const [authUser, setAuthUser] = useState<User | undefined>(undefined);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const getUserById = async (id: string) => {
     if (id) {
       const { data, error } = await supabase
         .from("users")
         .select()
-        .eq("id", id);
+        .eq("id", id)
+        .single();
 
       if (error) {
         console.error("Error al obtener usuario:", error.message);
         return;
       }
-      console.log("Obteniendo usuario", data);
-      setAuthUser(data[0]);
+      setAuthUser(data);
+
+      if (!data?.isPasswordChanged) {
+        navigate("account/change-password");
+      }
     }
   };
 
@@ -28,7 +35,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const getSessionUser = async () => {
       setLoading(true);
       const { data, error } = await supabase.auth.getUser();
-
       if (error) {
         console.error("Error al obtener sesión:", error.message);
         setLoading(false);
@@ -67,6 +73,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (!error) {
+      LogoutToast();
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -76,6 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setId,
         loading,
         setLoading,
+        handleLogout,
       }}>
       {children}
     </AuthContext.Provider>

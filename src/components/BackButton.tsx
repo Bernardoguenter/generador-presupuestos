@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { BackArrow } from "../assets/svg/BackArrow";
+import { BackArrow } from "../assets/svg";
 
 const BackButton = () => {
   const location = useLocation();

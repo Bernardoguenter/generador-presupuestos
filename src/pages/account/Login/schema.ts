@@ -10,7 +10,7 @@ export const loginSchema = z.object({
       message: "Formato de e-mail inválido",
     }),
   password: z.string({ required_error: "Debes ingresar el password" }),
-  /*. min(
+  /* .min(
       6,
       "El password debe contener al menos 6 caracteres, una mayúscula y un número"
     ), */

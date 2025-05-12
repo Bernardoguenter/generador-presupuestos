@@ -3,11 +3,9 @@ import { Form } from "../../../components/FormProvider";
 import { loginSchema, type LoginFormData } from "./schema";
 import { Button } from "../../../components/Button";
 import { supabase } from "../../../utils/supabase";
-import { useNavigate } from "react-router";
+import { LoginErrorToast, LoginSuccessToast } from "../../../utils/alerts";
 
 export const FormLogin = () => {
-  const navigate = useNavigate();
-
   const handleSubmit = async (formData: LoginFormData) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -20,13 +18,10 @@ export const FormLogin = () => {
       }
 
       if (data) {
-        console.log("data del login", data);
-        alert("Usuario Logueado");
-        setTimeout(() => {
-          navigate("/");
-        }, 2000);
+        LoginSuccessToast(formData.email);
       }
     } catch (error) {
+      LoginErrorToast();
       console.error(error);
     }
   };
@@ -34,7 +29,11 @@ export const FormLogin = () => {
   return (
     <Form
       onSubmit={handleSubmit}
-      schema={loginSchema}>
+      schema={loginSchema}
+      defaultValues={{
+        email: "",
+        password: "",
+      }}>
       <TextInput
         name="email"
         label="E-mail"

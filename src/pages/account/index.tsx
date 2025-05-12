@@ -1,7 +1,5 @@
-import { lazy } from "react";
-
-const Login = lazy(() => import("./Login"));
+import { Outlet } from "react-router";
 
 export default function Account() {
-  return <Login />;
+  return <Outlet />;
 }

@@ -41,7 +41,7 @@ export const Form = <
     if (defaultValues) {
       methods.reset(defaultValues);
     }
-  }, [defaultValues]);
+  }, [defaultValues, methods]);
 
   return (
     <FormProvider {...methods}>
