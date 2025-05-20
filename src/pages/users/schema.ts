@@ -9,6 +9,15 @@ export const createUserSchema = z.object({
     .email({
       message: "Formato de e-mail inválido",
     }),
+  fullName: z.string({
+    required_error: "Debes ingresar el nombre completo",
+  }),
+  role: z.string({
+    required_error: "Debes seleccionar un rol",
+  }),
+  company_id: z.string({
+    required_error: "Debes asignar una empresa para el usuario",
+  }),
 });
 
 export type CreateUserFormData = z.infer<typeof createUserSchema>;

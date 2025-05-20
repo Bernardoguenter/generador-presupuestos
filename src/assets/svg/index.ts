@@ -4,3 +4,7 @@ export * from "./DeleteIcon";
 export * from "./EditIcon";
 export * from "./LogoutIcon";
 export * from "./UsersIcon";
+export * from "./CompanyIcon";
+export * from "./MenuIcon";
+export * from "./UsersIcon";
+export * from "./PreferencesIcon";

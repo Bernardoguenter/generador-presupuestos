@@ -8,16 +8,23 @@ import DefaultLayout from "../layout/DefaultLayout";
 
 // Páginas públicas (account)
 const Login = lazy(() => import("../pages/account/Login"));
-const ChangePassword = lazy(() => import("../pages/account/ChangePassword"));
+const ResetPasswrord = lazy(() => import("../pages/account/ResetPassword"));
 
 // Páginas privadas
 const MainComponent = lazy(() => import("../pages/main/mainComponent"));
+const Preferences = lazy(() => import("../pages/main/preferences"));
+
+const ChangePassword = lazy(() => import("../pages/account/ChangePassword"));
 const Calculator = lazy(() => import("../pages/budgets/calculator"));
 const BudgetHistory = lazy(() => import("../pages/budgets/history"));
 
 const CreateUser = lazy(() => import("../pages/users/createUsers"));
-const Preferences = lazy(() => import("../pages/users/preferences"));
 const ListUsers = lazy(() => import("../pages/users/listUsers"));
+const UserDetail = lazy(() => import("../pages/users/userDetail"));
+
+const CreateCompany = lazy(() => import("../pages/companies/createCompany"));
+const ListCompany = lazy(() => import("../pages/companies/listCompany"));
+const CompanyDetail = lazy(() => import("../pages/companies/companyDetail"));
 
 export default function AppRoutes() {
   const { authUser } = useAuthContext();
@@ -40,6 +47,10 @@ export default function AppRoutes() {
         <Route
           path="login"
           element={<Login />}
+        />
+        <Route
+          path="reset-password"
+          element={<ResetPasswrord />}
         />
       </Route>
       {authUser && (
@@ -83,12 +94,37 @@ export default function AppRoutes() {
                 element={<CreateUser />}
               />
               <Route
+                index
+                element={<ListUsers />}
+              />
+              <Route
+                path=":id"
+                element={<UserDetail />}
+              />
+            </Route>
+          )}
+          {authUser.role !== "usuario" && (
+            <Route path="/*">
+              <Route
                 path="preferences"
                 element={<Preferences />}
               />
+            </Route>
+          )}
+
+          {authUser.role === "superadmin" && (
+            <Route path="companies/*">
+              <Route
+                path="create-company"
+                element={<CreateCompany />}
+              />
               <Route
                 index
-                element={<ListUsers />}
+                element={<ListCompany />}
+              />
+              <Route
+                path=":id"
+                element={<CompanyDetail />}
               />
             </Route>
           )}

@@ -1,33 +1,37 @@
 import { useEffect, useState } from "react";
 import { CustomLink } from "../../../../components/CustomLink";
-import type { User } from "../../../../helpers/types";
+import type { Company } from "../../../../helpers/types";
 import { supabase } from "../../../../utils/supabase";
 import { DeleteIcon, EditIcon } from "../../../../assets/svg";
 import { DeleteUserToastError } from "../../../../utils/alerts";
 import useSweetAlertModal from "../../../../common/hooks";
 
-export const UserList = () => {
-  const [users, setUsers] = useState<User[] | null>(null);
+export const CompanyList = () => {
+  const [companies, setCompanies] = useState<Company[] | null>(null);
   const { showAlert } = useSweetAlertModal();
 
-  useEffect(() => {
-    const getAllUsers = async () => {
-      const { data: users, error } = await supabase.from("users").select("*");
+  const getAllCompanies = async () => {
+    try {
+      const { data, error } = await supabase.from("companies").select("*");
       if (error) {
         throw new Error("Error al obtener usuarios");
       }
-      setUsers(users);
-    };
+      setCompanies(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-    getAllUsers();
+  useEffect(() => {
+    getAllCompanies();
   }, []);
 
-  const handleDeleteUser = async (id: string, email: string) => {
+  const handleDeleteCompany = async (id: string, nombre: string) => {
     try {
-      if (id && email) {
+      if (id && nombre) {
         const result = await showAlert({
           title: "¿Estás seguro?",
-          text: `Esta acción eliminará al usuario ${email} y no se puede deshacer`,
+          text: `Esta acción eliminará la empresa ${nombre} y no se puede deshacer`,
           icon: "warning",
           showCancelButton: true,
           confirmButtonColor: "#FF8303",
@@ -37,72 +41,78 @@ export const UserList = () => {
         });
 
         if (result.isConfirmed) {
-          const { error } = await supabase.functions.invoke("delete-user", {
-            body: { id: id },
-          });
+          const { error } = await supabase
+            .from("companies")
+            .delete()
+            .eq("id", id);
 
           if (!error) {
             await showAlert({
               title: "¡Eliminado!",
-              text: `El usuario ${email} fue eliminado correctamente.`,
+              text: `La empresa ${nombre} fue eliminado correctamente.`,
               icon: "success",
               confirmButtonColor: "#FF8303",
             });
-            const newUsers = users?.filter((user) => user.id !== id);
-            if (newUsers) {
-              setUsers(newUsers);
+            const newCompany = companies?.filter(
+              (company) => company.id !== id
+            );
+            if (newCompany) {
+              setCompanies(newCompany);
             }
           } else {
-            DeleteUserToastError(email);
+            DeleteUserToastError(nombre);
           }
         }
       }
     } catch (error) {
       console.error(error);
-      DeleteUserToastError(email);
+      DeleteUserToastError(nombre);
     }
   };
 
   return (
     <table className="max-w-full shadow-md overflow-hidden border rounded divide-y divide-gray-100">
-      <thead className="rounded ">
+      <thead className="rounded">
         <tr className="flex items-center w-full ">
           <th className="px-2 py-2 text-left text-sm font-medium w-2/4">
-            Nombre Completo
+            Nombre Empresa
           </th>
           <th className="px-2 py-2 text-center text-sm font-medium w-1/4">
             Eliminar
           </th>
-          <th className="px-2 py-2 text-center text-sm font-medium w-1/4 ">
+          <th className="px-2 py-2 text-center text-sm font-medium w-1/4">
             Editar
           </th>
         </tr>
       </thead>
-      <tbody className="divide-y divide-gray-50 w-full">
-        {users?.length === 0 ? (
+      <tbody className="divide-y divide-gray-50">
+        {companies?.length === 0 ? (
           <tr>
             <td
               colSpan={3}
               className="text-center py-4">
-              No se encontraron usuarios
+              No se encontraron empresas
             </td>
           </tr>
         ) : (
-          users?.map((user) => (
+          companies?.map((company) => (
             <tr
-              key={user.id}
+              key={company.id}
               className="flex items-center w-full ">
               <td className="px-2 py-2 text-xs overflow-hidden w-2/4">
-                {user.fullName}
+                {company.nombre}
               </td>
               <td className="px-2 py-2 flex justify-center items-center w-1/4">
-                <button onClick={() => handleDeleteUser(user.id, user.email)}>
+                <button
+                  onClick={() =>
+                    handleDeleteCompany(company.id, company.nombre)
+                  }>
                   <DeleteIcon />
                 </button>
               </td>
-              <td className="px-2 py-2 w-1/4 ">
+              <td className="px-2 py-2 flex justify-center items-center w-1/4">
                 <CustomLink
-                  href={`${user.id}`}
+                  href={`${company.id}`}
                   styles="flex items-center justify-center">
                   <EditIcon />
                 </CustomLink>
