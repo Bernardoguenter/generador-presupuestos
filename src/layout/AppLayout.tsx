@@ -27,8 +27,11 @@ const AppLayout = () => {
       </Suspense>
       <section className="grow-1 p-4">
         <Suspense fallback={<PageLoader />}>
-          <aside>
+          <aside className="flex justify-between items-center">
             <BackButton />
+            <p>
+              {authUser?.fullName} - {authUser?.role}
+            </p>
           </aside>
           <Outlet />
         </Suspense>

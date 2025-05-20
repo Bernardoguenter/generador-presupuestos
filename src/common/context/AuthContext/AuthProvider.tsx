@@ -36,7 +36,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       const { data, error } = await supabase.auth.getUser();
       if (error) {
-        console.error("Error al obtener sesión:", error.message);
         setLoading(false);
         return;
       }

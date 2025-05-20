@@ -54,7 +54,7 @@ const LogoutToast = () => {
   });
 };
 
-export const ChangePasswordToastSuccess = () => {
+const ChangePasswordToastSuccess = () => {
   const Toast = Swal.mixin({
     toast: true,
     position: "top-end",
@@ -72,7 +72,7 @@ export const ChangePasswordToastSuccess = () => {
   });
 };
 
-export const ChangePasswordToastError = () => {
+const ChangePasswordToastError = () => {
   const Toast = Swal.mixin({
     toast: true,
     position: "top-end",
@@ -91,4 +91,50 @@ export const ChangePasswordToastError = () => {
   });
 };
 
-export { LoginErrorToast, LoginSuccessToast, LogoutToast };
+const ResetPasswordToastSuccess = () => {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    },
+  });
+  Toast.fire({
+    icon: "success",
+    title:
+      "Se ha cambiado el password. Recibirás un e-mail con los datos para que puedas ingresar",
+  });
+};
+
+const ResetPasswordToastError = () => {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    },
+  });
+  Toast.fire({
+    icon: "error",
+    title:
+      "Ha ocurrido un error al resetear el tu password, vuelve a intentarlo",
+  });
+};
+
+export {
+  LoginErrorToast,
+  LoginSuccessToast,
+  LogoutToast,
+  ChangePasswordToastSuccess,
+  ChangePasswordToastError,
+  ResetPasswordToastSuccess,
+  ResetPasswordToastError,
+};

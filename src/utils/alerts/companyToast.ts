@@ -1,42 +1,6 @@
 import Swal from "sweetalert2";
 
-const DeleteUserToastSuccess = (user: string) => {
-  const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.onmouseenter = Swal.stopTimer;
-      toast.onmouseleave = Swal.resumeTimer;
-    },
-  });
-  Toast.fire({
-    icon: "error",
-    title: `${user} se ha eliminado correctamente`,
-  });
-};
-
-const DeleteUserToastError = (user: string) => {
-  const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.onmouseenter = Swal.stopTimer;
-      toast.onmouseleave = Swal.resumeTimer;
-    },
-  });
-  Toast.fire({
-    icon: "error",
-    title: `Ha ocurrido un error al intentar eliminar ${user}`,
-  });
-};
-
-const CreateUserToastSuccess = (user: string) => {
+const CreateCompanyToastSuccess = (company: string) => {
   const Toast = Swal.mixin({
     toast: true,
     position: "top-end",
@@ -50,11 +14,11 @@ const CreateUserToastSuccess = (user: string) => {
   });
   Toast.fire({
     icon: "success",
-    title: `El usuario ${user} se ha creado exitosamente`,
+    title: `La empresa ${company} se ha creado exitosamente`,
   });
 };
 
-const CreateUserToastErrorDuplicated = (user: string) => {
+const CreateCompanyToastErrorDuplicated = (company: string) => {
   const Toast = Swal.mixin({
     toast: true,
     position: "top-end",
@@ -68,11 +32,11 @@ const CreateUserToastErrorDuplicated = (user: string) => {
   });
   Toast.fire({
     icon: "error",
-    title: `El usuario ${user} ya existe y no es posible crearlo nuevamente`,
+    title: `La empresa ${company} ya existe y no es posible crearlo nuevamente`,
   });
 };
 
-const CreateUserToastError = (error: string) => {
+const CreateCompanyToastError = (error: string) => {
   const Toast = Swal.mixin({
     toast: true,
     position: "top-end",
@@ -90,7 +54,7 @@ const CreateUserToastError = (error: string) => {
   });
 };
 
-const CreateUserRoleToastError = () => {
+const DeleteCompanyToastSuccess = (company: string) => {
   const Toast = Swal.mixin({
     toast: true,
     position: "top-end",
@@ -104,11 +68,29 @@ const CreateUserRoleToastError = () => {
   });
   Toast.fire({
     icon: "error",
-    title: `Debes seleccionar un rol para tu usuario`,
+    title: `${company} se ha eliminado correctamente`,
   });
 };
 
-const UpdateUserToastSuccess = (user: string) => {
+const DeleteCompanyToastError = (company: string) => {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    },
+  });
+  Toast.fire({
+    icon: "error",
+    title: `Ha ocurrido un error al intentar eliminar ${company}`,
+  });
+};
+
+const UpdateCompanyToastSuccess = (company: string) => {
   const Toast = Swal.mixin({
     toast: true,
     position: "top-end",
@@ -122,10 +104,10 @@ const UpdateUserToastSuccess = (user: string) => {
   });
   Toast.fire({
     icon: "success",
-    title: `El usuario ${user} se ha actualizado exitosamente`,
+    title: `La empresa ${company} se ha actualizado exitosamente`,
   });
 };
-const UpdateUserToastError = (error: string) => {
+const UpdateCompanyToastError = (error: string) => {
   const Toast = Swal.mixin({
     toast: true,
     position: "top-end",
@@ -139,17 +121,16 @@ const UpdateUserToastError = (error: string) => {
   });
   Toast.fire({
     icon: "error",
-    title: `Ha ocurrido el siguiente error: ${error}`,
+    title: `Ha ocurrido el siguiente error al actualizar la empresa: ${error}`,
   });
 };
 
 export {
-  DeleteUserToastSuccess,
-  DeleteUserToastError,
-  CreateUserToastSuccess,
-  CreateUserToastErrorDuplicated,
-  CreateUserToastError,
-  CreateUserRoleToastError,
-  UpdateUserToastSuccess,
-  UpdateUserToastError,
+  CreateCompanyToastError,
+  CreateCompanyToastErrorDuplicated,
+  CreateCompanyToastSuccess,
+  DeleteCompanyToastError,
+  DeleteCompanyToastSuccess,
+  UpdateCompanyToastError,
+  UpdateCompanyToastSuccess,
 };

@@ -4,6 +4,7 @@ import { loginSchema, type LoginFormData } from "./schema";
 import { Button } from "../../../components/Button";
 import { supabase } from "../../../utils/supabase";
 import { LoginErrorToast, LoginSuccessToast } from "../../../utils/alerts";
+import { CustomLink } from "../../../components/CustomLink";
 
 export const FormLogin = () => {
   const handleSubmit = async (formData: LoginFormData) => {
@@ -50,6 +51,11 @@ export const FormLogin = () => {
         color="info">
         Ingresar
       </Button>
+      <CustomLink
+        href="/account/reset-password"
+        styles="text-center mt-4 underline">
+        Olvidé mi clave
+      </CustomLink>
     </Form>
   );
 };
