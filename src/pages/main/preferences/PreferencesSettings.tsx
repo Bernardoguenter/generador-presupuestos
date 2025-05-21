@@ -10,7 +10,7 @@ import {
 } from "../../../utils/alerts";
 
 export default function PreferencesSettings() {
-  const { preferences } = usePreferencesContext();
+  const { preferences, setIsLoading } = usePreferencesContext();
 
   const handleSubmit = async (formData: PreferencesFormData) => {
     try {
@@ -36,6 +36,7 @@ export default function PreferencesSettings() {
         .select();
 
       if (!error) {
+        setIsLoading(true);
         UpdatePreferencesToastSuccess();
       } else {
         UpdatePreferencesToastError();

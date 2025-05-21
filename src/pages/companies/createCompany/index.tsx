@@ -15,7 +15,6 @@ import { usePreferencesContext } from "../../../common/context/PreferencesContex
 export default function CreateCompany() {
   const navigate = useNavigate();
   const { preferences } = usePreferencesContext();
-  console.log(preferences);
 
   const handleSubmit = async (formData: CreateCompanyFormData) => {
     const { direccion, localidad, provincia, email, nombre, telefono } =
@@ -37,11 +36,6 @@ export default function CreateCompany() {
         .single();
 
       if (!createcompany_error) {
-        console.log("company_data.id", company_data.id);
-        console.log({
-          ...preferences,
-          company_id: company_data.id,
-        });
         if (company_data) {
           const { error: company_settings_error } =
             await supabase.functions.invoke("set-preferences", {
