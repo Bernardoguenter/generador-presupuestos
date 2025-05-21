@@ -29,9 +29,6 @@ const AppLayout = () => {
         <Suspense fallback={<PageLoader />}>
           <aside className="flex justify-between items-center">
             <BackButton />
-            <p>
-              {authUser?.fullName} - {authUser?.role}
-            </p>
           </aside>
           <Outlet />
         </Suspense>
