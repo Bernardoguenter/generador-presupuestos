@@ -74,7 +74,6 @@ export const CompanyDetailHeader = ({ company }: Props) => {
             company.id,
             `/${companyName}.${fileType}`
           );
-        console.log({ bucketData, bucketError });
         if (!bucketError) {
           UpdateCompanyLogoToastSuccess(company.nombre);
           const { error: updateLogoUrlError } = await updateCompany(
