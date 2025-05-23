@@ -4,7 +4,11 @@ import type { Company } from "../../../../helpers/types";
 import { DeleteIcon, EditIcon } from "../../../../assets/svg";
 import { DeleteUserToastError } from "../../../../utils/alerts";
 import useSweetAlertModal from "../../../../common/hooks";
-import { deleteCompany, getAllCompanies } from "../../../../common/lib";
+import {
+  deleteCompany,
+  deleteFileInBucket,
+  getAllCompanies,
+} from "../../../../common/lib";
 
 export const CompanyList = () => {
   const [companies, setCompanies] = useState<Company[] | null>(null);
@@ -26,7 +30,11 @@ export const CompanyList = () => {
     getCompanies();
   }, []);
 
-  const handleDeleteCompany = async (id: string, nombre: string) => {
+  const handleDeleteCompany = async (
+    id: string,
+    nombre: string,
+    logo_url: string | null
+  ) => {
     try {
       if (id && nombre) {
         const result = await showAlert({
@@ -44,6 +52,15 @@ export const CompanyList = () => {
           const { error } = await deleteCompany(id);
 
           if (!error) {
+            if (logo_url !== null && logo_url !== undefined) {
+              const { error: bucketError } = await deleteFileInBucket(
+                "companies-logos",
+                logo_url
+              );
+              if (error) {
+                console.error(bucketError);
+              }
+            }
             await showAlert({
               title: "¡Eliminado!",
               text: `La empresa ${nombre} fue eliminado correctamente.`,
@@ -102,7 +119,11 @@ export const CompanyList = () => {
               <td className="px-2 py-2 flex justify-center items-center w-1/4">
                 <button
                   onClick={() =>
-                    handleDeleteCompany(company.id, company.nombre)
+                    handleDeleteCompany(
+                      company.id,
+                      company.nombre,
+                      company.logo_url
+                    )
                   }>
                   <DeleteIcon />
                 </button>
