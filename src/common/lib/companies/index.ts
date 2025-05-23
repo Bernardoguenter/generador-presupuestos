@@ -24,7 +24,6 @@ const getCompanyById = async (id: string) => {
 };
 
 const createCompany = async (createCompanyBody: CreateCompanyFormData) => {
-  console.log(createCompanyBody);
   const { data, error } = await supabase
     .from("companies")
     .insert([createCompanyBody])
