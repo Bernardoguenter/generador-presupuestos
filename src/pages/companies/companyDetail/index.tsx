@@ -14,8 +14,6 @@ export default function CompanyDetail() {
       const getCompany = async (id: string) => {
         try {
           const { data, error } = await getCompanyById(id);
-          console.log(data);
-
           if (!error) {
             setCompany(data);
           }
