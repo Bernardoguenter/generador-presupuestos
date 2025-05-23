@@ -1,20 +1,21 @@
 import { useEffect, useState } from "react";
 import type { Role } from "../../../helpers/types";
-import { supabase } from "../../../utils/supabase";
-import { SelectInput } from "../../../components/SelectInput";
+import { SelectInput } from "../../../components";
+import { getUserRoles } from "../../../common/lib";
 
 export const RolesSelect = () => {
   const [roles, setRoles] = useState<Role[] | null>(null);
 
   useEffect(() => {
     const getRoles = async () => {
-      const { data, error } = await supabase.from("roles").select("*");
+      const { data, error } = await getUserRoles();
       if (!error) {
         setRoles(data);
       }
     };
     getRoles();
   }, []);
+
   return (
     <SelectInput
       name="role"

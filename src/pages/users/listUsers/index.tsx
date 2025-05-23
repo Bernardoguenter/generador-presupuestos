@@ -1,4 +1,4 @@
-import { CustomLink } from "../../../components/CustomLink";
+import { CustomLink } from "../../../components";
 import { UserList } from "./Components/UserList";
 
 export default function ListUsers() {

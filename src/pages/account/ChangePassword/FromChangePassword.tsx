@@ -1,13 +1,16 @@
-import { TextInput } from "../../../components/TextInput";
-import { Form } from "../../../components/FormProvider";
-import { Button } from "../../../components/Button";
-import { supabase } from "../../../utils/supabase";
 import { changePasswordSchema, type ChangePasswordFormData } from "./schema";
 import {
   ChangePasswordToastError,
   ChangePasswordToastSuccess,
 } from "../../../utils/alerts";
 import { useAuthContext } from "../../../common/context/AuthContext/AuthContext";
+import { Button, Form, TextInput } from "../../../components";
+import {
+  signOutUser,
+  updateUser,
+  updateUserPassword,
+} from "../../../common/lib";
+import { useMemo } from "react";
 
 export const FormChangePassword = () => {
   const { handleLogout } = useAuthContext();
@@ -19,26 +22,25 @@ export const FormChangePassword = () => {
     }
 
     try {
-      const { data, error } = await supabase.auth.updateUser({
-        password: password,
-      });
+      const { data, error } = await updateUserPassword(password);
 
       if (error) {
         console.error("Error cambiando la contraseña:", error);
         ChangePasswordToastError();
       } else {
-        const { error: updateUserError } = await supabase
-          .from("users")
-          .update({ isPasswordChanged: true })
-          .eq("id", data.user.id);
-
-        if (!updateUserError) {
-          const { error } = await supabase.auth.signOut();
-          if (!error) {
-            ChangePasswordToastSuccess();
+        if (data.user) {
+          const { error: updateUserError } = await updateUser(
+            { isPasswordChanged: true },
+            data.user.id
+          );
+          if (!updateUserError) {
+            const { error } = await signOutUser();
+            if (!error) {
+              ChangePasswordToastSuccess();
+            }
+          } else {
+            ChangePasswordToastError();
           }
-        } else {
-          ChangePasswordToastError();
         }
       }
     } catch (error) {
@@ -46,14 +48,19 @@ export const FormChangePassword = () => {
     }
   };
 
+  const defaultValues = useMemo(
+    () => ({
+      password: "",
+      confirmPassword: "",
+    }),
+    []
+  );
+
   return (
     <Form
       onSubmit={handleSubmit}
       schema={changePasswordSchema}
-      defaultValues={{
-        password: "",
-        confirmPassword: "",
-      }}>
+      defaultValues={defaultValues}>
       <h2 className="mb-4 text-2xl text-center">
         Para usar tu cuenta debes cambiar tu password
       </h2>

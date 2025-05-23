@@ -1,6 +1,4 @@
 import { Link, NavLink } from "react-router";
-import { Button } from "../components/Button";
-import { useAuthContext } from "../common/context/AuthContext/AuthContext";
 import {
   BudgetIcon,
   CompanyIcon,
@@ -11,6 +9,8 @@ import { UserIcon } from "../assets/svg/UserIcon";
 import { useEffect, useState } from "react";
 import { useCompanyContext } from "../common/context/CompanyContext/CompanyContext";
 import { retriveFileFromBucket } from "../common/lib";
+import { Button } from "../components";
+import { useAuthContext } from "../common/context/AuthContext/AuthContext";
 
 export const Navbar = () => {
   const { authUser, handleLogout } = useAuthContext();

@@ -1,7 +1,4 @@
 import { useNavigate } from "react-router";
-import { Button } from "../../../components/Button";
-import { Form } from "../../../components/FormProvider";
-import { TextInput } from "../../../components/TextInput";
 import {
   ResetPasswordToastError,
   ResetPasswordToastSuccess,
@@ -11,6 +8,8 @@ import {
   regeneratePassword,
   sendEmailResetPassword,
 } from "../../../common/lib";
+import { Button, Form, TextInput } from "../../../components";
+import { useMemo } from "react";
 
 export const FormResetPassword = () => {
   const navigate = useNavigate();
@@ -39,13 +38,19 @@ export const FormResetPassword = () => {
       console.error(error);
     }
   };
+
+  const defaultValues = useMemo(
+    () => ({
+      email: "",
+    }),
+    []
+  );
+
   return (
     <Form
       onSubmit={handleSubmit}
       schema={resetPasswordSchema}
-      defaultValues={{
-        email: "",
-      }}>
+      defaultValues={defaultValues}>
       <h2 className="mb-4 text-2xl text-center">
         Escribe tu e-mail y te enviaremos una nueva contraseña
       </h2>

@@ -1,12 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import type { User } from "../../../helpers/types";
-import { supabase } from "../../../utils/supabase";
-import { Button } from "../../../components/Button";
-import { TextInput } from "../../../components/TextInput";
-import { Form } from "../../../components/FormProvider";
 import { RolesSelect } from "../components/RolesSelect";
 import { CompanySelect } from "../components/CompanySelect";
+import { Button, TextInput, Form } from "../../../components";
 import { createUserSchema, type CreateUserFormData } from "../schema";
 import {
   DeleteUserToastError,
@@ -14,7 +11,7 @@ import {
   UpdateUserToastSuccess,
 } from "../../../utils/alerts";
 import useSweetAlertModal from "../../../common/hooks";
-import { deleteUser, updateUser } from "../../../common/lib";
+import { deleteUser, getUserById, updateUser } from "../../../common/lib";
 
 export default function UserDetail() {
   const { id } = useParams();
@@ -26,11 +23,7 @@ export default function UserDetail() {
     if (id) {
       const getUser = async (id: string) => {
         try {
-          const { data, error } = await supabase
-            .from("users")
-            .select("*")
-            .eq("id", id)
-            .single();
+          const { data, error } = await getUserById(id);
 
           if (!error) {
             setUser(data);
@@ -99,16 +92,15 @@ export default function UserDetail() {
     }
   };
 
-  const defaultValues: CreateUserFormData | undefined = user
-    ? (() => {
-        return {
-          role: user.role,
-          email: user.email,
-          company_id: user.company_id,
-          fullName: user.fullName,
-        };
-      })()
-    : undefined;
+  const defaultValues = useMemo<CreateUserFormData | undefined>(() => {
+    if (!user) return undefined;
+    return {
+      role: user.role,
+      email: user.email,
+      company_id: user.company_id,
+      fullName: user.fullName,
+    };
+  }, [user]);
 
   if (!user) return <h2>No se encontró información para este usuario</h2>;
 

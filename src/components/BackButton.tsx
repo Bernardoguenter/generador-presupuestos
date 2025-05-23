@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { BackArrow } from "../assets/svg";
 
-const BackButton = () => {
+export const BackButton = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -29,5 +29,3 @@ const BackButton = () => {
     </button>
   ) : null;
 };
-
-export default BackButton;

@@ -1,13 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   replaceFileInBucket,
   retriveFileFromBucket,
   updateCompany,
   uploadFileToBucket,
 } from "../../../common/lib";
-import { Button } from "../../../components/Button";
-import { FileInput } from "../../../components/FileInput";
-import { Form } from "../../../components/FormProvider";
+import { Button, FileInput, Form } from "../../../components";
 import { formatCompanyName, formatFileType } from "../../../helpers/formatData";
 import type { Company } from "../../../helpers/types";
 import {
@@ -94,11 +92,14 @@ export const CompanyDetailHeader = ({ company }: Props) => {
       }
     }
   };
+
+  const defaultValues = useMemo(() => ({ file: undefined }), []);
+
   return (
     <Form
       onSubmit={handleSubmit}
       schema={companyLogoSchema}
-      defaultValues={{ file: undefined }}>
+      defaultValues={defaultValues}>
       <h2 className="my-4 text-2xl font-medium">{company?.nombre}</h2>
       <div className="flex flex-col items-start justify-start py-4">
         <FileInput

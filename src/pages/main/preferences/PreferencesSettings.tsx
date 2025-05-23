@@ -1,13 +1,13 @@
-import { Form } from "../../../components/FormProvider";
+import { Form, NumberInput, Button } from "../../../components";
 import { preferencesSchema, type PreferencesFormData } from "./schema";
-import { NumberInput } from "../../../components/NumberInput";
-import { Button } from "../../../components/Button";
 import { usePreferencesContext } from "../../../common/context/PreferencesContext/PreferencesContext";
 import {
   UpdatePreferencesToastError,
   UpdatePreferencesToastSuccess,
 } from "../../../utils/alerts";
 import { updateUserPreferences } from "../../../common/lib";
+import { useMemo } from "react";
+import type { Preferences } from "../../../helpers/types";
 
 export default function PreferencesSettings() {
   const { preferences, setIsLoading } = usePreferencesContext();
@@ -31,9 +31,16 @@ export default function PreferencesSettings() {
     }
   };
 
+  const defaultValues = useMemo<Preferences | undefined>(() => {
+    if (!preferences) return undefined;
+    return {
+      ...preferences,
+    };
+  }, [preferences]);
+
   return (
     <Form
-      defaultValues={preferences}
+      defaultValues={defaultValues}
       onSubmit={handleSubmit}
       schema={preferencesSchema}>
       <NumberInput

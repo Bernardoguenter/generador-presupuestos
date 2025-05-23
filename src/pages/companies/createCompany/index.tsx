@@ -1,9 +1,12 @@
 import { useNavigate } from "react-router";
-import { Button } from "../../../components/Button";
-import { Form } from "../../../components/FormProvider";
-import { SelectInput } from "../../../components/SelectInput";
-import { TextInput } from "../../../components/TextInput";
 import { provinciasArgentina } from "../../../helpers/fixedData";
+import {
+  Button,
+  Form,
+  SelectInput,
+  TextInput,
+  FileInput,
+} from "../../../components";
 import {
   CreateCompanyToastError,
   CreateCompanyToastSuccess,
@@ -12,7 +15,6 @@ import {
 } from "../../../utils/alerts";
 import { createCompanySchema, type CreateCompanyFormData } from "../schema";
 import { usePreferencesContext } from "../../../common/context/PreferencesContext/PreferencesContext";
-import { FileInput } from "../../../components/FileInput";
 import {
   createCompany,
   setCompanyPreferences,
@@ -21,6 +23,7 @@ import {
 } from "../../../common/lib";
 import { formatCompanyName, formatFileType } from "../../../helpers/formatData";
 import type { PostgrestError } from "@supabase/supabase-js";
+import { useMemo } from "react";
 
 export default function CreateCompany() {
   const navigate = useNavigate();
@@ -106,18 +109,23 @@ export default function CreateCompany() {
     }
   };
 
+  const defaultValues = useMemo(
+    () => ({
+      nombre: "",
+      email: "",
+      telefono: "",
+      direccion: "",
+      localidad: "",
+      provincia: provinciasArgentina[0],
+    }),
+    []
+  );
+
   return (
     <Form
       onSubmit={handleSubmit}
       schema={createCompanySchema}
-      defaultValues={{
-        nombre: "",
-        email: "",
-        telefono: "",
-        direccion: "",
-        localidad: "",
-        provincia: provinciasArgentina[0],
-      }}>
+      defaultValues={defaultValues}>
       <h2 className="my-4 text-2xl font-medium">Crea una nueva empresa</h2>
       <TextInput
         label="Nombre de Empresa"

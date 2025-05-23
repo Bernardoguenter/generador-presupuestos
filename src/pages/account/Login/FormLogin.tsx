@@ -1,18 +1,16 @@
-import { TextInput } from "../../../components/TextInput";
-import { Form } from "../../../components/FormProvider";
 import { loginSchema, type LoginFormData } from "./schema";
-import { Button } from "../../../components/Button";
-import { supabase } from "../../../utils/supabase";
 import { LoginErrorToast, LoginSuccessToast } from "../../../utils/alerts";
-import { CustomLink } from "../../../components/CustomLink";
+import { Button, Form, TextInput, CustomLink } from "../../../components";
+import { loginUser } from "../../../common/lib";
+import { useMemo } from "react";
 
 export const FormLogin = () => {
   const handleSubmit = async (formData: LoginFormData) => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: formData.email,
-        password: formData.password,
-      });
+      const { data, error } = await loginUser(
+        formData.email,
+        formData.password
+      );
 
       if (error) {
         throw new Error(error.message);
@@ -27,14 +25,19 @@ export const FormLogin = () => {
     }
   };
 
+  const defaultValues = useMemo(
+    () => ({
+      email: "",
+      password: "",
+    }),
+    []
+  );
+
   return (
     <Form
       onSubmit={handleSubmit}
       schema={loginSchema}
-      defaultValues={{
-        email: "",
-        password: "",
-      }}>
+      defaultValues={defaultValues}>
       <TextInput
         name="email"
         label="E-mail"
