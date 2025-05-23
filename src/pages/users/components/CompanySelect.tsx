@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import type { Company } from "../../../helpers/types";
-import { supabase } from "../../../utils/supabase";
-import { SelectInput } from "../../../components/SelectInput";
+import { SelectInput } from "../../../components";
+import { getAllCompanies } from "../../../common/lib";
 
 export const CompanySelect = () => {
   const [companies, setCompanies] = useState<Company[] | null>(null);
 
   useEffect(() => {
     const getCompanies = async () => {
-      const { data, error } = await supabase.from("companies").select("*");
+      const { data, error } = await getAllCompanies();
       if (!error) {
         setCompanies(data);
       }

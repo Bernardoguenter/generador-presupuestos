@@ -1,8 +1,7 @@
+import { useMemo } from "react";
 import { usePreferencesContext } from "../../../common/context/PreferencesContext/PreferencesContext";
 import { updateUserPreferences } from "../../../common/lib";
-import { Button } from "../../../components/Button";
-import { Form } from "../../../components/FormProvider";
-import { NumberInput } from "../../../components/NumberInput";
+import { Button, Form, NumberInput } from "../../../components";
 import type { ShedhousePriceMap } from "../../../helpers/types";
 import {
   UpdatePricesToastError,
@@ -36,11 +35,18 @@ export const PricesTinglado = () => {
     }
   };
 
+  const defaultValues = useMemo<ShedhousePriceMap | undefined>(() => {
+    if (!shed_prices) return undefined;
+    return {
+      ...shed_prices,
+    };
+  }, [shed_prices]);
+
   return (
     <Form
       className="mt-4"
       onSubmit={handleSubmit}
-      defaultValues={shed_prices}>
+      defaultValues={defaultValues}>
       <h3 className="my-4 text-xl font-medium">Precios Tinglado</h3>
       {Object.entries(shed_prices).map(([area]) => (
         <NumberInput

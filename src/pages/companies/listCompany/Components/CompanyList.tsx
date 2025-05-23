@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CustomLink } from "../../../../components/CustomLink";
+import { CustomLink } from "../../../../components";
 import type { Company } from "../../../../helpers/types";
 import { DeleteIcon, EditIcon } from "../../../../assets/svg";
 import { DeleteUserToastError } from "../../../../utils/alerts";

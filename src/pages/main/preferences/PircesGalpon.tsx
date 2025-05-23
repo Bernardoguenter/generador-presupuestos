@@ -1,8 +1,7 @@
+import { useMemo } from "react";
 import { usePreferencesContext } from "../../../common/context/PreferencesContext/PreferencesContext";
 import { updateUserPreferences } from "../../../common/lib";
-import { Button } from "../../../components/Button";
-import { Form } from "../../../components/FormProvider";
-import { NumberInput } from "../../../components/NumberInput";
+import { NumberInput, Button, Form } from "../../../components";
 import type { WharehousePriceMap } from "../../../helpers/types";
 import {
   UpdatePricesToastError,
@@ -35,11 +34,17 @@ export const PircesGalpon = () => {
       UpdatePricesToastError();
     }
   };
+  const defaultValues = useMemo<WharehousePriceMap | undefined>(() => {
+    if (!wharehouse_prices) return undefined;
+    return {
+      ...wharehouse_prices,
+    };
+  }, [wharehouse_prices]);
 
   return (
     <Form
       onSubmit={handleSubmit}
-      defaultValues={wharehouse_prices}>
+      defaultValues={defaultValues}>
       <h3 className="my-4 text-xl font-medium">Precios Galpón</h3>
       {Object.entries(wharehouse_prices).map(([area]) => (
         <NumberInput

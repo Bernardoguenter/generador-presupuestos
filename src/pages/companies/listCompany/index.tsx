@@ -1,5 +1,5 @@
-import { CustomLink } from "../../../components/CustomLink";
 import { CompanyList } from "./Components/CompanyList";
+import { CustomLink } from "../../../components";
 
 export default function ListCompany() {
   return (

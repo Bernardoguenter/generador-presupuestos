@@ -1,11 +1,8 @@
 import { useNavigate } from "react-router";
 import type { Company } from "../../../helpers/types";
-import { Button } from "../../../components/Button";
-import { SelectInput } from "../../../components/SelectInput";
-import { TextInput } from "../../../components/TextInput";
 import { provinciasArgentina } from "../../../helpers/fixedData";
 import { createCompanySchema, type CreateCompanyFormData } from "../schema";
-import { Form } from "../../../components/FormProvider";
+import { Button, TextInput, Form, SelectInput } from "../../../components";
 import {
   DeleteUserToastError,
   UpdateCompanyToastError,
@@ -17,6 +14,7 @@ import {
   deleteFileInBucket,
   updateCompany,
 } from "../../../common/lib";
+import { useMemo } from "react";
 
 interface Props {
   company: Company;
@@ -97,19 +95,18 @@ export default function CompanyDetailForm({ company }: Props) {
     }
   };
 
-  const defaultValues: CreateCompanyFormData | undefined = company
-    ? (() => {
-        const [direccion, localidad, provincia] = company.direccion.split(", ");
-        return {
-          nombre: company.nombre,
-          email: company.email ?? "",
-          telefono: company.telefono,
-          direccion,
-          localidad,
-          provincia,
-        };
-      })()
-    : undefined;
+  const defaultValues = useMemo<CreateCompanyFormData | undefined>(() => {
+    if (!company) return undefined;
+    const [direccion, localidad, provincia] = company.direccion.split(", ");
+    return {
+      nombre: company.nombre,
+      email: company.email ?? "",
+      telefono: company.telefono,
+      direccion,
+      localidad,
+      provincia,
+    };
+  }, [company]);
 
   return (
     <Form

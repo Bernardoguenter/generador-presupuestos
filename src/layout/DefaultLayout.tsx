@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Outlet } from "react-router-dom";
-import PageLoader from "../components/PageLoader";
+import { PageLoader } from "../components";
 
 const DefaultLayout = () => {
   return (

@@ -1,7 +1,5 @@
 import { useNavigate } from "react-router";
-import { Button } from "../../../components/Button";
-import { Form } from "../../../components/FormProvider";
-import { TextInput } from "../../../components/TextInput";
+import { Button, Form, TextInput } from "../../../components";
 import {
   CreateUserRoleToastError,
   CreateUserToastError,
@@ -12,6 +10,7 @@ import { createUserSchema, type CreateUserFormData } from "../schema";
 import { RolesSelect } from "../components/RolesSelect";
 import { CompanySelect } from "../components/CompanySelect";
 import { createUser, getUserByEmail, sendPassword } from "../../../common/lib";
+import { useMemo } from "react";
 
 export default function CreateUsers() {
   const navigate = useNavigate();
@@ -46,16 +45,21 @@ export default function CreateUsers() {
     }
   };
 
+  const defaultValues = useMemo(
+    () => ({
+      email: "",
+      fullName: "",
+      role: "usuario",
+      company_id: "default",
+    }),
+    []
+  );
+
   return (
     <Form
       onSubmit={handleSubmit}
       schema={createUserSchema}
-      defaultValues={{
-        email: "",
-        fullName: "",
-        role: "usuario",
-        company_id: "default",
-      }}>
+      defaultValues={defaultValues}>
       <h2 className="my-4 text-2xl font-medium">Crea un nuevo usuario</h2>
       <TextInput
         label="Nombre completo"
