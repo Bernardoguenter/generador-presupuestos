@@ -1,4 +1,5 @@
 import { usePreferencesContext } from "../../../common/context/PreferencesContext/PreferencesContext";
+import { updateUserPreferences } from "../../../common/lib";
 import { Button } from "../../../components/Button";
 import { Form } from "../../../components/FormProvider";
 import { NumberInput } from "../../../components/NumberInput";
@@ -7,7 +8,6 @@ import {
   UpdatePricesToastError,
   UpdatePricesToastSuccess,
 } from "../../../utils/alerts";
-import { supabase } from "../../../utils/supabase";
 
 export const PircesGalpon = () => {
   const { preferences, setIsLoading } = usePreferencesContext();
@@ -21,13 +21,8 @@ export const PircesGalpon = () => {
     }
 
     try {
-      const { error } = await supabase
-        .from("company_settings")
-        .update({
-          wharehouse_prices: formattedPrices,
-        })
-        .eq("company_id", company_id)
-        .select();
+      const dataToUpdate = { wharehouse_prices: formattedPrices };
+      const { error } = await updateUserPreferences(dataToUpdate, company_id);
 
       if (!error) {
         UpdatePricesToastSuccess();
@@ -45,8 +40,7 @@ export const PircesGalpon = () => {
     <Form
       onSubmit={handleSubmit}
       defaultValues={wharehouse_prices}>
-      <h2 className="my-4 text-2xl font-medium">Precios Galpón</h2>
-
+      <h3 className="my-4 text-xl font-medium">Precios Galpón</h3>
       {Object.entries(wharehouse_prices).map(([area]) => (
         <NumberInput
           key={area}
@@ -58,7 +52,7 @@ export const PircesGalpon = () => {
         styles="mt-4"
         type="submit"
         color="info">
-        Actualizar precios Galpón
+        Actualizar recios Galpón
       </Button>
     </Form>
   );

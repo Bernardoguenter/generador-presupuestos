@@ -4,6 +4,7 @@ import type { User } from "../../../helpers/types";
 import { AuthContext } from "./AuthContext";
 import { useNavigate } from "react-router";
 import { LogoutToast } from "../../../utils/alerts";
+import { getUserById } from "../../lib";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [id, setId] = useState<string | undefined>(undefined);
@@ -11,13 +12,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const getUserById = async (id: string) => {
+  const getAuthUser = async (id: string) => {
     if (id) {
-      const { data, error } = await supabase
-        .from("users")
-        .select()
-        .eq("id", id)
-        .single();
+      const { data, error } = await getUserById(id);
 
       if (error) {
         console.error("Error al obtener usuario:", error.message);
@@ -43,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (data?.user) {
         const userId = data.user.id;
         setId(userId);
-        await getUserById(userId);
+        await getAuthUser(userId);
       } else {
         setId(undefined);
         setAuthUser(undefined);
@@ -59,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (session?.user?.id) {
           const userId = session.user.id;
           setId(userId);
-          getUserById(userId);
+          getAuthUser(userId);
         } else {
           setId(undefined);
           setAuthUser(undefined);

@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
 import { CustomLink } from "../../../../components/CustomLink";
 import type { Company } from "../../../../helpers/types";
-import { supabase } from "../../../../utils/supabase";
 import { DeleteIcon, EditIcon } from "../../../../assets/svg";
 import { DeleteUserToastError } from "../../../../utils/alerts";
 import useSweetAlertModal from "../../../../common/hooks";
+import { deleteCompany, getAllCompanies } from "../../../../common/lib";
 
 export const CompanyList = () => {
   const [companies, setCompanies] = useState<Company[] | null>(null);
   const { showAlert } = useSweetAlertModal();
 
-  const getAllCompanies = async () => {
+  const getCompanies = async () => {
     try {
-      const { data, error } = await supabase.from("companies").select("*");
+      const { data, error } = await getAllCompanies();
       if (error) {
         throw new Error("Error al obtener usuarios");
       }
@@ -23,7 +23,7 @@ export const CompanyList = () => {
   };
 
   useEffect(() => {
-    getAllCompanies();
+    getCompanies();
   }, []);
 
   const handleDeleteCompany = async (id: string, nombre: string) => {
@@ -41,10 +41,7 @@ export const CompanyList = () => {
         });
 
         if (result.isConfirmed) {
-          const { error } = await supabase
-            .from("companies")
-            .delete()
-            .eq("id", id);
+          const { error } = await deleteCompany(id);
 
           if (!error) {
             await showAlert({

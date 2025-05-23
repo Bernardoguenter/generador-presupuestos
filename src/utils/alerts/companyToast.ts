@@ -125,6 +125,42 @@ const UpdateCompanyToastError = (error: string) => {
   });
 };
 
+const UpdateCompanyLogoToastSuccess = (company: string) => {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    },
+  });
+  Toast.fire({
+    icon: "success",
+    title: `Se ha actualizado el Logo de ${company} exitosamente`,
+  });
+};
+
+const UpdateCompanyLogoToastError = (company: string) => {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    },
+  });
+  Toast.fire({
+    icon: "error",
+    title: `No se ha podido actualizar el Logo de ${company}`,
+  });
+};
+
 export {
   CreateCompanyToastError,
   CreateCompanyToastErrorDuplicated,
@@ -133,4 +169,6 @@ export {
   DeleteCompanyToastSuccess,
   UpdateCompanyToastError,
   UpdateCompanyToastSuccess,
+  UpdateCompanyLogoToastSuccess,
+  UpdateCompanyLogoToastError,
 };

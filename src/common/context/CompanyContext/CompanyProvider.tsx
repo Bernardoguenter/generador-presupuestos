@@ -1,8 +1,8 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { supabase } from "../../../utils/supabase";
 import type { Company } from "../../../helpers/types";
 import { CompanyContext } from "./CompanyContext";
 import { useAuthContext } from "../AuthContext/AuthContext";
+import { getCompanyById } from "../../lib";
 
 export function CompanyProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -11,12 +11,7 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
 
   const getCompany = async (id: string) => {
     try {
-      const { data, error } = await supabase
-        .from("companies")
-        .select("*")
-        .eq("id", id)
-        .single();
-
+      const { data, error } = await getCompanyById(id);
       if (!error) {
         setCompany(data);
       }

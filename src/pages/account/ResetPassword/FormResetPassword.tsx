@@ -6,27 +6,26 @@ import {
   ResetPasswordToastError,
   ResetPasswordToastSuccess,
 } from "../../../utils/alerts";
-import { supabase } from "../../../utils/supabase";
 import { resetPasswordSchema, type ResetPasswordData } from "./shema";
+import {
+  regeneratePassword,
+  sendEmailResetPassword,
+} from "../../../common/lib";
 
 export const FormResetPassword = () => {
   const navigate = useNavigate();
   const handleSubmit = async (formData: ResetPasswordData) => {
     try {
       const { data: regenerateData, error: regenerateError } =
-        await supabase.functions.invoke("regenerate-password", {
-          body: { email: formData.email },
-        });
+        await regeneratePassword(formData.email);
 
       if (regenerateError) {
         console.error(regenerateError);
       }
 
-      const { error: sendPasswordError } = await supabase.functions.invoke(
-        "send-reset-password",
-        {
-          body: { email: formData.email, password: regenerateData.password },
-        }
+      const { error: sendPasswordError } = await sendEmailResetPassword(
+        formData.email,
+        regenerateData.password
       );
 
       if (!sendPasswordError) {

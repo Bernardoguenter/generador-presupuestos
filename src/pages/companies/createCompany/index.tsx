@@ -7,46 +7,82 @@ import { provinciasArgentina } from "../../../helpers/fixedData";
 import {
   CreateCompanyToastError,
   CreateCompanyToastSuccess,
+  UpdateCompanyLogoToastError,
+  UpdateCompanyLogoToastSuccess,
 } from "../../../utils/alerts";
-import { supabase } from "../../../utils/supabase";
 import { createCompanySchema, type CreateCompanyFormData } from "../schema";
 import { usePreferencesContext } from "../../../common/context/PreferencesContext/PreferencesContext";
+import { FileInput } from "../../../components/FileInput";
+import {
+  createCompany,
+  setCompanyPreferences,
+  updateCompany,
+  uploadFileToBucket,
+} from "../../../common/lib";
+import { formatCompanyName, formatFileType } from "../../../helpers/formatData";
+import type { PostgrestError } from "@supabase/supabase-js";
 
 export default function CreateCompany() {
   const navigate = useNavigate();
   const { preferences } = usePreferencesContext();
 
   const handleSubmit = async (formData: CreateCompanyFormData) => {
-    const { direccion, localidad, provincia, email, nombre, telefono } =
+    const { direccion, localidad, provincia, email, nombre, telefono, file } =
       formData;
+
     try {
       const formattedAddress = `${direccion}, ${localidad}, ${provincia}`;
 
-      const { data: company_data, error: createcompany_error } = await supabase
-        .from("companies")
-        .insert([
-          {
-            nombre,
-            email,
-            telefono,
-            direccion: formattedAddress,
-          },
-        ])
-        .select()
-        .single();
+      const companyData = {
+        nombre,
+        email,
+        telefono,
+        direccion: formattedAddress,
+      };
+
+      const { data: company_data, error: createcompany_error } =
+        await createCompany(companyData);
 
       if (!createcompany_error) {
         if (company_data) {
-          const { error: company_settings_error } =
-            await supabase.functions.invoke("set-preferences", {
-              body: { company_id: company_data.id, preferences },
-            });
+          const { error: company_settings_error } = await setCompanyPreferences(
+            company_data.id,
+            preferences
+          );
 
           if (!company_settings_error) {
-            CreateCompanyToastSuccess(company_data.nombre);
-            setTimeout(() => {
-              navigate("/companies");
-            }, 1000);
+            if (file && company_data.id) {
+              const companyName = formatCompanyName(nombre);
+              const fileType = formatFileType(file);
+
+              if (file) {
+                const { data: bucketData, error: bucketError } =
+                  await uploadFileToBucket(
+                    file,
+                    "companies-logos",
+                    company_data.id,
+                    `/${companyName}.${fileType}`
+                  );
+
+                if (!bucketError) {
+                  const { error: updateLogoUrlError } = await updateCompany(
+                    { logo_url: bucketData?.fullPath },
+                    company_data.id
+                  );
+                  if (!updateLogoUrlError) {
+                    CreateCompanyToastSuccess(company_data.nombre);
+                    setTimeout(() => {
+                      navigate("/companies");
+                    }, 1000);
+                    UpdateCompanyLogoToastSuccess(company_data.nombre);
+                  } else {
+                    UpdateCompanyLogoToastError(company_data.nombre);
+                  }
+                } else {
+                  CreateCompanyToastError(company_settings_error.message);
+                }
+              }
+            }
           } else {
             if (company_settings_error) {
               CreateCompanyToastError(company_settings_error.message);
@@ -65,9 +101,11 @@ export default function CreateCompany() {
         }
       }
     } catch (error) {
-      console.error(error);
+      const newError = error as PostgrestError;
+      CreateCompanyToastError(newError.message);
     }
   };
+
   return (
     <Form
       onSubmit={handleSubmit}
@@ -84,6 +122,10 @@ export default function CreateCompany() {
       <TextInput
         label="Nombre de Empresa"
         name="nombre"
+      />
+      <FileInput
+        label="Logo"
+        name="file"
       />
       <TextInput
         label="E-mail de Empresa"

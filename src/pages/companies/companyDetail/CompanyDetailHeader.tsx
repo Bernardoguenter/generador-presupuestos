@@ -1,0 +1,118 @@
+import { useEffect, useState } from "react";
+import {
+  replaceFileInBucket,
+  retriveFileFromBucket,
+  updateCompany,
+  uploadFileToBucket,
+} from "../../../common/lib";
+import { Button } from "../../../components/Button";
+import { FileInput } from "../../../components/FileInput";
+import { Form } from "../../../components/FormProvider";
+import { formatCompanyName, formatFileType } from "../../../helpers/formatData";
+import type { Company } from "../../../helpers/types";
+import {
+  UpdateCompanyLogoToastError,
+  UpdateCompanyLogoToastSuccess,
+  UpdateCompanyToastError,
+  UpdateCompanyToastSuccess,
+} from "../../../utils/alerts";
+import { companyLogoSchema, type CompanyLogoFormData } from "../schema";
+
+interface Props {
+  company: Company;
+}
+
+export const CompanyDetailHeader = ({ company }: Props) => {
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchLogo = async () => {
+      if (company.logo_url) {
+        const { data } = await retriveFileFromBucket(
+          "companies-logos",
+          company.logo_url
+        );
+        if (data) setLogoUrl(data.publicUrl);
+      }
+    };
+    fetchLogo();
+  }, [company.logo_url]);
+
+  const handleSubmit = async (data: CompanyLogoFormData) => {
+    const { file } = data;
+    if (file) {
+      const companyName = formatCompanyName(company.nombre);
+      const fileType = formatFileType(file);
+      if (company.logo_url === null) {
+        if (file) {
+          const { data: bucketData, error: bucketError } =
+            await uploadFileToBucket(
+              file,
+              "companies-logos",
+              company.id,
+              `/${companyName}.${fileType}`
+            );
+
+          if (!bucketError) {
+            UpdateCompanyLogoToastSuccess(company.nombre);
+            const { error: updateLogoUrlError } = await updateCompany(
+              { logo_url: bucketData?.fullPath },
+              company.id
+            );
+            if (!updateLogoUrlError) {
+              UpdateCompanyToastSuccess(company.nombre);
+            } else {
+              UpdateCompanyToastError(company.nombre);
+            }
+          } else {
+            UpdateCompanyLogoToastError(company.nombre);
+          }
+        }
+      } else {
+        const { data: bucketData, error: bucketError } =
+          await replaceFileInBucket(
+            file,
+            "companies-logos",
+            company.id,
+            `/${companyName}.${fileType}`
+          );
+        console.log({ bucketData, bucketError });
+        if (!bucketError) {
+          UpdateCompanyLogoToastSuccess(company.nombre);
+          const { error: updateLogoUrlError } = await updateCompany(
+            { logo_url: bucketData?.fullPath },
+            company.id
+          );
+          if (!updateLogoUrlError) {
+            UpdateCompanyToastSuccess(company.nombre);
+          } else {
+            UpdateCompanyToastError(company.nombre);
+          }
+        } else {
+          UpdateCompanyLogoToastError(company.nombre);
+        }
+      }
+    }
+  };
+  return (
+    <Form
+      onSubmit={handleSubmit}
+      schema={companyLogoSchema}
+      defaultValues={{ file: undefined }}>
+      <h2 className="my-4 text-2xl font-medium">{company?.nombre}</h2>
+      <div className="flex flex-col items-start justify-start py-4">
+        <FileInput
+          label="Logo"
+          name="file"
+          defaultPreviewUrl={logoUrl ?? undefined}
+        />
+        <Button
+          type="submit"
+          children="Actualizar Logo"
+          color="danger"
+          styles="mt-4"
+        />
+      </div>
+    </Form>
+  );
+};

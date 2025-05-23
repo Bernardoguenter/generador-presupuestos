@@ -1,8 +1,8 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { supabase } from "../../../utils/supabase";
 import type { Preferences } from "../../../helpers/types";
 import { PreferencesContext } from "./PreferencesContext";
 import { useAuthContext } from "../AuthContext/AuthContext";
+import { getUserPreferences } from "../../lib";
 
 const initialPreferencies = {
   company_id: "",
@@ -25,11 +25,7 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
 
   const getPreferences = async (id: string) => {
     try {
-      const { data, error } = await supabase
-        .from("company_settings")
-        .select("*")
-        .eq("company_id", id)
-        .single();
+      const { data, error } = await getUserPreferences(id);
 
       if (!error) {
         setPreferences(data);
