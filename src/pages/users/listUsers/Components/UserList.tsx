@@ -1,25 +1,25 @@
 import { useEffect, useState } from "react";
 import { CustomLink } from "../../../../components/CustomLink";
 import type { User } from "../../../../helpers/types";
-import { supabase } from "../../../../utils/supabase";
 import { DeleteIcon, EditIcon } from "../../../../assets/svg";
 import { DeleteUserToastError } from "../../../../utils/alerts";
 import useSweetAlertModal from "../../../../common/hooks";
+import { deleteUser, getAllUsers } from "../../../../common/lib";
 
 export const UserList = () => {
   const [users, setUsers] = useState<User[] | null>(null);
   const { showAlert } = useSweetAlertModal();
 
   useEffect(() => {
-    const getAllUsers = async () => {
-      const { data: users, error } = await supabase.from("users").select("*");
+    const getUsers = async () => {
+      const { data: users, error } = await getAllUsers();
       if (error) {
         throw new Error("Error al obtener usuarios");
       }
       setUsers(users);
     };
 
-    getAllUsers();
+    getUsers();
   }, []);
 
   const handleDeleteUser = async (id: string, email: string) => {
@@ -37,10 +37,7 @@ export const UserList = () => {
         });
 
         if (result.isConfirmed) {
-          const { error } = await supabase.functions.invoke("delete-user", {
-            body: { id: id },
-          });
-
+          const { error } = await deleteUser(id);
           if (!error) {
             await showAlert({
               title: "¡Eliminado!",

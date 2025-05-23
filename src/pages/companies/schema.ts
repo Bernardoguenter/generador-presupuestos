@@ -27,6 +27,45 @@ export const createCompanySchema = z.object({
   provincia: z.string({
     required_error: "Debes ingresar una localidad",
   }),
+  file: z
+    .instanceof(File, {
+      message: "Debes subir un archivo de imagen",
+    })
+    .refine((file) => file.size > 0, {
+      message: "El archivo no puede estar vacío",
+    })
+    .refine(
+      (file) => ["image/jpeg", "image/png", "image/webp"].includes(file.type),
+      {
+        message: "El archivo debe ser una imagen válida (jpg, png o webp)",
+      }
+    )
+    .refine((file) => file.size <= 512000, {
+      message: "El archivo no debe superar los 500KB",
+    })
+    .optional(),
 });
 
 export type CreateCompanyFormData = z.infer<typeof createCompanySchema>;
+
+export const companyLogoSchema = z.object({
+  file: z
+    .instanceof(File, {
+      message: "Debes subir un archivo de imagen",
+    })
+    .refine((file) => file.size > 0, {
+      message: "El archivo no puede estar vacío",
+    })
+    .refine(
+      (file) => ["image/jpeg", "image/png", "image/webp"].includes(file.type),
+      {
+        message: "El archivo debe ser una imagen válida (jpg, png o webp)",
+      }
+    )
+    .refine((file) => file.size <= 512000, {
+      message: "El archivo no debe superar los 500KB",
+    })
+    .optional(),
+});
+
+export type CompanyLogoFormData = z.infer<typeof companyLogoSchema>;

@@ -43,6 +43,10 @@ export const Form = <
     }
   }, [defaultValues, methods]);
 
+  useEffect(() => {
+    console.log("Errores del formulario", methods.formState.errors);
+  }, [methods.formState.errors]);
+
   return (
     <FormProvider {...methods}>
       <form

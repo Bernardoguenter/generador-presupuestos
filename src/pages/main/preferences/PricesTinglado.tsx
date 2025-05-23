@@ -1,4 +1,5 @@
 import { usePreferencesContext } from "../../../common/context/PreferencesContext/PreferencesContext";
+import { updateUserPreferences } from "../../../common/lib";
 import { Button } from "../../../components/Button";
 import { Form } from "../../../components/FormProvider";
 import { NumberInput } from "../../../components/NumberInput";
@@ -7,7 +8,6 @@ import {
   UpdatePricesToastError,
   UpdatePricesToastSuccess,
 } from "../../../utils/alerts";
-import { supabase } from "../../../utils/supabase";
 
 export const PricesTinglado = () => {
   const { preferences, setIsLoading } = usePreferencesContext();
@@ -21,13 +21,8 @@ export const PricesTinglado = () => {
     }
 
     try {
-      const { error } = await supabase
-        .from("company_settings")
-        .update({
-          shed_prices: formattedPrices,
-        })
-        .eq("company_id", company_id)
-        .select();
+      const dataToUpdate = { shed_prices: formattedPrices };
+      const { error } = await updateUserPreferences(dataToUpdate, company_id);
 
       if (!error) {
         UpdatePricesToastSuccess();
@@ -46,7 +41,7 @@ export const PricesTinglado = () => {
       className="mt-4"
       onSubmit={handleSubmit}
       defaultValues={shed_prices}>
-      <h2 className="my-4 text-2xl font-medium">Precios Tinglado</h2>
+      <h3 className="my-4 text-xl font-medium">Precios Tinglado</h3>
       {Object.entries(shed_prices).map(([area]) => (
         <NumberInput
           key={area}
@@ -55,10 +50,10 @@ export const PricesTinglado = () => {
         />
       ))}
       <Button
-        styles="mt-4"
+        styles="mt-4 "
         type="submit"
         color="info">
-        Actualizar precios Galpón
+        Actualizar precios Tinglado
       </Button>
     </Form>
   );

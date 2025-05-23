@@ -2,38 +2,22 @@ import { Form } from "../../../components/FormProvider";
 import { preferencesSchema, type PreferencesFormData } from "./schema";
 import { NumberInput } from "../../../components/NumberInput";
 import { Button } from "../../../components/Button";
-import { supabase } from "../../../utils/supabase";
 import { usePreferencesContext } from "../../../common/context/PreferencesContext/PreferencesContext";
 import {
   UpdatePreferencesToastError,
   UpdatePreferencesToastSuccess,
 } from "../../../utils/alerts";
+import { updateUserPreferences } from "../../../common/lib";
 
 export default function PreferencesSettings() {
   const { preferences, setIsLoading } = usePreferencesContext();
 
   const handleSubmit = async (formData: PreferencesFormData) => {
     try {
-      const {
-        colored_sheet_difference,
-        u_profile_difference,
-        default_markup,
-        dollar_quote,
-        gate_price,
-        km_price,
-      } = formData;
-      const { error } = await supabase
-        .from("company_settings")
-        .update({
-          colored_sheet_difference,
-          default_markup,
-          dollar_quote,
-          gate_price,
-          km_price,
-          u_profile_difference,
-        })
-        .eq("company_id", preferences.company_id)
-        .select();
+      const { error } = await updateUserPreferences(
+        formData,
+        preferences.company_id
+      );
 
       if (!error) {
         setIsLoading(true);
@@ -52,7 +36,6 @@ export default function PreferencesSettings() {
       defaultValues={preferences}
       onSubmit={handleSubmit}
       schema={preferencesSchema}>
-      <h2 className="my-4 text-2xl font-medium">Preferencias</h2>
       <NumberInput
         label="Cotización dólar"
         name="dollar_quote"

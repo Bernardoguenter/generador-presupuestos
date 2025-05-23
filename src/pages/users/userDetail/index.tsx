@@ -14,6 +14,7 @@ import {
   UpdateUserToastSuccess,
 } from "../../../utils/alerts";
 import useSweetAlertModal from "../../../common/hooks";
+import { deleteUser, updateUser } from "../../../common/lib";
 
 export default function UserDetail() {
   const { id } = useParams();
@@ -43,27 +44,19 @@ export default function UserDetail() {
   }, [id]);
 
   const handleSubmit = async (formData: CreateUserFormData) => {
-    const { company_id, email, fullName, role } = formData;
     try {
-      const { data, error } = await supabase
-        .from("users")
-        .update({
-          company_id,
-          email,
-          fullName,
-          role,
-        })
-        .eq("id", id)
-        .select()
-        .single();
+      if (id) {
+        const { data, error } = await updateUser(formData, id);
 
-      if (!error) {
-        UpdateUserToastSuccess(data?.fullName);
-        setTimeout(() => {
-          navigate("/users");
-        }, 1000);
-      } else {
-        UpdateUserToastError(error.message);
+        if (!error) {
+          UpdateUserToastSuccess(data?.fullName);
+          setTimeout(() => {
+            navigate("/users");
+          }, 1000);
+        } else {
+          UpdateUserToastError(error.message);
+          console.error(error);
+        }
       }
     } catch (error) {
       console.error(error);
@@ -85,9 +78,7 @@ export default function UserDetail() {
         });
 
         if (result.isConfirmed) {
-          const { error } = await supabase.functions.invoke("delete-user", {
-            body: { id: id },
-          });
+          const { error } = await deleteUser(id);
 
           if (!error) {
             await showAlert({
@@ -96,6 +87,7 @@ export default function UserDetail() {
               icon: "success",
               confirmButtonColor: "#FF8303",
             });
+            navigate("/users");
           } else {
             DeleteUserToastError(email);
           }

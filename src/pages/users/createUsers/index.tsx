@@ -8,45 +8,37 @@ import {
   CreateUserToastErrorDuplicated,
   CreateUserToastSuccess,
 } from "../../../utils/alerts";
-import { supabase } from "../../../utils/supabase";
 import { createUserSchema, type CreateUserFormData } from "../schema";
 import { RolesSelect } from "../components/RolesSelect";
 import { CompanySelect } from "../components/CompanySelect";
+import { createUser, getUserByEmail, sendPassword } from "../../../common/lib";
 
 export default function CreateUsers() {
   const navigate = useNavigate();
 
   const handleSubmit = async (formData: CreateUserFormData) => {
     try {
-      const { email, fullName, company_id, role } = formData;
-      if (company_id === "default") {
+      if (formData.company_id === "default") {
         CreateUserRoleToastError();
         return;
       }
+      const { data: isDuplicated } = await getUserByEmail(formData.email);
 
-      const isDuplicated = await supabase
-        .from("users")
-        .select("email")
-        .eq("email", email)
-        .single();
-
-      if (isDuplicated.data) {
-        CreateUserToastErrorDuplicated(email);
+      if (isDuplicated) {
+        CreateUserToastErrorDuplicated(formData.email);
       } else {
-        const { data, error } = await supabase.functions.invoke("create-user", {
-          body: { email, fullName, company_id, role },
-        });
+        const { data, error } = await createUser(formData);
         if (error) {
           console.error("Error desde la edge function:", error);
           CreateUserToastError(error);
         } else {
-          CreateUserToastSuccess(email);
+          CreateUserToastSuccess(formData.email);
           if (data.password) {
-            await supabase.functions.invoke("send-password", {
-              body: { email, password: data.password },
-            });
+            const { error } = await sendPassword(formData.email, data.password);
+            if (!error) {
+              navigate("/users");
+            }
           }
-          navigate("/users");
         }
       }
     } catch (error) {
