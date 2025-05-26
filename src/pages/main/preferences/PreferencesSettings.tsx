@@ -1,6 +1,5 @@
 import { Form, NumberInput, Button } from "../../../components";
 import { preferencesSchema, type PreferencesFormData } from "./schema";
-import { usePreferencesContext } from "../../../common/context/PreferencesContext/PreferencesContext";
 import {
   UpdatePreferencesToastError,
   UpdatePreferencesToastSuccess,
@@ -8,6 +7,7 @@ import {
 import { updateUserPreferences } from "../../../common/lib";
 import { useMemo } from "react";
 import type { Preferences } from "../../../helpers/types";
+import { usePreferencesContext } from "../../../common/context";
 
 export default function PreferencesSettings() {
   const { preferences, setIsLoading } = usePreferencesContext();

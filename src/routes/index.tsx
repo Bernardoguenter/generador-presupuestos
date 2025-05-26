@@ -1,10 +1,10 @@
 import { Routes, Route, Navigate } from "react-router";
 import { lazy } from "react";
-import { useAuthContext } from "../common/context/AuthContext/AuthContext";
 
 // Layouts
 import AppLayout from "../layout/AppLayout";
 import DefaultLayout from "../layout/DefaultLayout";
+import { useAuthContext } from "../common/context";
 
 // Páginas públicas (account)
 const Login = lazy(() => import("../pages/account/Login"));

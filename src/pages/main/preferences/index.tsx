@@ -2,7 +2,7 @@ import { useState } from "react";
 import PreferencesSettings from "./PreferencesSettings";
 import { PriceSettings } from "./PriceSettings";
 import type { Preferences } from "../../../helpers/types";
-import { useCompanyContext } from "../../../common/context/CompanyContext/CompanyContext";
+import { useCompanyContext } from "../../../common/context";
 
 export default function Preferences() {
   const [view, setView] = useState<string>("preferences");
@@ -11,7 +11,7 @@ export default function Preferences() {
   return (
     <section className="mt-8">
       <h2 className="my-4 text-2xl font-medium">
-        Preferencias {company?.nombre}
+        Preferencias {company?.company_name}
       </h2>
       <div className="w-full flex justify-around ">
         <button

@@ -16,10 +16,10 @@ export interface Role {
 
 export interface Company {
   id: string;
-  nombre: string;
+  company_name: string;
   logo_url: string | null;
-  telefono: string;
-  direccion: string;
+  phone: string;
+  fullAddress: string;
   email: string | null;
   created_at: Date;
 }
@@ -69,3 +69,25 @@ type AreaShed =
   | 1000;
 
 export type ShedhousePriceMap = Partial<Record<AreaShed, number>>;
+
+export interface Budget {
+  id: string;
+  created_by: string;
+  created_at: string;
+  customer: string;
+  material: string;
+  structure_type: string;
+  width: number;
+  length: number;
+  height: number;
+  enclousure_height: number;
+  includes_freight: boolean;
+  city: string;
+  color_roof_sheet: boolean;
+  color_side_sheet: boolean;
+  gate_width: number;
+  gate_height: number;
+  includes_taxes: number;
+  total: number;
+  details: string;
+}

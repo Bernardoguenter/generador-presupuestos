@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { usePreferencesContext } from "../../../common/context/PreferencesContext/PreferencesContext";
 import { updateUserPreferences } from "../../../common/lib";
 import { NumberInput, Button, Form } from "../../../components";
 import type { WharehousePriceMap } from "../../../helpers/types";
@@ -7,6 +6,7 @@ import {
   UpdatePricesToastError,
   UpdatePricesToastSuccess,
 } from "../../../utils/alerts";
+import { usePreferencesContext } from "../../../common/context";
 
 export const PircesGalpon = () => {
   const { preferences, setIsLoading } = usePreferencesContext();

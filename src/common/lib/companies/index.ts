@@ -3,9 +3,9 @@ import { supabase } from "../../../utils/supabase";
 
 type CreateCompanyFormData = {
   email: string;
-  nombre: string;
-  telefono: string;
-  direccion: string;
+  company_name: string;
+  phone: string;
+  fullAddress: string;
 };
 
 const getAllCompanies = async () => {

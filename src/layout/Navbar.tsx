@@ -7,10 +7,9 @@ import {
 } from "../assets/svg";
 import { UserIcon } from "../assets/svg/UserIcon";
 import { useEffect, useState } from "react";
-import { useCompanyContext } from "../common/context/CompanyContext/CompanyContext";
 import { retriveFileFromBucket } from "../common/lib";
 import { Button } from "../components";
-import { useAuthContext } from "../common/context/AuthContext/AuthContext";
+import { useAuthContext, useCompanyContext } from "../common/context";
 
 export const Navbar = () => {
   const { authUser, handleLogout } = useAuthContext();
@@ -38,11 +37,11 @@ export const Navbar = () => {
             <img
               className="object-cover h-10 "
               src={logoUrl}
-              alt={company ? company.nombre : "Logo"}
+              alt={company ? company.company_name : "Logo"}
             />
           </div>
         ) : (
-          <h1>{company?.nombre}</h1>
+          <h1>{company?.company_name}</h1>
         )}
       </Link>
 

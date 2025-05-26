@@ -32,14 +32,14 @@ export const CompanyList = () => {
 
   const handleDeleteCompany = async (
     id: string,
-    nombre: string,
+    company_name: string,
     logo_url: string | null
   ) => {
     try {
-      if (id && nombre) {
+      if (id && company_name) {
         const result = await showAlert({
           title: "¿Estás seguro?",
-          text: `Esta acción eliminará la empresa ${nombre} y no se puede deshacer`,
+          text: `Esta acción eliminará la empresa ${company_name} y no se puede deshacer`,
           icon: "warning",
           showCancelButton: true,
           confirmButtonColor: "#FF8303",
@@ -63,7 +63,7 @@ export const CompanyList = () => {
             }
             await showAlert({
               title: "¡Eliminado!",
-              text: `La empresa ${nombre} fue eliminado correctamente.`,
+              text: `La empresa ${company_name} fue eliminado correctamente.`,
               icon: "success",
               confirmButtonColor: "#FF8303",
             });
@@ -74,13 +74,13 @@ export const CompanyList = () => {
               setCompanies(newCompany);
             }
           } else {
-            DeleteUserToastError(nombre);
+            DeleteUserToastError(company_name);
           }
         }
       }
     } catch (error) {
       console.error(error);
-      DeleteUserToastError(nombre);
+      DeleteUserToastError(company_name);
     }
   };
 
@@ -114,14 +114,14 @@ export const CompanyList = () => {
               key={company.id}
               className="flex items-center w-full ">
               <td className="px-2 py-2 text-xs overflow-hidden w-2/4">
-                {company.nombre}
+                {company.company_name}
               </td>
               <td className="px-2 py-2 flex justify-center items-center w-1/4">
                 <button
                   onClick={() =>
                     handleDeleteCompany(
                       company.id,
-                      company.nombre,
+                      company.company_name,
                       company.logo_url
                     )
                   }>

@@ -2,8 +2,8 @@ import { Suspense, useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
-import { useAuthContext } from "../common/context/AuthContext/AuthContext";
 import { BackButton, PageLoader } from "../components";
+import { useAuthContext } from "../common/context";
 
 const AppLayout = () => {
   const { authUser } = useAuthContext();
