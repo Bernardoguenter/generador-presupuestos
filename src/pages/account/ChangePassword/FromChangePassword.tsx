@@ -3,7 +3,7 @@ import {
   ChangePasswordToastError,
   ChangePasswordToastSuccess,
 } from "../../../utils/alerts";
-import { Button, Form, TextInput } from "../../../components";
+import { Button, Form } from "../../../components";
 import {
   signOutUser,
   updateUser,
@@ -11,6 +11,7 @@ import {
 } from "../../../common/lib";
 import { useMemo } from "react";
 import { useAuthContext } from "../../../common/context";
+import { PasswordInput } from "../../../components/PasswordInputs";
 
 export const FormChangePassword = () => {
   const { handleLogout } = useAuthContext();
@@ -64,15 +65,13 @@ export const FormChangePassword = () => {
       <h2 className="mb-4 text-2xl text-center">
         Para usar tu cuenta debes cambiar tu password
       </h2>
-      <TextInput
+      <PasswordInput
         name="password"
         label="Elige tu nuevo password"
-        type="password"
       />
-      <TextInput
+      <PasswordInput
         name="confirmPassword"
         label="Vuelve a escribir tu contraseña"
-        type="password"
       />
       <Button
         type="submit"

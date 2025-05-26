@@ -8,3 +8,5 @@ export * from "./CompanyIcon";
 export * from "./MenuIcon";
 export * from "./UsersIcon";
 export * from "./PreferencesIcon";
+export * from "./VisibilityIcon";
+export * from "./VisibilityOffIcon";

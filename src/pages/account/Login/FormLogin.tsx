@@ -3,6 +3,7 @@ import { LoginErrorToast, LoginSuccessToast } from "../../../utils/alerts";
 import { Button, Form, TextInput, CustomLink } from "../../../components";
 import { loginUser } from "../../../common/lib";
 import { useMemo } from "react";
+import { PasswordInput } from "../../../components/PasswordInputs";
 
 export const FormLogin = () => {
   const handleSubmit = async (formData: LoginFormData) => {
@@ -43,10 +44,9 @@ export const FormLogin = () => {
         label="E-mail"
         type="email"
       />
-      <TextInput
+      <PasswordInput
         name="password"
         label="Password"
-        type="password"
       />
       <Button
         type="submit"
