@@ -8,7 +8,7 @@ import {
   regeneratePassword,
   sendEmailResetPassword,
 } from "../../../common/lib";
-import { Button, Form, TextInput } from "../../../components";
+import { Button, CustomLink, Form, TextInput } from "../../../components";
 import { useMemo } from "react";
 
 export const FormResetPassword = () => {
@@ -62,8 +62,14 @@ export const FormResetPassword = () => {
       <Button
         type="submit"
         color="info"
-        children="Solcitar nuevo password"
+        children="Solicitar nuevo password"
       />
+      <CustomLink
+        href="account/login"
+        color="danger"
+        styles="mt-2 text-center">
+        Ingresar a mi cuenta
+      </CustomLink>
     </Form>
   );
 };

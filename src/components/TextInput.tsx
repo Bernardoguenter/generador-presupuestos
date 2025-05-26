@@ -3,7 +3,7 @@ import { Controller, useFormContext } from "react-hook-form";
 interface Props {
   name: string;
   label: string;
-  type?: "email" | "password" | "text";
+  type?: "email" | "text";
 }
 
 export const TextInput = ({ name, label, type = "text" }: Props) => {
