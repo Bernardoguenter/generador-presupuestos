@@ -25,20 +25,19 @@ export default function CompanyDetailForm({ company }: Props) {
   const { showAlert } = useSweetAlertModal();
 
   const handleSubmit = async (formData: CreateCompanyFormData) => {
-    const { direccion, localidad, provincia, email, nombre, telefono } =
-      formData;
+    const { address, city, province, email, company_name, phone } = formData;
     try {
-      const formattedAddress = `${direccion}, ${localidad}, ${provincia}`;
+      const formattedAddress = `${address}, ${city}, ${province}`;
       const dataToUpdate = {
-        nombre,
+        company_name,
         email,
-        telefono,
-        direccion: formattedAddress,
+        phone,
+        fullAddress: formattedAddress,
       };
       const { data, error } = await updateCompany(dataToUpdate, company.id);
 
       if (!error) {
-        UpdateCompanyToastSuccess(data?.nombre);
+        UpdateCompanyToastSuccess(data?.company_name);
         setTimeout(() => {
           navigate("/companies");
         }, 1000);
@@ -50,12 +49,12 @@ export default function CompanyDetailForm({ company }: Props) {
     }
   };
 
-  const handleDeleteCompany = async (id: string, nombre: string) => {
+  const handleDeleteCompany = async (id: string, company_name: string) => {
     try {
-      if (id && nombre) {
+      if (id && company_name) {
         const result = await showAlert({
           title: "¿Estás seguro?",
-          text: `Esta acción eliminará la empresa ${nombre} y no se puede deshacer`,
+          text: `Esta acción eliminará la empresa ${company_name} y no se puede deshacer`,
           icon: "warning",
           showCancelButton: true,
           confirmButtonColor: "#FF8303",
@@ -79,32 +78,32 @@ export default function CompanyDetailForm({ company }: Props) {
             }
             await showAlert({
               title: "¡Eliminado!",
-              text: `La empresa ${nombre} fue eliminado correctamente.`,
+              text: `La empresa ${company_name} fue eliminado correctamente.`,
               icon: "success",
               confirmButtonColor: "#FF8303",
             });
             navigate("/companies");
           }
         } else {
-          DeleteUserToastError(nombre);
+          DeleteUserToastError(company_name);
         }
       }
     } catch (error) {
       console.error(error);
-      DeleteUserToastError(nombre);
+      DeleteUserToastError(company_name);
     }
   };
 
   const defaultValues = useMemo<CreateCompanyFormData | undefined>(() => {
     if (!company) return undefined;
-    const [direccion, localidad, provincia] = company.direccion.split(", ");
+    const [address, city, province] = company.fullAddress.split(", ");
     return {
-      nombre: company.nombre,
+      company_name: company.company_name,
       email: company.email ?? "",
-      telefono: company.telefono,
-      direccion,
-      localidad,
-      provincia,
+      phone: company.phone,
+      address,
+      city,
+      province,
     };
   }, [company]);
 
@@ -115,7 +114,7 @@ export default function CompanyDetailForm({ company }: Props) {
       defaultValues={defaultValues}>
       <TextInput
         label="Nombre de Empresa"
-        name="nombre"
+        name="company_name"
       />
       <TextInput
         label="E-mail de Empresa"
@@ -124,20 +123,20 @@ export default function CompanyDetailForm({ company }: Props) {
       />
       <TextInput
         label="Teléfono"
-        name="telefono"
+        name="phone"
       />
       <TextInput
         label="Dirección"
-        name="direccion"
+        name="address"
       />
 
       <TextInput
         label="Localidad"
-        name="localidad"
+        name="city"
       />
       <SelectInput
         label="Provincia"
-        name="provincia">
+        name="province">
         {provinciasArgentina.map((prov) => (
           <option
             key={prov}
@@ -159,7 +158,7 @@ export default function CompanyDetailForm({ company }: Props) {
         color="danger"
         children="Eliminar empresa"
         styles="mt-4"
-        onClick={() => handleDeleteCompany(company?.id, company?.nombre)}
+        onClick={() => handleDeleteCompany(company?.id, company?.company_name)}
       />
     </Form>
   );

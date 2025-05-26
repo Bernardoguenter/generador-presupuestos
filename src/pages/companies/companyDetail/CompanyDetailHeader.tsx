@@ -39,7 +39,7 @@ export const CompanyDetailHeader = ({ company }: Props) => {
   const handleSubmit = async (data: CompanyLogoFormData) => {
     const { file } = data;
     if (file) {
-      const companyName = formatCompanyName(company.nombre);
+      const companyName = formatCompanyName(company.company_name);
       const fileType = formatFileType(file);
       if (company.logo_url === null) {
         if (file) {
@@ -52,18 +52,18 @@ export const CompanyDetailHeader = ({ company }: Props) => {
             );
 
           if (!bucketError) {
-            UpdateCompanyLogoToastSuccess(company.nombre);
+            UpdateCompanyLogoToastSuccess(company.company_name);
             const { error: updateLogoUrlError } = await updateCompany(
               { logo_url: bucketData?.fullPath },
               company.id
             );
             if (!updateLogoUrlError) {
-              UpdateCompanyToastSuccess(company.nombre);
+              UpdateCompanyToastSuccess(company.company_name);
             } else {
-              UpdateCompanyToastError(company.nombre);
+              UpdateCompanyToastError(company.company_name);
             }
           } else {
-            UpdateCompanyLogoToastError(company.nombre);
+            UpdateCompanyLogoToastError(company.company_name);
           }
         }
       } else {
@@ -75,18 +75,18 @@ export const CompanyDetailHeader = ({ company }: Props) => {
             `/${companyName}.${fileType}`
           );
         if (!bucketError) {
-          UpdateCompanyLogoToastSuccess(company.nombre);
+          UpdateCompanyLogoToastSuccess(company.company_name);
           const { error: updateLogoUrlError } = await updateCompany(
             { logo_url: bucketData?.fullPath },
             company.id
           );
           if (!updateLogoUrlError) {
-            UpdateCompanyToastSuccess(company.nombre);
+            UpdateCompanyToastSuccess(company.company_name);
           } else {
-            UpdateCompanyToastError(company.nombre);
+            UpdateCompanyToastError(company.company_name);
           }
         } else {
-          UpdateCompanyLogoToastError(company.nombre);
+          UpdateCompanyLogoToastError(company.company_name);
         }
       }
     }
@@ -99,7 +99,7 @@ export const CompanyDetailHeader = ({ company }: Props) => {
       onSubmit={handleSubmit}
       schema={companyLogoSchema}
       defaultValues={defaultValues}>
-      <h2 className="my-4 text-2xl font-medium">{company?.nombre}</h2>
+      <h2 className="my-4 text-2xl font-medium">{company?.company_name}</h2>
       <div className="flex flex-col items-start justify-start py-4">
         <FileInput
           label="Logo"

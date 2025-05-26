@@ -14,7 +14,6 @@ import {
   UpdateCompanyLogoToastSuccess,
 } from "../../../utils/alerts";
 import { createCompanySchema, type CreateCompanyFormData } from "../schema";
-import { usePreferencesContext } from "../../../common/context/PreferencesContext/PreferencesContext";
 import {
   createCompany,
   setCompanyPreferences,
@@ -24,23 +23,24 @@ import {
 import { formatCompanyName, formatFileType } from "../../../helpers/formatData";
 import type { PostgrestError } from "@supabase/supabase-js";
 import { useMemo } from "react";
+import { usePreferencesContext } from "../../../common/context";
 
 export default function CreateCompany() {
   const navigate = useNavigate();
   const { preferences } = usePreferencesContext();
 
   const handleSubmit = async (formData: CreateCompanyFormData) => {
-    const { direccion, localidad, provincia, email, nombre, telefono, file } =
+    const { address, city, province, email, company_name, phone, file } =
       formData;
 
     try {
-      const formattedAddress = `${direccion}, ${localidad}, ${provincia}`;
+      const formattedAddress = `${address}, ${city}, ${province}`;
 
       const companyData = {
-        nombre,
+        company_name,
         email,
-        telefono,
-        direccion: formattedAddress,
+        phone,
+        fullAddress: formattedAddress,
       };
 
       const { data: company_data, error: createcompany_error } =
@@ -55,7 +55,7 @@ export default function CreateCompany() {
 
           if (!company_settings_error) {
             if (file && company_data.id) {
-              const companyName = formatCompanyName(nombre);
+              const companyName = formatCompanyName(company_name);
               const fileType = formatFileType(file);
 
               if (file) {
@@ -73,13 +73,13 @@ export default function CreateCompany() {
                     company_data.id
                   );
                   if (!updateLogoUrlError) {
-                    CreateCompanyToastSuccess(company_data.nombre);
+                    CreateCompanyToastSuccess(company_data.company_name);
                     setTimeout(() => {
                       navigate("/companies");
                     }, 1000);
-                    UpdateCompanyLogoToastSuccess(company_data.nombre);
+                    UpdateCompanyLogoToastSuccess(company_data.company_name);
                   } else {
-                    UpdateCompanyLogoToastError(company_data.nombre);
+                    UpdateCompanyLogoToastError(company_data.company_name);
                   }
                 } else {
                   CreateCompanyToastError(company_settings_error.message);
@@ -111,12 +111,12 @@ export default function CreateCompany() {
 
   const defaultValues = useMemo(
     () => ({
-      nombre: "",
+      company_name: "",
       email: "",
-      telefono: "",
-      direccion: "",
-      localidad: "",
-      provincia: provinciasArgentina[0],
+      phone: "",
+      address: "",
+      city: "",
+      province: provinciasArgentina[0],
     }),
     []
   );
@@ -129,7 +129,7 @@ export default function CreateCompany() {
       <h2 className="my-4 text-2xl font-medium">Crea una nueva empresa</h2>
       <TextInput
         label="Nombre de Empresa"
-        name="nombre"
+        name="company_name"
       />
       <FileInput
         label="Logo"
@@ -142,19 +142,19 @@ export default function CreateCompany() {
       />
       <TextInput
         label="Teléfono"
-        name="telefono"
+        name="phone"
       />
       <TextInput
         label="Dirección"
-        name="direccion"
+        name="address"
       />
       <TextInput
         label="Localidad"
-        name="localidad"
+        name="city"
       />
       <SelectInput
         label="Provincia"
-        name="provincia">
+        name="province">
         {provinciasArgentina.map((prov) => (
           <option
             key={prov}

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const createCompanySchema = z.object({
-  nombre: z.string({
+  company_name: z.string({
     required_error: "Debes ingresar un nombre para la empresa",
   }),
   email: z
@@ -11,20 +11,20 @@ export const createCompanySchema = z.object({
     .email({
       message: "El e-mail debe tener un formato válido",
     }),
-  telefono: z
+  phone: z
     .string({
       required_error: "Debes ingresar un teléfono",
     })
     .refine((val) => /^\d+$/.test(val), {
       message: "El teléfono debe contener solo números",
     }),
-  direccion: z.string({
+  address: z.string({
     required_error: "Debes ingresar una dirección para la empresa",
   }),
-  localidad: z.string({
+  city: z.string({
     required_error: "Debes ingresar una localidad",
   }),
-  provincia: z.string({
+  province: z.string({
     required_error: "Debes ingresar una localidad",
   }),
   file: z

@@ -25,7 +25,7 @@ export const CompanySelect = () => {
           <option
             key={company.id}
             value={company.id}>
-            {company.nombre}
+            {company.company_name}
           </option>
         ))}
     </SelectInput>

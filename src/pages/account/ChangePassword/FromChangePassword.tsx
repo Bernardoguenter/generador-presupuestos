@@ -3,7 +3,6 @@ import {
   ChangePasswordToastError,
   ChangePasswordToastSuccess,
 } from "../../../utils/alerts";
-import { useAuthContext } from "../../../common/context/AuthContext/AuthContext";
 import { Button, Form, TextInput } from "../../../components";
 import {
   signOutUser,
@@ -11,6 +10,7 @@ import {
   updateUserPassword,
 } from "../../../common/lib";
 import { useMemo } from "react";
+import { useAuthContext } from "../../../common/context";
 
 export const FormChangePassword = () => {
   const { handleLogout } = useAuthContext();

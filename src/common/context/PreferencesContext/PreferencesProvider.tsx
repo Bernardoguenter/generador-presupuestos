@@ -1,8 +1,8 @@
 import { useEffect, useState, type ReactNode } from "react";
 import type { Preferences } from "../../../helpers/types";
 import { PreferencesContext } from "./PreferencesContext";
-import { useAuthContext } from "../AuthContext/AuthContext";
 import { getUserPreferences } from "../../lib";
+import { useAuthContext } from "../AuthContext/AuthContext";
 
 const initialPreferencies = {
   company_id: "",

@@ -1,8 +1,8 @@
 import { useEffect, useState, type ReactNode } from "react";
 import type { Company } from "../../../helpers/types";
 import { CompanyContext } from "./CompanyContext";
-import { useAuthContext } from "../AuthContext/AuthContext";
 import { getCompanyById } from "../../lib";
+import { useAuthContext } from "../AuthContext/AuthContext";
 
 export function CompanyProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
