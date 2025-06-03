@@ -8,8 +8,11 @@ type UpdateUserFormData = {
   isPasswordChanged?: boolean;
 };
 
-const getAllUsers = async () => {
-  const { data, error } = await supabase.from("users").select("*");
+const getAllUsers = async (userId: string) => {
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .neq("id", userId);
 
   return { data, error };
 };

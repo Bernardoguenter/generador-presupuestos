@@ -1,7 +1,7 @@
-import { createContext, useContext } from "react";
+import { createContext, use } from "react";
 import type { User } from "../../../helpers/types";
 
-interface AuthContextInterface {
+export interface AuthContextInterface {
   authUser: User | undefined;
   setAuthUser: React.Dispatch<React.SetStateAction<User | undefined>>;
   id: string | undefined;
@@ -16,7 +16,7 @@ export const AuthContext = createContext<AuthContextInterface | undefined>(
 );
 
 export function useAuthContext() {
-  const context = useContext(AuthContext);
+  const context = use(AuthContext);
   if (!context) {
     throw new Error("useAuthContext must be used within an AuthProvider");
   }

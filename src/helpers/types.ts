@@ -19,7 +19,7 @@ export interface Company {
   company_name: string;
   logo_url: string | null;
   phone: string;
-  fullAddress: string;
+  address: Address;
   email: string | null;
   created_at: Date;
 }
@@ -30,11 +30,16 @@ export interface Preferences {
   default_markup: number;
   wharehouse_prices: WharehousePriceMap;
   shed_prices: ShedhousePriceMap;
-  gate_price: number;
   km_price: number;
   colored_sheet_difference: number;
   solid_web_difference: number;
   u_profile_difference: number;
+  gutter_price: number;
+  gate_price: number;
+  iva_percentage: number;
+  twisted_iron_column_cost: number;
+  solid_web_column_cost: number;
+  u_profile_column_cost: number;
 }
 
 type AreaWharehouse =
@@ -72,7 +77,7 @@ export type ShedhousePriceMap = Partial<Record<AreaShed, number>>;
 
 export interface Budget {
   id: string;
-  created_by: string;
+  created_by: string | CreatedByObject;
   created_at: string;
   customer: string;
   material: string;
@@ -82,12 +87,32 @@ export interface Budget {
   height: number;
   enclousure_height: number;
   includes_freight: boolean;
-  city: string;
+  freight_price: number;
+  address: Address;
   color_roof_sheet: boolean;
   color_side_sheet: boolean;
-  gate_width: number;
-  gate_height: number;
-  includes_taxes: number;
+  includes_taxes: boolean;
   total: number;
   details: string;
+  includes_gate: boolean;
+  number_of_gates: number;
+  gates_measurements: GatesMeasurements[] | null;
+  has_gutter: boolean;
+  gutter_metters: number;
 }
+
+export type GatesMeasurements = {
+  width: number;
+  height: number;
+};
+
+type CreatedByObject = {
+  id: string;
+  fullName: string;
+};
+
+export type Address = {
+  address: string;
+  lat: number;
+  lng: number;
+};

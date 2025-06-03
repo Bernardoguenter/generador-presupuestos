@@ -15,7 +15,6 @@ const setCompanyPreferences = async (
   const { error } = await supabase.functions.invoke("set-preferences", {
     body: { company_id, preferences },
   });
-
   return { error };
 };
 

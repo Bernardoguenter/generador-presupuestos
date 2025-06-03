@@ -6,18 +6,17 @@ import { CompanySelect } from "../components/CompanySelect";
 import { Button, TextInput, Form } from "../../../components";
 import { createUserSchema, type CreateUserFormData } from "../schema";
 import {
-  DeleteUserToastError,
   UpdateUserToastError,
   UpdateUserToastSuccess,
 } from "../../../utils/alerts";
-import useSweetAlertModal from "../../../common/hooks";
-import { deleteUser, getUserById, updateUser } from "../../../common/lib";
+import { getUserById, updateUser } from "../../../common/lib";
+import { DeleteUserButton } from "./DeleteUserButton";
 
 export default function UserDetail() {
   const { id } = useParams();
   const [user, setUser] = useState<User | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
-  const { showAlert } = useSweetAlertModal();
 
   useEffect(() => {
     if (id) {
@@ -38,6 +37,7 @@ export default function UserDetail() {
 
   const handleSubmit = async (formData: CreateUserFormData) => {
     try {
+      setIsSubmitting(true);
       if (id) {
         const { data, error } = await updateUser(formData, id);
 
@@ -53,42 +53,8 @@ export default function UserDetail() {
       }
     } catch (error) {
       console.error(error);
-    }
-  };
-
-  const handleDeleteUser = async (id: string, email: string) => {
-    try {
-      if (id && email) {
-        const result = await showAlert({
-          title: "¿Estás seguro?",
-          text: `Esta acción eliminará al usuario ${email} y no se puede deshacer`,
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#FF8303",
-          cancelButtonColor: "#ff3503",
-          confirmButtonText: "Sí, eliminar",
-          cancelButtonText: "Cancelar",
-        });
-
-        if (result.isConfirmed) {
-          const { error } = await deleteUser(id);
-
-          if (!error) {
-            await showAlert({
-              title: "¡Eliminado!",
-              text: `El usuario ${email} fue eliminado correctamente.`,
-              icon: "success",
-              confirmButtonColor: "#FF8303",
-            });
-            navigate("/users");
-          } else {
-            DeleteUserToastError(email);
-          }
-        }
-      }
-    } catch (error) {
-      console.error(error);
-      DeleteUserToastError(email);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -120,7 +86,6 @@ export default function UserDetail() {
         name="email"
         type="email"
       />
-
       <RolesSelect />
       <CompanySelect />
       <Button
@@ -128,13 +93,12 @@ export default function UserDetail() {
         color="info"
         children="Editar usuario"
         styles="mt-4"
+        disabled={isSubmitting}
       />
-      <Button
-        type="button"
-        color="danger"
-        children="Eliminar usuario"
-        styles="mt-4"
-        onClick={() => handleDeleteUser(user?.id, user?.email)}
+      <DeleteUserButton
+        isSubmitting={isSubmitting}
+        email={user.email}
+        id={user.id}
       />
     </Form>
   );

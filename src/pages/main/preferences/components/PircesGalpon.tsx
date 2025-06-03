@@ -1,16 +1,17 @@
-import { useMemo } from "react";
-import { updateUserPreferences } from "../../../common/lib";
-import { NumberInput, Button, Form } from "../../../components";
-import type { WharehousePriceMap } from "../../../helpers/types";
+import { useMemo, useState } from "react";
+import { updateUserPreferences } from "../../../../common/lib";
+import { NumberInput, Button, Form } from "../../../../components";
+import type { WharehousePriceMap } from "../../../../helpers/types";
 import {
   UpdatePricesToastError,
   UpdatePricesToastSuccess,
-} from "../../../utils/alerts";
-import { usePreferencesContext } from "../../../common/context";
+} from "../../../../utils/alerts";
+import { usePreferencesContext } from "../../../../common/context";
 
 export const PircesGalpon = () => {
   const { preferences, setIsLoading } = usePreferencesContext();
   const { company_id, wharehouse_prices } = preferences;
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (formData: WharehousePriceMap) => {
     const formattedPrices: Record<string, number> = {};
@@ -20,6 +21,7 @@ export const PircesGalpon = () => {
     }
 
     try {
+      setIsSubmitting(true);
       const dataToUpdate = { wharehouse_prices: formattedPrices };
       const { error } = await updateUserPreferences(dataToUpdate, company_id);
 
@@ -32,6 +34,8 @@ export const PircesGalpon = () => {
     } catch (error) {
       console.error(error);
       UpdatePricesToastError();
+    } finally {
+      setIsSubmitting(false);
     }
   };
   const defaultValues = useMemo<WharehousePriceMap | undefined>(() => {
@@ -50,13 +54,14 @@ export const PircesGalpon = () => {
         <NumberInput
           key={area}
           name={area}
-          label={`Área ${area}`}
+          label={`Área menor a ${area}`}
         />
       ))}
       <Button
         styles="mt-4"
         type="submit"
-        color="info">
+        color="info"
+        disabled={isSubmitting}>
         Actualizar recios Galpón
       </Button>
     </Form>

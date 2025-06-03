@@ -1,16 +1,17 @@
-import { useMemo } from "react";
-import { updateUserPreferences } from "../../../common/lib";
-import { Button, Form, NumberInput } from "../../../components";
-import type { ShedhousePriceMap } from "../../../helpers/types";
+import { useMemo, useState } from "react";
+import { updateUserPreferences } from "../../../../common/lib";
+import { Button, Form, NumberInput } from "../../../../components";
+import type { ShedhousePriceMap } from "../../../../helpers/types";
 import {
   UpdatePricesToastError,
   UpdatePricesToastSuccess,
-} from "../../../utils/alerts";
-import { usePreferencesContext } from "../../../common/context";
+} from "../../../../utils/alerts";
+import { usePreferencesContext } from "../../../../common/context";
 
 export const PricesTinglado = () => {
   const { preferences, setIsLoading } = usePreferencesContext();
   const { company_id, shed_prices } = preferences;
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (formData: ShedhousePriceMap) => {
     const formattedPrices: Record<string, number> = {};
@@ -20,6 +21,7 @@ export const PricesTinglado = () => {
     }
 
     try {
+      setIsSubmitting(true);
       const dataToUpdate = { shed_prices: formattedPrices };
       const { error } = await updateUserPreferences(dataToUpdate, company_id);
 
@@ -32,6 +34,8 @@ export const PricesTinglado = () => {
     } catch (error) {
       console.error(error);
       UpdatePricesToastError();
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -52,13 +56,14 @@ export const PricesTinglado = () => {
         <NumberInput
           key={area}
           name={area}
-          label={`Área ${area}`}
+          label={`Área menor a ${area}`}
         />
       ))}
       <Button
         styles="mt-4 "
         type="submit"
-        color="info">
+        color="info"
+        disabled={isSubmitting}>
         Actualizar precios Tinglado
       </Button>
     </Form>

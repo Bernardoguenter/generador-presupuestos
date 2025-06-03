@@ -11,12 +11,16 @@ import { RolesSelect } from "../components/RolesSelect";
 import { CompanySelect } from "../components/CompanySelect";
 import { createUser, getUserByEmail, sendPassword } from "../../../common/lib";
 import { useMemo } from "react";
+import SubmittingOverlay from "../../../components/SubmittingOverlay";
+import { useIsSubmitting } from "../../../common/hooks/useIsSubmitting";
 
 export default function CreateUsers() {
   const navigate = useNavigate();
+  const { isSubmitting, setIsSubmitting } = useIsSubmitting();
 
   const handleSubmit = async (formData: CreateUserFormData) => {
     try {
+      setIsSubmitting(true);
       if (formData.company_id === "default") {
         CreateUserRoleToastError();
         return;
@@ -42,6 +46,8 @@ export default function CreateUsers() {
       }
     } catch (error) {
       console.error("Error al crear el usuario:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -56,30 +62,33 @@ export default function CreateUsers() {
   );
 
   return (
-    <Form
-      onSubmit={handleSubmit}
-      schema={createUserSchema}
-      defaultValues={defaultValues}>
-      <h2 className="my-4 text-2xl font-medium">Crea un nuevo usuario</h2>
-      <TextInput
-        label="Nombre completo"
-        name="fullName"
-        type="text"
-      />
-      <TextInput
-        label="E-mail"
-        name="email"
-        type="email"
-      />
+    <SubmittingOverlay isSubmitting={isSubmitting}>
+      <Form
+        onSubmit={handleSubmit}
+        schema={createUserSchema}
+        defaultValues={defaultValues}>
+        <h2 className="my-4 text-2xl font-medium">Crea un nuevo usuario</h2>
+        <TextInput
+          label="Nombre completo"
+          name="fullName"
+          type="text"
+        />
+        <TextInput
+          label="E-mail"
+          name="email"
+          type="email"
+        />
 
-      <RolesSelect />
-      <CompanySelect />
-      <Button
-        type="submit"
-        color="info"
-        children="Crear Usuario"
-        styles="mt-4"
-      />
-    </Form>
+        <RolesSelect />
+        <CompanySelect />
+        <Button
+          type="submit"
+          color="info"
+          children="Crear Usuario"
+          styles="mt-4"
+          disabled={isSubmitting}
+        />
+      </Form>
+    </SubmittingOverlay>
   );
 }

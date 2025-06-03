@@ -20,12 +20,22 @@ export const preferencesSchema = z.object({
     }),
   gate_price: z.coerce
     .number({
-      required_error: "Debes ingresar un precio portón",
-      invalid_type_error: "El precio portón debe ser un número",
+      required_error: "Debes ingresar un precio portón por m2",
+      invalid_type_error: "El precio portón por m2 debe ser un número",
     })
-    .nonnegative("El precio portón debe ser un número positivo")
+    .nonnegative("El precio portón por m2 debe ser un número positivo")
     .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
-      message: "El precio base debe tener como máximo 2 decimales",
+      message: "El precio portón por m2 tener como máximo 2 decimales",
+    }),
+  gutter_price: z.coerce
+    .number({
+      required_error: "Debes ingresar un precio de canaletas por metro",
+      invalid_type_error: "El precio de canaletas por metro debe ser un número",
+    })
+    .nonnegative("precio de canaletas por metro debe ser un número positivo")
+    .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
+      message:
+        "precio de canaletas por metrodebe tener como máximo 2 decimales",
     }),
   km_price: z.coerce
     .number({
@@ -62,6 +72,15 @@ export const preferencesSchema = z.object({
     .nonnegative("La diferencia perfil U debe ser un número positivo")
     .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
       message: "La diferencia perfil U debe tener como máximo 2 decimales",
+    }),
+  iva_percentage: z.coerce
+    .number({
+      required_error: "Debes ingresar un valor el IVA",
+      invalid_type_error: "El porcentaje del IVA debe ser un número",
+    })
+    .nonnegative("El porcentaje del IVAdebe ser un número positivo")
+    .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
+      message: "El porcentaje del IVA debe tener como máximo 2 decimales",
     }),
 });
 

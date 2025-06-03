@@ -17,6 +17,7 @@ const Preferences = lazy(() => import("../pages/main/preferences"));
 const ChangePassword = lazy(() => import("../pages/account/ChangePassword"));
 const Calculator = lazy(() => import("../pages/budgets/calculator"));
 const BudgetHistory = lazy(() => import("../pages/budgets/history"));
+const BudgetDetail = lazy(() => import("../pages/budgets/budgetDetail"));
 
 const CreateUser = lazy(() => import("../pages/users/createUsers"));
 const ListUsers = lazy(() => import("../pages/users/listUsers"));
@@ -83,6 +84,10 @@ export default function AppRoutes() {
             <Route
               index
               element={<BudgetHistory />}
+            />
+            <Route
+              path=":id"
+              element={<BudgetDetail />}
             />
           </Route>
 

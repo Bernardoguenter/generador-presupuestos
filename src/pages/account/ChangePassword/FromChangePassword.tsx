@@ -3,18 +3,18 @@ import {
   ChangePasswordToastError,
   ChangePasswordToastSuccess,
 } from "../../../utils/alerts";
-import { Button, Form } from "../../../components";
+import { Button, Form, PasswordInput } from "../../../components";
 import {
   signOutUser,
   updateUser,
   updateUserPassword,
 } from "../../../common/lib";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useAuthContext } from "../../../common/context";
-import { PasswordInput } from "../../../components/PasswordInputs";
 
 export const FormChangePassword = () => {
   const { handleLogout } = useAuthContext();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (formData: ChangePasswordFormData) => {
     const { password, confirmPassword } = formData;
@@ -23,6 +23,7 @@ export const FormChangePassword = () => {
     }
 
     try {
+      setIsSubmitting(true);
       const { data, error } = await updateUserPassword(password);
 
       if (error) {
@@ -46,6 +47,8 @@ export const FormChangePassword = () => {
       }
     } catch (error) {
       console.error("Error cambiando la contraseña:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -76,7 +79,8 @@ export const FormChangePassword = () => {
       <Button
         type="submit"
         styles="mt-5 w-[90%] self-center"
-        color="info">
+        color="info"
+        disabled={isSubmitting}>
         Cambiar password
       </Button>
       <Button
