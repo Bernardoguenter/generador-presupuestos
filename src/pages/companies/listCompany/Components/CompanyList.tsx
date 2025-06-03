@@ -1,26 +1,21 @@
 import { useEffect, useState } from "react";
 import { CustomLink } from "../../../../components";
 import type { Company } from "../../../../helpers/types";
-import { DeleteIcon, EditIcon } from "../../../../assets/svg";
-import { DeleteUserToastError } from "../../../../utils/alerts";
-import useSweetAlertModal from "../../../../common/hooks";
-import {
-  deleteCompany,
-  deleteFileInBucket,
-  getAllCompanies,
-} from "../../../../common/lib";
+import { EditIcon } from "../../../../assets/svg";
+import { getAllCompanies } from "../../../../common/lib";
+import { DeleteCompanyButton } from "./DeleteCompanyButton";
 
 export const CompanyList = () => {
   const [companies, setCompanies] = useState<Company[] | null>(null);
-  const { showAlert } = useSweetAlertModal();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const getCompanies = async () => {
     try {
       const { data, error } = await getAllCompanies();
-      if (error) {
-        throw new Error("Error al obtener usuarios");
+      if (!error) {
+        setCompanies(data);
       }
-      setCompanies(data);
+      setIsLoading(false);
     } catch (error) {
       console.error(error);
     }
@@ -28,74 +23,14 @@ export const CompanyList = () => {
 
   useEffect(() => {
     getCompanies();
-  }, []);
-
-  const handleDeleteCompany = async (
-    id: string,
-    company_name: string,
-    logo_url: string | null
-  ) => {
-    try {
-      if (id && company_name) {
-        const result = await showAlert({
-          title: "¿Estás seguro?",
-          text: `Esta acción eliminará la empresa ${company_name} y no se puede deshacer`,
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#FF8303",
-          cancelButtonColor: "#ff3503",
-          confirmButtonText: "Sí, eliminar",
-          cancelButtonText: "Cancelar",
-        });
-
-        if (result.isConfirmed) {
-          const { error } = await deleteCompany(id);
-
-          if (!error) {
-            if (logo_url !== null && logo_url !== undefined) {
-              const { error: bucketError } = await deleteFileInBucket(
-                "companies-logos",
-                logo_url
-              );
-              if (error) {
-                console.error(bucketError);
-              }
-            }
-            await showAlert({
-              title: "¡Eliminado!",
-              text: `La empresa ${company_name} fue eliminado correctamente.`,
-              icon: "success",
-              confirmButtonColor: "#FF8303",
-            });
-            const newCompany = companies?.filter(
-              (company) => company.id !== id
-            );
-            if (newCompany) {
-              setCompanies(newCompany);
-            }
-          } else {
-            DeleteUserToastError(company_name);
-          }
-        }
-      }
-    } catch (error) {
-      console.error(error);
-      DeleteUserToastError(company_name);
-    }
-  };
+  }, [isLoading]);
 
   return (
     <table className="max-w-full shadow-md overflow-hidden border rounded divide-y divide-gray-100">
       <thead className="rounded">
         <tr className="flex items-center w-full ">
-          <th className="px-2 py-2 text-left text-sm font-medium w-2/4">
+          <th className="px-2 py-2 text-left text-sm font-medium w-3/5">
             Nombre Empresa
-          </th>
-          <th className="px-2 py-2 text-center text-sm font-medium w-1/4">
-            Eliminar
-          </th>
-          <th className="px-2 py-2 text-center text-sm font-medium w-1/4">
-            Editar
           </th>
         </tr>
       </thead>
@@ -113,22 +48,18 @@ export const CompanyList = () => {
             <tr
               key={company.id}
               className="flex items-center w-full ">
-              <td className="px-2 py-2 text-xs overflow-hidden w-2/4">
+              <td className="px-2 py-2 text-xs overflow-hidden w-3/5">
                 {company.company_name}
               </td>
-              <td className="px-2 py-2 flex justify-center items-center w-1/4">
-                <button
-                  onClick={() =>
-                    handleDeleteCompany(
-                      company.id,
-                      company.company_name,
-                      company.logo_url
-                    )
-                  }>
-                  <DeleteIcon />
-                </button>
+              <td className="px-2 py-2 flex justify-center items-center w-1/5">
+                <DeleteCompanyButton
+                  company_name={company.company_name}
+                  company_id={company.id}
+                  logo_url={company.logo_url}
+                  setIsLoading={setIsLoading}
+                />
               </td>
-              <td className="px-2 py-2 flex justify-center items-center w-1/4">
+              <td className="px-2 py-2 flex justify-center items-center w-1/5">
                 <CustomLink
                   href={`${company.id}`}
                   styles="flex items-center justify-center">

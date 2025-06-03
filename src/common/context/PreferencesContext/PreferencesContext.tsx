@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, use } from "react";
 import type { Preferences } from "../../../helpers/types";
 
 interface PreferencesContextInterface {
@@ -13,7 +13,7 @@ export const PreferencesContext = createContext<
 >(undefined);
 
 export function usePreferencesContext() {
-  const context = useContext(PreferencesContext);
+  const context = use(PreferencesContext);
   if (!context) {
     throw new Error(
       "usePreferencesContext must be used within an AuthProvider"

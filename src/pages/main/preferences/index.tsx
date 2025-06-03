@@ -1,8 +1,8 @@
 import { useState } from "react";
-import PreferencesSettings from "./PreferencesSettings";
-import { PriceSettings } from "./PriceSettings";
 import type { Preferences } from "../../../helpers/types";
 import { useCompanyContext } from "../../../common/context";
+import PreferencesSettings from "./components/PreferencesSettings";
+import { PriceSettings } from "./components/PriceSettings";
 
 export default function Preferences() {
   const [view, setView] = useState<string>("preferences");

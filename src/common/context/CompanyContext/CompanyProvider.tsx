@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Company } from "../../../helpers/types";
 import { CompanyContext } from "./CompanyContext";
 import { getCompanyById } from "../../lib";
@@ -28,15 +28,17 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
     }
   }, [isLoading, authUser]);
 
+  const values = useMemo(
+    () => ({
+      isLoading,
+      setIsLoading,
+      company,
+      setCompany,
+    }),
+    [isLoading, company]
+  );
+
   return (
-    <CompanyContext.Provider
-      value={{
-        isLoading,
-        setIsLoading,
-        company,
-        setCompany,
-      }}>
-      {children}
-    </CompanyContext.Provider>
+    <CompanyContext.Provider value={values}>{children}</CompanyContext.Provider>
   );
 }

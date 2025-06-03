@@ -1,13 +1,6 @@
 import type { Company } from "../../../helpers/types";
 import { supabase } from "../../../utils/supabase";
 
-type CreateCompanyFormData = {
-  email: string;
-  company_name: string;
-  phone: string;
-  fullAddress: string;
-};
-
 const getAllCompanies = async () => {
   const { data, error } = await supabase.from("companies").select("*");
   return { data, error };
@@ -23,7 +16,9 @@ const getCompanyById = async (id: string) => {
   return { data, error };
 };
 
-const createCompany = async (createCompanyBody: CreateCompanyFormData) => {
+const createCompany = async (
+  createCompanyBody: Omit<Company, "id" | "logo_url" | "created_at">
+) => {
   const { data, error } = await supabase
     .from("companies")
     .insert([createCompanyBody])

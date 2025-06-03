@@ -1,19 +1,21 @@
-import { Form, NumberInput, Button } from "../../../components";
-import { preferencesSchema, type PreferencesFormData } from "./schema";
+import { useMemo, useState } from "react";
+import { Form, NumberInput, Button } from "../../../../components";
+import { preferencesSchema, type PreferencesFormData } from "../schema";
 import {
   UpdatePreferencesToastError,
   UpdatePreferencesToastSuccess,
-} from "../../../utils/alerts";
-import { updateUserPreferences } from "../../../common/lib";
-import { useMemo } from "react";
-import type { Preferences } from "../../../helpers/types";
-import { usePreferencesContext } from "../../../common/context";
+} from "../../../../utils/alerts";
+import { updateUserPreferences } from "../../../../common/lib";
+import type { Preferences } from "../../../../helpers/types";
+import { usePreferencesContext } from "../../../../common/context";
 
 export default function PreferencesSettings() {
   const { preferences, setIsLoading } = usePreferencesContext();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (formData: PreferencesFormData) => {
     try {
+      setIsSubmitting(true);
       const { error } = await updateUserPreferences(
         formData,
         preferences.company_id
@@ -28,6 +30,8 @@ export default function PreferencesSettings() {
     } catch (error) {
       console.error(error);
       UpdatePreferencesToastError();
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -52,11 +56,15 @@ export default function PreferencesSettings() {
         name="default_markup"
       />
       <NumberInput
-        label="Precio Portón"
+        label="Precio Portón por m2"
         name="gate_price"
       />
       <NumberInput
-        label="Precio Km"
+        label="Precio por metro de canaleta"
+        name="gutter_price"
+      />
+      <NumberInput
+        label="Precio por Km de flete"
         name="km_price"
       />
       <NumberInput
@@ -71,10 +79,27 @@ export default function PreferencesSettings() {
         label="Diferencia Perfil U"
         name="u_profile_difference"
       />
+      <NumberInput
+        label="Costo columna Hierro torsionado"
+        name="twisted_iron_column_cost"
+      />
+      <NumberInput
+        label="Costo columna Alma Llena"
+        name="solid_web_column_cost"
+      />
+      <NumberInput
+        label="Costo columnas Perfil U"
+        name="u_profile_column_cost"
+      />
+      <NumberInput
+        label="Porcentaje de IVA"
+        name="iva_percentage"
+      />
       <Button
         styles="mt-4"
         type="submit"
-        color="info">
+        color="info"
+        disabled={isSubmitting}>
         Actualizar Preferencias
       </Button>
     </Form>

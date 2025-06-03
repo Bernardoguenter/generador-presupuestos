@@ -1,11 +1,11 @@
 import { useNavigate } from "react-router";
-import { provinciasArgentina } from "../../../helpers/fixedData";
 import {
   Button,
   Form,
-  SelectInput,
   TextInput,
   FileInput,
+  GooglePlacesInput,
+  HiddenInput,
 } from "../../../components";
 import {
   CreateCompanyToastError,
@@ -22,25 +22,28 @@ import {
 } from "../../../common/lib";
 import { formatCompanyName, formatFileType } from "../../../helpers/formatData";
 import type { PostgrestError } from "@supabase/supabase-js";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { usePreferencesContext } from "../../../common/context";
 
 export default function CreateCompany() {
   const navigate = useNavigate();
   const { preferences } = usePreferencesContext();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (formData: CreateCompanyFormData) => {
-    const { address, city, province, email, company_name, phone, file } =
-      formData;
+    const { address, email, company_name, phone, file, lat, lng } = formData;
 
     try {
-      const formattedAddress = `${address}, ${city}, ${province}`;
-
+      setIsSubmitting(true);
       const companyData = {
         company_name,
         email,
         phone,
-        fullAddress: formattedAddress,
+        address: {
+          address,
+          lat,
+          lng,
+        },
       };
 
       const { data: company_data, error: createcompany_error } =
@@ -85,6 +88,11 @@ export default function CreateCompany() {
                   CreateCompanyToastError(company_settings_error.message);
                 }
               }
+            } else {
+              CreateCompanyToastSuccess(company_data.company_name);
+              setTimeout(() => {
+                navigate("/companies");
+              }, 1000);
             }
           } else {
             if (company_settings_error) {
@@ -102,10 +110,16 @@ export default function CreateCompany() {
             CreateCompanyToastError(errorMessage);
           }
         }
+        CreateCompanyToastSuccess(company_data.company_name);
+        setTimeout(() => {
+          navigate("/companies");
+        }, 1000);
       }
     } catch (error) {
       const newError = error as PostgrestError;
       CreateCompanyToastError(newError.message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -115,8 +129,8 @@ export default function CreateCompany() {
       email: "",
       phone: "",
       address: "",
-      city: "",
-      province: provinciasArgentina[0],
+      lat: 0,
+      lng: 0,
     }),
     []
   );
@@ -144,29 +158,17 @@ export default function CreateCompany() {
         label="Teléfono"
         name="phone"
       />
-      <TextInput
-        label="Dirección"
+      <GooglePlacesInput
         name="address"
+        label="Dirección"
       />
-      <TextInput
-        label="Localidad"
-        name="city"
-      />
-      <SelectInput
-        label="Provincia"
-        name="province">
-        {provinciasArgentina.map((prov) => (
-          <option
-            key={prov}
-            value={prov}>
-            {prov}
-          </option>
-        ))}
-      </SelectInput>
+      <HiddenInput name="lng" />
+      <HiddenInput name="lat" />
       <Button
         type="submit"
         color="info"
-        styles="mt-4">
+        styles="mt-4"
+        disabled={isSubmitting}>
         Crear empresa
       </Button>
     </Form>

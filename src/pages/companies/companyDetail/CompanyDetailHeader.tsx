@@ -22,6 +22,7 @@ interface Props {
 
 export const CompanyDetailHeader = ({ company }: Props) => {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchLogo = async () => {
@@ -38,19 +39,44 @@ export const CompanyDetailHeader = ({ company }: Props) => {
 
   const handleSubmit = async (data: CompanyLogoFormData) => {
     const { file } = data;
-    if (file) {
-      const companyName = formatCompanyName(company.company_name);
-      const fileType = formatFileType(file);
-      if (company.logo_url === null) {
-        if (file) {
+    try {
+      setIsSubmitting(true);
+      if (file) {
+        const companyName = formatCompanyName(company.company_name);
+        const fileType = formatFileType(file);
+        if (company.logo_url === null) {
+          if (file) {
+            const { data: bucketData, error: bucketError } =
+              await uploadFileToBucket(
+                file,
+                "companies-logos",
+                company.id,
+                `/${companyName}.${fileType}`
+              );
+
+            if (!bucketError) {
+              UpdateCompanyLogoToastSuccess(company.company_name);
+              const { error: updateLogoUrlError } = await updateCompany(
+                { logo_url: bucketData?.fullPath },
+                company.id
+              );
+              if (!updateLogoUrlError) {
+                UpdateCompanyToastSuccess(company.company_name);
+              } else {
+                UpdateCompanyToastError(company.company_name);
+              }
+            } else {
+              UpdateCompanyLogoToastError(company.company_name);
+            }
+          }
+        } else {
           const { data: bucketData, error: bucketError } =
-            await uploadFileToBucket(
+            await replaceFileInBucket(
               file,
               "companies-logos",
               company.id,
               `/${companyName}.${fileType}`
             );
-
           if (!bucketError) {
             UpdateCompanyLogoToastSuccess(company.company_name);
             const { error: updateLogoUrlError } = await updateCompany(
@@ -66,29 +92,11 @@ export const CompanyDetailHeader = ({ company }: Props) => {
             UpdateCompanyLogoToastError(company.company_name);
           }
         }
-      } else {
-        const { data: bucketData, error: bucketError } =
-          await replaceFileInBucket(
-            file,
-            "companies-logos",
-            company.id,
-            `/${companyName}.${fileType}`
-          );
-        if (!bucketError) {
-          UpdateCompanyLogoToastSuccess(company.company_name);
-          const { error: updateLogoUrlError } = await updateCompany(
-            { logo_url: bucketData?.fullPath },
-            company.id
-          );
-          if (!updateLogoUrlError) {
-            UpdateCompanyToastSuccess(company.company_name);
-          } else {
-            UpdateCompanyToastError(company.company_name);
-          }
-        } else {
-          UpdateCompanyLogoToastError(company.company_name);
-        }
       }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -111,6 +119,7 @@ export const CompanyDetailHeader = ({ company }: Props) => {
           children="Actualizar Logo"
           color="danger"
           styles="mt-4"
+          disabled={isSubmitting}
         />
       </div>
     </Form>

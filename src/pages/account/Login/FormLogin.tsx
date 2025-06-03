@@ -1,13 +1,21 @@
 import { loginSchema, type LoginFormData } from "./schema";
 import { LoginErrorToast, LoginSuccessToast } from "../../../utils/alerts";
-import { Button, Form, TextInput, CustomLink } from "../../../components";
+import {
+  Button,
+  Form,
+  TextInput,
+  CustomLink,
+  PasswordInput,
+} from "../../../components";
 import { loginUser } from "../../../common/lib";
-import { useMemo } from "react";
-import { PasswordInput } from "../../../components/PasswordInputs";
+import { useMemo, useState } from "react";
 
 export const FormLogin = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleSubmit = async (formData: LoginFormData) => {
     try {
+      setIsSubmitting(true);
       const { data, error } = await loginUser(
         formData.email,
         formData.password
@@ -23,6 +31,8 @@ export const FormLogin = () => {
     } catch (error) {
       LoginErrorToast();
       console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -51,7 +61,8 @@ export const FormLogin = () => {
       <Button
         type="submit"
         styles="mt-5 w-[90%] self-center"
-        color="info">
+        color="info"
+        disabled={isSubmitting}>
         Ingresar
       </Button>
       <CustomLink

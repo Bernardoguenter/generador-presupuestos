@@ -3,3 +3,4 @@ export * from "./companies";
 export * from "./edge";
 export * from "./users";
 export * from "./preferences";
+export * from "./budgets";

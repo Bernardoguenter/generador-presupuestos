@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Preferences } from "../../../helpers/types";
 import { PreferencesContext } from "./PreferencesContext";
 import { getUserPreferences } from "../../lib";
@@ -11,10 +11,12 @@ const initialPreferencies = {
   wharehouse_prices: {},
   shed_prices: {},
   gate_price: 0,
+  gutter_price: 0,
   km_price: 0,
   colored_sheet_difference: 0,
   u_profile_difference: 0,
   solid_web_difference: 0,
+  iva_percentage: 10.5,
 };
 
 export function PreferencesProvider({ children }: { children: ReactNode }) {
@@ -43,14 +45,18 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
     }
   }, [isLoading, authUser]);
 
+  const values = useMemo(
+    () => ({
+      isLoading,
+      setIsLoading,
+      preferences,
+      setPreferences,
+    }),
+    [isLoading, preferences]
+  );
+
   return (
-    <PreferencesContext.Provider
-      value={{
-        isLoading,
-        setIsLoading,
-        preferences,
-        setPreferences,
-      }}>
+    <PreferencesContext.Provider value={values}>
       {children}
     </PreferencesContext.Provider>
   );

@@ -8,3 +8,7 @@ export { default as PageLoader } from "./PageLoader";
 export { FormWatch } from "./SearchFormProvider";
 export { TextInput } from "./TextInput";
 export { SelectInput } from "./SelectInput";
+export { PasswordInput } from "./PasswordInput";
+export { GooglePlacesInput } from "./GooglePlacesInput";
+export { HiddenInput } from "./HiddenInput";
+export { CheckboxInput } from "./CheckboxInput";

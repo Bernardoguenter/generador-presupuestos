@@ -9,9 +9,11 @@ export const createUserSchema = z.object({
     .email({
       message: "Formato de e-mail inválido",
     }),
-  fullName: z.string({
-    required_error: "Debes ingresar el nombre completo",
-  }),
+  fullName: z
+    .string({
+      required_error: "Debes ingresar el nombre completo",
+    })
+    .min(1, "Debes ingresar un nombre para tu usuario"),
   role: z.string({
     required_error: "Debes seleccionar un rol",
   }),

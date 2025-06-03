@@ -1,3 +1,19 @@
+import { CustomLink } from "../../../components";
+import { BudgetsHistoryList } from "./components/BudgetsHistoryList";
+
 export default function BudgetHistory() {
-  return <div>BudgetHistory</div>;
+  return (
+    <section className="py-4 flex flex-col gap-4 w-full">
+      <div className="flex items-center justify-between">
+        <h2>Lisado de Presupuestos</h2>
+        <CustomLink
+          href="calculator"
+          color="danger"
+          styles="self-end">
+          Nuevo presupuesto
+        </CustomLink>
+      </div>
+      <BudgetsHistoryList />
+    </section>
+  );
 }

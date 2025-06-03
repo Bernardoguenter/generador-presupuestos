@@ -9,12 +9,15 @@ import {
   sendEmailResetPassword,
 } from "../../../common/lib";
 import { Button, CustomLink, Form, TextInput } from "../../../components";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 export const FormResetPassword = () => {
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleSubmit = async (formData: ResetPasswordData) => {
     try {
+      setIsSubmitting(true);
       const { data: regenerateData, error: regenerateError } =
         await regeneratePassword(formData.email);
 
@@ -36,6 +39,8 @@ export const FormResetPassword = () => {
     } catch (error) {
       ResetPasswordToastError();
       console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -63,6 +68,7 @@ export const FormResetPassword = () => {
         type="submit"
         color="info"
         children="Solicitar nuevo password"
+        disabled={isSubmitting}
       />
       <CustomLink
         href="account/login"
