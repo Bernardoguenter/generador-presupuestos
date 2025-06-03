@@ -17,6 +17,9 @@ const initialPreferencies = {
   u_profile_difference: 0,
   solid_web_difference: 0,
   iva_percentage: 10.5,
+  twisted_iron_column_cost: 0,
+  solid_web_column_cost: 0,
+  u_profile_column_cost: 0,
 };
 
 export function PreferencesProvider({ children }: { children: ReactNode }) {
