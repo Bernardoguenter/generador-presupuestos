@@ -102,7 +102,7 @@ export default function BudgetDetail() {
         {budget.includes_freight && (
           <li>
             <strong>Costo de Flete: </strong>
-            {budget.freight_price}
+            USD{formatNumber(budget.freight_price)}
           </li>
         )}
         <li>
