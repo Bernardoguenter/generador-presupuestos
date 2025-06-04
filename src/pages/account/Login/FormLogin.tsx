@@ -6,10 +6,10 @@ import {
   TextInput,
   CustomLink,
   PasswordInput,
+  SubmittingOverlay,
 } from "../../../components";
 import { loginUser } from "../../../common/lib";
 import { useMemo } from "react";
-import SubmittingOverlay from "../../../components/SubmittingOverlay";
 import { useIsSubmitting } from "../../../common/hooks/useIsSubmitting";
 
 export const FormLogin = () => {

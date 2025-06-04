@@ -1,13 +1,17 @@
 import { useMemo } from "react";
 import { updateUserPreferences } from "../../../../common/lib";
-import { Button, Form, NumberInput } from "../../../../components";
+import {
+  Button,
+  Form,
+  NumberInput,
+  SubmittingOverlay,
+} from "../../../../components";
 import type { ShedhousePriceMap } from "../../../../helpers/types";
 import {
   UpdatePricesToastError,
   UpdatePricesToastSuccess,
 } from "../../../../utils/alerts";
 import { usePreferencesContext } from "../../../../common/context";
-import SubmittingOverlay from "../../../../components/SubmittingOverlay";
 import { useIsSubmitting } from "../../../../common/hooks/useIsSubmitting";
 
 export const PricesTinglado = () => {

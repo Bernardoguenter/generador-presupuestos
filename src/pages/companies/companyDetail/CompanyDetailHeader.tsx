@@ -5,7 +5,12 @@ import {
   updateCompany,
   uploadFileToBucket,
 } from "../../../common/lib";
-import { Button, FileInput, Form } from "../../../components";
+import {
+  Button,
+  FileInput,
+  Form,
+  SubmittingOverlay,
+} from "../../../components";
 import { formatCompanyName, formatFileType } from "../../../helpers/formatData";
 import type { Company } from "../../../helpers/types";
 import {
@@ -15,7 +20,6 @@ import {
   UpdateCompanyToastSuccess,
 } from "../../../utils/alerts";
 import { companyLogoSchema, type CompanyLogoFormData } from "../schema";
-import SubmittingOverlay from "../../../components/SubmittingOverlay";
 import { useIsSubmitting } from "../../../common/hooks/useIsSubmitting";
 
 interface Props {

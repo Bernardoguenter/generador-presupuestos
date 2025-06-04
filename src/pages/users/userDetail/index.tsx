@@ -3,7 +3,12 @@ import { useNavigate, useParams } from "react-router";
 import type { User } from "../../../helpers/types";
 import { RolesSelect } from "../components/RolesSelect";
 import { CompanySelect } from "../components/CompanySelect";
-import { Button, TextInput, Form } from "../../../components";
+import {
+  Button,
+  TextInput,
+  Form,
+  SubmittingOverlay,
+} from "../../../components";
 import { createUserSchema, type CreateUserFormData } from "../schema";
 import {
   UpdateUserToastError,
@@ -11,7 +16,6 @@ import {
 } from "../../../utils/alerts";
 import { getUserById, updateUser } from "../../../common/lib";
 import { DeleteUserButton } from "./DeleteUserButton";
-import SubmittingOverlay from "../../../components/SubmittingOverlay";
 import { useIsSubmitting } from "../../../common/hooks/useIsSubmitting";
 
 export default function UserDetail() {

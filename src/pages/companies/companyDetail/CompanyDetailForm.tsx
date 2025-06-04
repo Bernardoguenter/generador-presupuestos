@@ -7,6 +7,7 @@ import {
   Form,
   GooglePlacesInput,
   HiddenInput,
+  SubmittingOverlay,
 } from "../../../components";
 import {
   UpdateCompanyToastError,
@@ -15,7 +16,6 @@ import {
 import { updateCompany } from "../../../common/lib";
 import { useMemo } from "react";
 import { DeleteCompanyButton } from "./DeleteCompanyButton";
-import SubmittingOverlay from "../../../components/SubmittingOverlay";
 import { useIsSubmitting } from "../../../common/hooks/useIsSubmitting";
 
 interface Props {

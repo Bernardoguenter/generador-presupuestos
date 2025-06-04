@@ -1,5 +1,10 @@
 import { useNavigate } from "react-router";
-import { Button, Form, TextInput } from "../../../components";
+import {
+  Button,
+  Form,
+  SubmittingOverlay,
+  TextInput,
+} from "../../../components";
 import {
   CreateUserRoleToastError,
   CreateUserToastError,
@@ -11,7 +16,6 @@ import { RolesSelect } from "../components/RolesSelect";
 import { CompanySelect } from "../components/CompanySelect";
 import { createUser, getUserByEmail, sendPassword } from "../../../common/lib";
 import { useMemo } from "react";
-import SubmittingOverlay from "../../../components/SubmittingOverlay";
 import { useIsSubmitting } from "../../../common/hooks/useIsSubmitting";
 
 export default function CreateUsers() {
