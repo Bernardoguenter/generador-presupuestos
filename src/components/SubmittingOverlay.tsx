@@ -5,7 +5,7 @@ interface SubmittingOverlayProps {
   children: ReactNode;
 }
 
-const SubmittingOverlay = ({
+export const SubmittingOverlay = ({
   isSubmitting,
   children,
 }: SubmittingOverlayProps) => {
@@ -20,5 +20,3 @@ const SubmittingOverlay = ({
     </div>
   );
 };
-
-export default SubmittingOverlay;

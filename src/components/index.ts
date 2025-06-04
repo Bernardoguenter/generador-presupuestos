@@ -12,3 +12,4 @@ export { PasswordInput } from "./PasswordInput";
 export { GooglePlacesInput } from "./GooglePlacesInput";
 export { HiddenInput } from "./HiddenInput";
 export { CheckboxInput } from "./CheckboxInput";
+export { SubmittingOverlay } from "./SubmittingOverlay";

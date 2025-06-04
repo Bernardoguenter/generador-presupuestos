@@ -6,6 +6,7 @@ import {
   FileInput,
   GooglePlacesInput,
   HiddenInput,
+  SubmittingOverlay,
 } from "../../../components";
 import {
   CreateCompanyToastError,
@@ -24,7 +25,6 @@ import { formatCompanyName, formatFileType } from "../../../helpers/formatData";
 import type { PostgrestError } from "@supabase/supabase-js";
 import { useMemo } from "react";
 import { usePreferencesContext } from "../../../common/context";
-import SubmittingOverlay from "../../../components/SubmittingOverlay";
 import { useIsSubmitting } from "../../../common/hooks/useIsSubmitting";
 
 export default function CreateCompany() {

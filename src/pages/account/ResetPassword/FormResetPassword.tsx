@@ -8,9 +8,14 @@ import {
   regeneratePassword,
   sendEmailResetPassword,
 } from "../../../common/lib";
-import { Button, CustomLink, Form, TextInput } from "../../../components";
+import {
+  Button,
+  CustomLink,
+  Form,
+  SubmittingOverlay,
+  TextInput,
+} from "../../../components";
 import { useMemo } from "react";
-import SubmittingOverlay from "../../../components/SubmittingOverlay";
 import { useIsSubmitting } from "../../../common/hooks/useIsSubmitting";
 
 export const FormResetPassword = () => {

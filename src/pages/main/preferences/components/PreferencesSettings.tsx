@@ -1,5 +1,10 @@
 import { useMemo } from "react";
-import { Form, NumberInput, Button } from "../../../../components";
+import {
+  Form,
+  NumberInput,
+  Button,
+  SubmittingOverlay,
+} from "../../../../components";
 import { preferencesSchema, type PreferencesFormData } from "../schema";
 import {
   UpdatePreferencesToastError,
@@ -9,7 +14,6 @@ import { updateUserPreferences } from "../../../../common/lib";
 import type { Preferences } from "../../../../helpers/types";
 import { usePreferencesContext } from "../../../../common/context";
 import { useIsSubmitting } from "../../../../common/hooks/useIsSubmitting";
-import SubmittingOverlay from "../../../../components/SubmittingOverlay";
 
 export default function PreferencesSettings() {
   const { preferences, setIsLoading } = usePreferencesContext();

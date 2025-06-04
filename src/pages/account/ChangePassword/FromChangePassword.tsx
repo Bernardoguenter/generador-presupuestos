@@ -3,7 +3,12 @@ import {
   ChangePasswordToastError,
   ChangePasswordToastSuccess,
 } from "../../../utils/alerts";
-import { Button, Form, PasswordInput } from "../../../components";
+import {
+  Button,
+  Form,
+  PasswordInput,
+  SubmittingOverlay,
+} from "../../../components";
 import {
   signOutUser,
   updateUser,
@@ -12,7 +17,6 @@ import {
 import { useMemo } from "react";
 import { useAuthContext } from "../../../common/context";
 import { useIsSubmitting } from "../../../common/hooks/useIsSubmitting";
-import SubmittingOverlay from "../../../components/SubmittingOverlay";
 
 export const FormChangePassword = () => {
   const { handleLogout } = useAuthContext();
