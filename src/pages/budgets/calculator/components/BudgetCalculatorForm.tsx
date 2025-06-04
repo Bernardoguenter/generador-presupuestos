@@ -8,7 +8,7 @@ import {
   CheckboxInput,
 } from "../../../../components";
 import { calculateBudgetSchema, type BudgetFormData } from "../../schema";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { MaterialsSelect } from "./MaterialsSelect";
 import { StructureSelect } from "./StructureSelect";
 import { GutterInput } from "./GutterInput";
@@ -30,9 +30,11 @@ import {
   calculateFreightPrice,
   getBudgetTotal,
 } from "../../../../helpers/formulas";
+import SubmittingOverlay from "../../../../components/SubmittingOverlay";
+import { useIsSubmitting } from "../../../../common/hooks/useIsSubmitting";
 
 export const BudgetCalculatorForm = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isSubmitting, setIsSubmitting } = useIsSubmitting();
   const { authUser } = useAuthContext();
   const { preferences } = usePreferencesContext();
   const { company } = useCompanyContext();
@@ -173,61 +175,63 @@ export const BudgetCalculatorForm = () => {
   );
 
   return (
-    <Form
-      onSubmit={handleSubmit}
-      schema={calculateBudgetSchema}
-      defaultValues={defaultValues}
-      className="mt-4">
-      <h2 className="my-4 text-2xl font-medium">Nuevo Presupuesto</h2>
-      <MaterialsSelect />
-      <StructureSelect />
-      <NumberInput
-        label="Ancho"
-        name="width"
-      />
-      <NumberInput
-        label="Largo"
-        name="length"
-      />
-      <NumberInput
-        label="Alto"
-        name="height"
-      />
-      <EnclousureHeightInput />
-      <GooglePlacesInput
-        name="address"
-        label="Dirección"
-      />
-      <HiddenInput name="lng" />
-      <HiddenInput name="lat" />
-      <TextInput
-        name="customer"
-        label="Cliente"
-      />
-      <div className="flex justify-between items-start">
-        <GutterInput />
-      </div>
-      <IncludesGatesInput />
-      <CheckboxInput
-        name="includes_freight"
-        label="Incluye flete?"
-      />
-      <CheckboxInput
-        name="color_roof_sheet"
-        label="Techo a color?"
-      />
-      <ColorSideSheetInput />
-      <CheckboxInput
-        name="includes_taxes"
-        label="Incluye IVA?"
-      />
-      <Button
-        type="submit"
-        color="info"
-        styles="mt-4"
-        disabled={isSubmitting}>
-        Crear presupuesto
-      </Button>
-    </Form>
+    <SubmittingOverlay isSubmitting={isSubmitting}>
+      <Form
+        onSubmit={handleSubmit}
+        schema={calculateBudgetSchema}
+        defaultValues={defaultValues}
+        className="mt-4">
+        <h2 className="my-4 text-2xl font-medium">Nuevo Presupuesto</h2>
+        <MaterialsSelect />
+        <StructureSelect />
+        <NumberInput
+          label="Ancho"
+          name="width"
+        />
+        <NumberInput
+          label="Largo"
+          name="length"
+        />
+        <NumberInput
+          label="Alto"
+          name="height"
+        />
+        <EnclousureHeightInput />
+        <GooglePlacesInput
+          name="address"
+          label="Dirección"
+        />
+        <HiddenInput name="lng" />
+        <HiddenInput name="lat" />
+        <TextInput
+          name="customer"
+          label="Cliente"
+        />
+        <div className="flex justify-between items-start">
+          <GutterInput />
+        </div>
+        <IncludesGatesInput />
+        <CheckboxInput
+          name="includes_freight"
+          label="Incluye flete?"
+        />
+        <CheckboxInput
+          name="color_roof_sheet"
+          label="Techo a color?"
+        />
+        <ColorSideSheetInput />
+        <CheckboxInput
+          name="includes_taxes"
+          label="Incluye IVA?"
+        />
+        <Button
+          type="submit"
+          color="info"
+          styles="mt-4"
+          disabled={isSubmitting}>
+          Crear presupuesto
+        </Button>
+      </Form>
+    </SubmittingOverlay>
   );
 };

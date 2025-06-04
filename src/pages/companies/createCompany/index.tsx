@@ -22,13 +22,15 @@ import {
 } from "../../../common/lib";
 import { formatCompanyName, formatFileType } from "../../../helpers/formatData";
 import type { PostgrestError } from "@supabase/supabase-js";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { usePreferencesContext } from "../../../common/context";
+import SubmittingOverlay from "../../../components/SubmittingOverlay";
+import { useIsSubmitting } from "../../../common/hooks/useIsSubmitting";
 
 export default function CreateCompany() {
   const navigate = useNavigate();
   const { preferences } = usePreferencesContext();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isSubmitting, setIsSubmitting } = useIsSubmitting();
 
   const handleSubmit = async (formData: CreateCompanyFormData) => {
     const { address, email, company_name, phone, file, lat, lng } = formData;
@@ -136,41 +138,43 @@ export default function CreateCompany() {
   );
 
   return (
-    <Form
-      onSubmit={handleSubmit}
-      schema={createCompanySchema}
-      defaultValues={defaultValues}>
-      <h2 className="my-4 text-2xl font-medium">Crea una nueva empresa</h2>
-      <TextInput
-        label="Nombre de Empresa"
-        name="company_name"
-      />
-      <FileInput
-        label="Logo"
-        name="file"
-      />
-      <TextInput
-        label="E-mail de Empresa"
-        name="email"
-        type="email"
-      />
-      <TextInput
-        label="Teléfono"
-        name="phone"
-      />
-      <GooglePlacesInput
-        name="address"
-        label="Dirección"
-      />
-      <HiddenInput name="lng" />
-      <HiddenInput name="lat" />
-      <Button
-        type="submit"
-        color="info"
-        styles="mt-4"
-        disabled={isSubmitting}>
-        Crear empresa
-      </Button>
-    </Form>
+    <SubmittingOverlay isSubmitting={isSubmitting}>
+      <Form
+        onSubmit={handleSubmit}
+        schema={createCompanySchema}
+        defaultValues={defaultValues}>
+        <h2 className="my-4 text-2xl font-medium">Crea una nueva empresa</h2>
+        <TextInput
+          label="Nombre de Empresa"
+          name="company_name"
+        />
+        <FileInput
+          label="Logo"
+          name="file"
+        />
+        <TextInput
+          label="E-mail de Empresa"
+          name="email"
+          type="email"
+        />
+        <TextInput
+          label="Teléfono"
+          name="phone"
+        />
+        <GooglePlacesInput
+          name="address"
+          label="Dirección"
+        />
+        <HiddenInput name="lng" />
+        <HiddenInput name="lat" />
+        <Button
+          type="submit"
+          color="info"
+          styles="mt-4"
+          disabled={isSubmitting}>
+          Crear empresa
+        </Button>
+      </Form>
+    </SubmittingOverlay>
   );
 }

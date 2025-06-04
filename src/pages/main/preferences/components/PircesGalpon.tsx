@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { updateUserPreferences } from "../../../../common/lib";
 import { NumberInput, Button, Form } from "../../../../components";
 import type { WharehousePriceMap } from "../../../../helpers/types";
@@ -7,11 +7,13 @@ import {
   UpdatePricesToastSuccess,
 } from "../../../../utils/alerts";
 import { usePreferencesContext } from "../../../../common/context";
+import SubmittingOverlay from "../../../../components/SubmittingOverlay";
+import { useIsSubmitting } from "../../../../common/hooks/useIsSubmitting";
 
 export const PircesGalpon = () => {
   const { preferences, setIsLoading } = usePreferencesContext();
   const { company_id, wharehouse_prices } = preferences;
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isSubmitting, setIsSubmitting } = useIsSubmitting();
 
   const handleSubmit = async (formData: WharehousePriceMap) => {
     const formattedPrices: Record<string, number> = {};
@@ -46,24 +48,26 @@ export const PircesGalpon = () => {
   }, [wharehouse_prices]);
 
   return (
-    <Form
-      onSubmit={handleSubmit}
-      defaultValues={defaultValues}>
-      <h3 className="my-4 text-xl font-medium">Precios Galpón</h3>
-      {Object.entries(wharehouse_prices).map(([area]) => (
-        <NumberInput
-          key={area}
-          name={area}
-          label={`Área menor a ${area}`}
-        />
-      ))}
-      <Button
-        styles="mt-4"
-        type="submit"
-        color="info"
-        disabled={isSubmitting}>
-        Actualizar recios Galpón
-      </Button>
-    </Form>
+    <SubmittingOverlay isSubmitting={isSubmitting}>
+      <Form
+        onSubmit={handleSubmit}
+        defaultValues={defaultValues}>
+        <h3 className="my-4 text-xl font-medium">Precios Galpón</h3>
+        {Object.entries(wharehouse_prices).map(([area]) => (
+          <NumberInput
+            key={area}
+            name={area}
+            label={`Área menor a ${area}`}
+          />
+        ))}
+        <Button
+          styles="mt-4"
+          type="submit"
+          color="info"
+          disabled={isSubmitting}>
+          Actualizar recios Galpón
+        </Button>
+      </Form>
+    </SubmittingOverlay>
   );
 };

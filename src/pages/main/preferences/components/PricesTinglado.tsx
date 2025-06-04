@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { updateUserPreferences } from "../../../../common/lib";
 import { Button, Form, NumberInput } from "../../../../components";
 import type { ShedhousePriceMap } from "../../../../helpers/types";
@@ -7,11 +7,13 @@ import {
   UpdatePricesToastSuccess,
 } from "../../../../utils/alerts";
 import { usePreferencesContext } from "../../../../common/context";
+import SubmittingOverlay from "../../../../components/SubmittingOverlay";
+import { useIsSubmitting } from "../../../../common/hooks/useIsSubmitting";
 
 export const PricesTinglado = () => {
   const { preferences, setIsLoading } = usePreferencesContext();
   const { company_id, shed_prices } = preferences;
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isSubmitting, setIsSubmitting } = useIsSubmitting();
 
   const handleSubmit = async (formData: ShedhousePriceMap) => {
     const formattedPrices: Record<string, number> = {};
@@ -47,25 +49,27 @@ export const PricesTinglado = () => {
   }, [shed_prices]);
 
   return (
-    <Form
-      className="mt-4"
-      onSubmit={handleSubmit}
-      defaultValues={defaultValues}>
-      <h3 className="my-4 text-xl font-medium">Precios Tinglado</h3>
-      {Object.entries(shed_prices).map(([area]) => (
-        <NumberInput
-          key={area}
-          name={area}
-          label={`Área menor a ${area}`}
-        />
-      ))}
-      <Button
-        styles="mt-4 "
-        type="submit"
-        color="info"
-        disabled={isSubmitting}>
-        Actualizar precios Tinglado
-      </Button>
-    </Form>
+    <SubmittingOverlay isSubmitting={isSubmitting}>
+      <Form
+        className="mt-4"
+        onSubmit={handleSubmit}
+        defaultValues={defaultValues}>
+        <h3 className="my-4 text-xl font-medium">Precios Tinglado</h3>
+        {Object.entries(shed_prices).map(([area]) => (
+          <NumberInput
+            key={area}
+            name={area}
+            label={`Área menor a ${area}`}
+          />
+        ))}
+        <Button
+          styles="mt-4 "
+          type="submit"
+          color="info"
+          disabled={isSubmitting}>
+          Actualizar precios Tinglado
+        </Button>
+      </Form>
+    </SubmittingOverlay>
   );
 };

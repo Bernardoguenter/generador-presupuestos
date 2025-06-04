@@ -9,12 +9,14 @@ import {
   updateUser,
   updateUserPassword,
 } from "../../../common/lib";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useAuthContext } from "../../../common/context";
+import { useIsSubmitting } from "../../../common/hooks/useIsSubmitting";
+import SubmittingOverlay from "../../../components/SubmittingOverlay";
 
 export const FormChangePassword = () => {
   const { handleLogout } = useAuthContext();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isSubmitting, setIsSubmitting } = useIsSubmitting();
 
   const handleSubmit = async (formData: ChangePasswordFormData) => {
     const { password, confirmPassword } = formData;
@@ -61,35 +63,37 @@ export const FormChangePassword = () => {
   );
 
   return (
-    <Form
-      onSubmit={handleSubmit}
-      schema={changePasswordSchema}
-      defaultValues={defaultValues}>
-      <h2 className="mb-4 text-2xl text-center">
-        Para usar tu cuenta debes cambiar tu password
-      </h2>
-      <PasswordInput
-        name="password"
-        label="Elige tu nuevo password"
-      />
-      <PasswordInput
-        name="confirmPassword"
-        label="Vuelve a escribir tu contraseña"
-      />
-      <Button
-        type="submit"
-        styles="mt-5 w-[90%] self-center"
-        color="info"
-        disabled={isSubmitting}>
-        Cambiar password
-      </Button>
-      <Button
-        type="submit"
-        styles="mt-5 w-[90%] self-center"
-        color="danger"
-        onClick={handleLogout}>
-        Salir y cambiar mi password más tarde
-      </Button>
-    </Form>
+    <SubmittingOverlay isSubmitting={isSubmitting}>
+      <Form
+        onSubmit={handleSubmit}
+        schema={changePasswordSchema}
+        defaultValues={defaultValues}>
+        <h2 className="mb-4 text-2xl text-center">
+          Para usar tu cuenta debes cambiar tu password
+        </h2>
+        <PasswordInput
+          name="password"
+          label="Elige tu nuevo password"
+        />
+        <PasswordInput
+          name="confirmPassword"
+          label="Vuelve a escribir tu contraseña"
+        />
+        <Button
+          type="submit"
+          styles="mt-5 w-[90%] self-center"
+          color="info"
+          disabled={isSubmitting}>
+          Cambiar password
+        </Button>
+        <Button
+          type="submit"
+          styles="mt-5 w-[90%] self-center"
+          color="danger"
+          onClick={handleLogout}>
+          Salir y cambiar mi password más tarde
+        </Button>
+      </Form>
+    </SubmittingOverlay>
   );
 };

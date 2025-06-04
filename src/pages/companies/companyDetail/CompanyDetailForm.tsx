@@ -13,8 +13,10 @@ import {
   UpdateCompanyToastSuccess,
 } from "../../../utils/alerts";
 import { updateCompany } from "../../../common/lib";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { DeleteCompanyButton } from "./DeleteCompanyButton";
+import SubmittingOverlay from "../../../components/SubmittingOverlay";
+import { useIsSubmitting } from "../../../common/hooks/useIsSubmitting";
 
 interface Props {
   company: Company;
@@ -22,7 +24,7 @@ interface Props {
 
 export default function CompanyDetailForm({ company }: Props) {
   const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isSubmitting, setIsSubmitting } = useIsSubmitting();
 
   const handleSubmit = async (formData: CreateCompanyFormData) => {
     const { address, email, company_name, phone, lat, lng } = formData;
@@ -68,46 +70,48 @@ export default function CompanyDetailForm({ company }: Props) {
   }, [company]);
 
   return (
-    <Form
-      onSubmit={handleSubmit}
-      schema={createCompanySchema}
-      defaultValues={defaultValues}>
-      <TextInput
-        label="Nombre de Empresa"
-        name="company_name"
-      />
-      <HiddenInput name="lat" />
-      <HiddenInput name="lng" />
-      <TextInput
-        label="E-mail de Empresa"
-        name="email"
-        type="email"
-      />
-      <TextInput
-        label="Teléfono"
-        name="phone"
-      />
-      <GooglePlacesInput
-        name="address"
-        label="Dirección"
-      />
-      <HiddenInput name="lat" />
-      <HiddenInput name="lng" />
-      <Button
-        type="submit"
-        color="info"
-        styles="mt-4"
-        disabled={isSubmitting}>
-        Editar empresa
-      </Button>
+    <SubmittingOverlay isSubmitting={isSubmitting}>
+      <Form
+        onSubmit={handleSubmit}
+        schema={createCompanySchema}
+        defaultValues={defaultValues}>
+        <TextInput
+          label="Nombre de Empresa"
+          name="company_name"
+        />
+        <HiddenInput name="lat" />
+        <HiddenInput name="lng" />
+        <TextInput
+          label="E-mail de Empresa"
+          name="email"
+          type="email"
+        />
+        <TextInput
+          label="Teléfono"
+          name="phone"
+        />
+        <GooglePlacesInput
+          name="address"
+          label="Dirección"
+        />
+        <HiddenInput name="lat" />
+        <HiddenInput name="lng" />
+        <Button
+          type="submit"
+          color="info"
+          styles="mt-4"
+          disabled={isSubmitting}>
+          Editar empresa
+        </Button>
 
-      <DeleteCompanyButton
-        logo_url={company.logo_url}
-        id={company.id}
-        company_name={company.company_name}
-        isSubmitting={isSubmitting}
-        setIsSubmitting={setIsSubmitting}
-      />
-    </Form>
+        <DeleteCompanyButton
+          logo_url={company.logo_url}
+          id={company.id}
+          company_name={company.company_name}
+          isSubmitting={isSubmitting}
+          setIsSubmitting={setIsSubmitting}
+        />
+      </Form>
+    </SubmittingOverlay>
   );
 }
