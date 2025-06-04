@@ -11,11 +11,13 @@ import {
 } from "../../../utils/alerts";
 import { getUserById, updateUser } from "../../../common/lib";
 import { DeleteUserButton } from "./DeleteUserButton";
+import SubmittingOverlay from "../../../components/SubmittingOverlay";
+import { useIsSubmitting } from "../../../common/hooks/useIsSubmitting";
 
 export default function UserDetail() {
   const { id } = useParams();
   const [user, setUser] = useState<User | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isSubmitting, setIsSubmitting } = useIsSubmitting();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -71,35 +73,37 @@ export default function UserDetail() {
   if (!user) return <h2>No se encontró información para este usuario</h2>;
 
   return (
-    <Form
-      onSubmit={handleSubmit}
-      schema={createUserSchema}
-      defaultValues={defaultValues}>
-      <h2 className="my-4 text-2xl font-medium"> {user?.fullName}</h2>
-      <TextInput
-        label="Nombre completo"
-        name="fullName"
-        type="text"
-      />
-      <TextInput
-        label="E-mail"
-        name="email"
-        type="email"
-      />
-      <RolesSelect />
-      <CompanySelect />
-      <Button
-        type="submit"
-        color="info"
-        children="Editar usuario"
-        styles="mt-4"
-        disabled={isSubmitting}
-      />
-      <DeleteUserButton
-        isSubmitting={isSubmitting}
-        email={user.email}
-        id={user.id}
-      />
-    </Form>
+    <SubmittingOverlay isSubmitting={isSubmitting}>
+      <Form
+        onSubmit={handleSubmit}
+        schema={createUserSchema}
+        defaultValues={defaultValues}>
+        <h2 className="my-4 text-2xl font-medium"> {user?.fullName}</h2>
+        <TextInput
+          label="Nombre completo"
+          name="fullName"
+          type="text"
+        />
+        <TextInput
+          label="E-mail"
+          name="email"
+          type="email"
+        />
+        <RolesSelect />
+        <CompanySelect />
+        <Button
+          type="submit"
+          color="info"
+          children="Editar usuario"
+          styles="mt-4"
+          disabled={isSubmitting}
+        />
+        <DeleteUserButton
+          isSubmitting={isSubmitting}
+          email={user.email}
+          id={user.id}
+        />
+      </Form>
+    </SubmittingOverlay>
   );
 }

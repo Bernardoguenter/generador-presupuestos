@@ -9,11 +9,13 @@ import {
   sendEmailResetPassword,
 } from "../../../common/lib";
 import { Button, CustomLink, Form, TextInput } from "../../../components";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import SubmittingOverlay from "../../../components/SubmittingOverlay";
+import { useIsSubmitting } from "../../../common/hooks/useIsSubmitting";
 
 export const FormResetPassword = () => {
   const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isSubmitting, setIsSubmitting } = useIsSubmitting();
 
   const handleSubmit = async (formData: ResetPasswordData) => {
     try {
@@ -52,30 +54,32 @@ export const FormResetPassword = () => {
   );
 
   return (
-    <Form
-      onSubmit={handleSubmit}
-      schema={resetPasswordSchema}
-      defaultValues={defaultValues}>
-      <h2 className="mb-4 text-2xl text-center">
-        Escribe tu e-mail y te enviaremos una nueva contraseña
-      </h2>
-      <TextInput
-        name="email"
-        label="E-mail"
-        type="email"
-      />
-      <Button
-        type="submit"
-        color="info"
-        children="Solicitar nuevo password"
-        disabled={isSubmitting}
-      />
-      <CustomLink
-        href="account/login"
-        color="danger"
-        styles="mt-2 text-center">
-        Ingresar a mi cuenta
-      </CustomLink>
-    </Form>
+    <SubmittingOverlay isSubmitting={isSubmitting}>
+      <Form
+        onSubmit={handleSubmit}
+        schema={resetPasswordSchema}
+        defaultValues={defaultValues}>
+        <h2 className="mb-4 text-2xl text-center">
+          Escribe tu e-mail y te enviaremos una nueva contraseña
+        </h2>
+        <TextInput
+          name="email"
+          label="E-mail"
+          type="email"
+        />
+        <Button
+          type="submit"
+          color="info"
+          children="Solicitar nuevo password"
+          disabled={isSubmitting}
+        />
+        <CustomLink
+          href="account/login"
+          color="danger"
+          styles="mt-2 text-center">
+          Ingresar a mi cuenta
+        </CustomLink>
+      </Form>
+    </SubmittingOverlay>
   );
 };

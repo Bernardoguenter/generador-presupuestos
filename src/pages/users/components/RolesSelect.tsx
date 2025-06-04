@@ -25,7 +25,8 @@ export const RolesSelect = () => {
           <option
             key={role.id}
             value={role.id}
-            title={role.description}>
+            title={role.description}
+            defaultChecked={role.id === "usuario"}>
             {role.label}
           </option>
         ))}

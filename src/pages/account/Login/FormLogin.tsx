@@ -8,10 +8,12 @@ import {
   PasswordInput,
 } from "../../../components";
 import { loginUser } from "../../../common/lib";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import SubmittingOverlay from "../../../components/SubmittingOverlay";
+import { useIsSubmitting } from "../../../common/hooks/useIsSubmitting";
 
 export const FormLogin = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isSubmitting, setIsSubmitting } = useIsSubmitting();
 
   const handleSubmit = async (formData: LoginFormData) => {
     try {
@@ -45,31 +47,33 @@ export const FormLogin = () => {
   );
 
   return (
-    <Form
-      onSubmit={handleSubmit}
-      schema={loginSchema}
-      defaultValues={defaultValues}>
-      <TextInput
-        name="email"
-        label="E-mail"
-        type="email"
-      />
-      <PasswordInput
-        name="password"
-        label="Password"
-      />
-      <Button
-        type="submit"
-        styles="mt-5 w-[90%] self-center"
-        color="info"
-        disabled={isSubmitting}>
-        Ingresar
-      </Button>
-      <CustomLink
-        href="/account/reset-password"
-        styles="text-center mt-4 underline">
-        Olvidé mi clave
-      </CustomLink>
-    </Form>
+    <SubmittingOverlay isSubmitting={isSubmitting}>
+      <Form
+        onSubmit={handleSubmit}
+        schema={loginSchema}
+        defaultValues={defaultValues}>
+        <TextInput
+          name="email"
+          label="E-mail"
+          type="email"
+        />
+        <PasswordInput
+          name="password"
+          label="Password"
+        />
+        <Button
+          type="submit"
+          styles="mt-5 w-[90%] self-center"
+          color="info"
+          disabled={isSubmitting}>
+          Ingresar
+        </Button>
+        <CustomLink
+          href="/account/reset-password"
+          styles="text-center mt-4 underline">
+          Olvidé mi clave
+        </CustomLink>
+      </Form>
+    </SubmittingOverlay>
   );
 };

@@ -5,15 +5,18 @@ interface SubmittingOverlayProps {
   children: ReactNode;
 }
 
-const SubmittingOverlay: React.FC<SubmittingOverlayProps> = ({
+const SubmittingOverlay = ({
   isSubmitting,
   children,
-}) => {
+}: SubmittingOverlayProps) => {
   if (!isSubmitting) return <>{children}</>;
 
   return (
-    <div className="absolute top-0 left-0 w-full h-full bg-white opacity-75 flex justify-center items-center">
-      <div className="text-2xl text-black font-bold">Enviado...</div>
+    <div className=" ">
+      <div className="absolute top-0 left-0 w-full h-full bg-black opacity-60 flex justify-center items-center">
+        <span className="sending"></span>
+      </div>
+      {children}
     </div>
   );
 };

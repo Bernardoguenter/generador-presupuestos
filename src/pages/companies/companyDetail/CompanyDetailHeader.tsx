@@ -15,6 +15,8 @@ import {
   UpdateCompanyToastSuccess,
 } from "../../../utils/alerts";
 import { companyLogoSchema, type CompanyLogoFormData } from "../schema";
+import SubmittingOverlay from "../../../components/SubmittingOverlay";
+import { useIsSubmitting } from "../../../common/hooks/useIsSubmitting";
 
 interface Props {
   company: Company;
@@ -22,7 +24,7 @@ interface Props {
 
 export const CompanyDetailHeader = ({ company }: Props) => {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isSubmitting, setIsSubmitting } = useIsSubmitting();
 
   useEffect(() => {
     const fetchLogo = async () => {
@@ -103,25 +105,27 @@ export const CompanyDetailHeader = ({ company }: Props) => {
   const defaultValues = useMemo(() => ({ file: undefined }), []);
 
   return (
-    <Form
-      onSubmit={handleSubmit}
-      schema={companyLogoSchema}
-      defaultValues={defaultValues}>
-      <h2 className="my-4 text-2xl font-medium">{company?.company_name}</h2>
-      <div className="flex flex-col items-start justify-start py-4">
-        <FileInput
-          label="Logo"
-          name="file"
-          defaultPreviewUrl={logoUrl ?? undefined}
-        />
-        <Button
-          type="submit"
-          children="Actualizar Logo"
-          color="danger"
-          styles="mt-4"
-          disabled={isSubmitting}
-        />
-      </div>
-    </Form>
+    <SubmittingOverlay isSubmitting={isSubmitting}>
+      <Form
+        onSubmit={handleSubmit}
+        schema={companyLogoSchema}
+        defaultValues={defaultValues}>
+        <h2 className="my-4 text-2xl font-medium">{company?.company_name}</h2>
+        <div className="flex flex-col items-start justify-start py-4">
+          <FileInput
+            label="Logo"
+            name="file"
+            defaultPreviewUrl={logoUrl ?? undefined}
+          />
+          <Button
+            type="submit"
+            children="Actualizar Logo"
+            color="danger"
+            styles="mt-4"
+            disabled={isSubmitting}
+          />
+        </div>
+      </Form>
+    </SubmittingOverlay>
   );
 };

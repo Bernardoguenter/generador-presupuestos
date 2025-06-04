@@ -84,7 +84,7 @@ export default function CreateUsers() {
         <Button
           type="submit"
           color="info"
-          children="Crear Usuario"
+          children={isSubmitting ? "Creando Usuario..." : "Crear Usuario"}
           styles="mt-4"
           disabled={isSubmitting}
         />
