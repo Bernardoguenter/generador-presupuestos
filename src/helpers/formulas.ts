@@ -58,7 +58,7 @@ export const calculateDistance = async (
   };
 
   const response = await service.getDistanceMatrix(request);
-  return response.rows[0].elements[0].distance.value / 1000;
+  return Math.ceil(response.rows[0].elements[0].distance.value / 1000);
 };
 
 export const calculateFreightPrice = (
@@ -88,7 +88,6 @@ export const getBudgetTotal = (
   const {
     colored_sheet_difference,
     default_markup,
-    dollar_quote,
     gate_price,
     gutter_price,
     shed_prices,
@@ -96,6 +95,9 @@ export const getBudgetTotal = (
     u_profile_difference,
     wharehouse_prices,
     iva_percentage,
+    solid_web_column_cost,
+    twisted_iron_column_cost,
+    u_profile_column_cost,
   } = preferences;
 
   const wharehouse_priceList = {
@@ -131,10 +133,10 @@ export const getBudgetTotal = (
 
   const columnsPrice =
     material === "Hierro Torsionado"
-      ? 35
+      ? twisted_iron_column_cost
       : material === "Perfil U Ángulo"
-      ? 69
-      : 144;
+      ? u_profile_column_cost
+      : solid_web_column_cost;
 
   const columnsCost =
     height === 5
@@ -197,7 +199,7 @@ export const getBudgetTotal = (
       : priceBeforeTaxes;
 
   //CALCULO DE TOTALES EN USD
-  const finalPriceInDollars = priceWithMarkup * dollar_quote;
+  const finalPriceInDollars = priceWithMarkup;
 
   return { priceWithMarkup, finalPriceInDollars, totalArea };
 };

@@ -6,7 +6,6 @@ import {
   NumberInput,
   TextInput,
   CheckboxInput,
-  SubmittingOverlay,
 } from "../../../../components";
 import { calculateBudgetSchema, type BudgetFormData } from "../../schema";
 import { useMemo } from "react";
@@ -16,13 +15,9 @@ import { GutterInput } from "./GutterInput";
 import {
   useAuthContext,
   useCompanyContext,
+  usePDFContext,
   usePreferencesContext,
 } from "../../../../common/context";
-import { createBudget } from "../../../../common/lib";
-import {
-  CreateBudgetToastError,
-  CreateBudgetToastSuccess,
-} from "../../../../utils/alerts";
 import { IncludesGatesInput } from "./IncludesGatesInput";
 import { EnclousureHeightInput } from "./EnclousureHeightInput";
 import { ColorSideSheetInput } from "./ColorSideSheetInput";
@@ -31,121 +26,140 @@ import {
   calculateFreightPrice,
   getBudgetTotal,
 } from "../../../../helpers/formulas";
-import { useIsSubmitting } from "../../../../common/hooks/useIsSubmitting";
+import { formatDetails } from "../../../../helpers/formatData";
+import { PDFComponent } from "./PDFComponent";
 
 export const BudgetCalculatorForm = () => {
-  const { isSubmitting, setIsSubmitting } = useIsSubmitting();
   const { authUser } = useAuthContext();
   const { preferences } = usePreferencesContext();
   const { company } = useCompanyContext();
+  const { setPdfInfo, setShowPDF, showPDF, pdfInfo } = usePDFContext();
 
   const handleSubmit = async (formData: BudgetFormData) => {
-    try {
-      setIsSubmitting(true);
-      const {
-        color_roof_sheet,
-        color_side_sheet,
-        enclousure_height,
-        gates_measurements,
-        gutter_metters,
-        has_gutter,
+    const {
+      color_roof_sheet,
+      color_side_sheet,
+      enclousure_height,
+      gates_measurements,
+      gutter_metters,
+      has_gutter,
+      height,
+      includes_freight,
+      includes_gate,
+      includes_taxes,
+      length,
+      material,
+      number_of_gates,
+      structure_type,
+      width,
+      address,
+      lat,
+      lng,
+      customer,
+    } = formData;
+
+    const newAddress = {
+      address: address,
+      lat: lat,
+      lng: lng,
+    };
+
+    let newDistance = 0;
+    if (company && company.address && includes_freight) {
+      newDistance = await calculateDistance(company?.address, newAddress);
+    }
+    const freight_price = includes_freight
+      ? calculateFreightPrice(newDistance, preferences.km_price)
+      : 0;
+
+    const newGutter_metters = has_gutter ? gutter_metters : 0;
+    const newEnclousure_height =
+      structure_type === "Galpón" ? enclousure_height : 0;
+    const newGates_measurements =
+      structure_type === "Galpón" ? gates_measurements : [];
+    const newNumber_of_gates =
+      structure_type === "Galpón" ? number_of_gates : 0;
+    const newColor_side_sheet =
+      structure_type === "Galpón" ? color_side_sheet : false;
+
+    const total = getBudgetTotal(
+      preferences,
+      width,
+      length,
+      height,
+      newEnclousure_height,
+      structure_type,
+      material,
+      color_roof_sheet,
+      newColor_side_sheet,
+      newGutter_metters,
+      newGates_measurements,
+      includes_gate,
+      includes_taxes,
+      freight_price,
+      has_gutter
+    );
+
+    const newDetails = formatDetails(
+      structure_type,
+      material,
+      color_roof_sheet,
+      color_side_sheet,
+      includes_gate,
+      gates_measurements,
+      has_gutter,
+      gutter_metters,
+      width
+    );
+
+    if (authUser) {
+      const dataToSubmit = {
+        material,
+        customer,
+        structure_type,
+        width,
+        length,
         height,
         includes_freight,
         includes_gate,
         includes_taxes,
-        length,
-        material,
-        number_of_gates,
-        structure_type,
-        width,
-        address,
-        lat,
-        lng,
-        customer,
-      } = formData;
-
-      const newAddress = {
-        address: address,
-        lat: lat,
-        lng: lng,
+        created_by: authUser?.id,
+        details: newDetails,
+        freight_price,
+        total: total.priceWithMarkup,
+        gutter_metters: newGutter_metters,
+        enclousure_height: newEnclousure_height,
+        gates_measurements: newGates_measurements,
+        number_of_gates: newNumber_of_gates,
+        color_side_sheet: newColor_side_sheet,
+        color_roof_sheet,
+        has_gutter,
+        address: newAddress,
+        description: "",
+        paymentMethods: "",
       };
 
-      let newDistance = 0;
-      if (company && company.address && includes_freight) {
-        newDistance = await calculateDistance(company?.address, newAddress);
-      }
-      const freight_price = includes_freight
-        ? calculateFreightPrice(newDistance, preferences.km_price)
-        : 0;
-
-      const newGutter_metters = has_gutter ? gutter_metters : 0;
-      const newEnclousure_height =
-        structure_type === "Galpón" ? enclousure_height : 0;
-      const newGates_measurements =
-        structure_type === "Galpón" ? gates_measurements : [];
-      const newNumber_of_gates =
-        structure_type === "Galpón" ? number_of_gates : 0;
-      const newColor_side_sheet =
-        structure_type === "Galpón" ? color_side_sheet : false;
-
-      const total = getBudgetTotal(
-        preferences,
+      setPdfInfo({
+        customer,
+        details: newDetails,
+        structure_type,
         width,
         length,
         height,
-        newEnclousure_height,
-        structure_type,
-        material,
-        color_roof_sheet,
-        newColor_side_sheet,
-        newGutter_metters,
-        newGates_measurements,
+        enclousure_height,
         includes_gate,
         includes_taxes,
         freight_price,
-        has_gutter
-      );
+        includes_freight,
+        totals: total,
+        distance: newDistance,
+        customer_address: newAddress.address,
+        dataToSubmit: dataToSubmit,
+      });
 
-      const details = "El detalle si hace falta";
-      if (authUser) {
-        const dataToSubmit = {
-          material,
-          customer,
-          structure_type,
-          width,
-          length,
-          height,
-          includes_freight,
-          includes_gate,
-          includes_taxes,
-          created_by: authUser?.id,
-          details,
-          freight_price,
-          total: total.priceWithMarkup,
-          gutter_metters: newGutter_metters,
-          enclousure_height: newEnclousure_height,
-          gates_measurements: newGates_measurements,
-          number_of_gates: newNumber_of_gates,
-          color_side_sheet: newColor_side_sheet,
-          color_roof_sheet,
-          has_gutter,
-          address: newAddress,
-        };
-
-        const { data, error } = await createBudget(dataToSubmit);
-
-        if (!error) {
-          CreateBudgetToastSuccess();
-          console.log(data);
-          //TODO: hacer modal de envío de presupuesto vía e-mail o whatsapp
-        } else {
-          CreateBudgetToastError();
-        }
+      if (total) {
+        setShowPDF(true);
       }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -175,12 +189,12 @@ export const BudgetCalculatorForm = () => {
   );
 
   return (
-    <SubmittingOverlay isSubmitting={isSubmitting}>
+    <div className="flex w-full  gap-8 ">
       <Form
         onSubmit={handleSubmit}
         schema={calculateBudgetSchema}
         defaultValues={defaultValues}
-        className="mt-4">
+        className="mt-4 w-full lg:w-2/5">
         <h2 className="my-4 text-2xl font-medium">Nuevo Presupuesto</h2>
         <MaterialsSelect />
         <StructureSelect />
@@ -227,11 +241,11 @@ export const BudgetCalculatorForm = () => {
         <Button
           type="submit"
           color="info"
-          styles="mt-4"
-          disabled={isSubmitting}>
-          Crear presupuesto
+          styles="mt-4">
+          Crear Vista Previa
         </Button>
       </Form>
-    </SubmittingOverlay>
+      {showPDF && pdfInfo && <PDFComponent />}
+    </div>
   );
 };

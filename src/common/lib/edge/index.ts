@@ -8,6 +8,19 @@ type CreateUser = {
   company_id: string;
 };
 
+type Payload = {
+  pdf: {
+    filename: string;
+    content: string;
+  }[];
+  custsomerEmail: string;
+  customerName: string;
+  companyName: string | undefined;
+  companyEmail: string | null | undefined;
+  userEmail: string | undefined;
+  userName: string | undefined;
+};
+
 const setCompanyPreferences = async (
   company_id: string,
   preferences: Preferences
@@ -59,6 +72,14 @@ const sendPassword = async (email: string, password: string) => {
   return { error };
 };
 
+const sendBudget = async (payload: Payload) => {
+  const { data, error } = await supabase.functions.invoke("send-budget", {
+    body: payload,
+  });
+
+  return { data, error };
+};
+
 export {
   setCompanyPreferences,
   deleteUser,
@@ -66,4 +87,5 @@ export {
   sendEmailResetPassword,
   createUser,
   sendPassword,
+  sendBudget,
 };

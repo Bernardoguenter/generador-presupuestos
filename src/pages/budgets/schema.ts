@@ -6,10 +6,12 @@ export const calculateBudgetSchema = z
       required_error: "Debes ingresar un marterial",
       invalid_type_error: "El material debe ser una cadena de texto",
     }),
-    customer: z.string({
-      required_error: "Debes ingresar un Cliente",
-      invalid_type_error: "El cliente debe ser una cadena de texto",
-    }),
+    customer: z
+      .string({
+        required_error: "Debes ingresar un Cliente",
+        invalid_type_error: "El cliente debe ser una cadena de texto",
+      })
+      .min(1, "Debes ingresar el nombre del cliente"),
     structure_type: z.string({
       required_error: "Debes ingresar un tipo de estructura",
       invalid_type_error: "El tipo de estructura debe ser una cadena de texto",
@@ -52,10 +54,15 @@ export const calculateBudgetSchema = z
         message: "El alto del cerramiento  debe tener como máximo 2 decimales",
       }),
     includes_freight: z.boolean(),
-    address: z.string({
-      required_error: "Debes ingresar una ciudad",
-      invalid_type_error: "El ciudad debe ser una cadena de texto",
-    }),
+    address: z
+      .string({
+        required_error: "Debes ingresar una ciudad",
+        invalid_type_error: "El ciudad debe ser una cadena de texto",
+      })
+      .min(
+        1,
+        "Debes ingresar la dirección (puede ser localidad, ciudad o dirección exacta)"
+      ),
     lng: z.coerce.number(),
     lat: z.coerce.number(),
     color_roof_sheet: z.boolean(),
@@ -64,8 +71,6 @@ export const calculateBudgetSchema = z
     includes_gate: z.boolean(),
     number_of_gates: z.coerce
       .number({
-        /* required_error:
-          "Debes ingresar una cantidad de portones para el presupuesto si este los incluye", */
         invalid_type_error: "La cantidad de portones debe ser un número",
       })
       .int("La cantidad de portones debe ser un número entero")
@@ -103,7 +108,7 @@ export const calculateBudgetSchema = z
       (data.includes_gate && data.number_of_gates > 0),
     {
       message:
-        "Si el presupuesto incluye portón, la cantidad debe ser mayor a 0. Si no, debe ser 0.",
+        "Si el presupuesto incluye portón, la cantidad debe ser mayor a 0.",
       path: ["number_of_gates"],
     }
   )
@@ -137,8 +142,17 @@ export const calculateBudgetSchema = z
   )
   .refine((data) => data.gutter_metters <= data.length * 2, {
     message:
-      "El metraje de las canaletas no puede ser mayor al doble del largo.",
+      "El metraje de las canaletas no puede ser mayor al doble del largo de la estructura.",
     path: ["gutter_metters"],
   });
 
 export type BudgetFormData = z.infer<typeof calculateBudgetSchema>;
+
+export const ConfirmPDFhema = z.object({
+  description: z.string(),
+  details: z.string(),
+  paymentMethods: z.string(),
+  total: z.coerce.number(),
+});
+
+export type ConfirmPDFFormData = z.infer<typeof ConfirmPDFhema>;

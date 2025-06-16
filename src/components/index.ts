@@ -13,3 +13,5 @@ export { GooglePlacesInput } from "./GooglePlacesInput";
 export { HiddenInput } from "./HiddenInput";
 export { CheckboxInput } from "./CheckboxInput";
 export { SubmittingOverlay } from "./SubmittingOverlay";
+export { TextAreaInput } from "./TextAreaInput";
+export { Logo } from "./Logo";
