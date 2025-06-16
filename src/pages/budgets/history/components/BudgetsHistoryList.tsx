@@ -41,12 +41,6 @@ export const BudgetsHistoryList = () => {
           <th className="px-2 py-2 text-left text-sm font-medium w-3/16">
             Ubicación
           </th>
-          {/* <th className="px-2 py-2 text-center text-sm font-medium w-2/16">
-            Eliminar
-          </th>
-          <th className="px-2 py-2 text-center text-sm font-medium w-2/16">
-            Editar
-          </th> */}
         </tr>
       </thead>
       <tbody className="divide-y divide-gray-50">

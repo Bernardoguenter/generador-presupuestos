@@ -1,11 +1,12 @@
-import { Link } from "react-router-dom";
+import { BudgetCalculatorForm } from "../../budgets/calculator/components/BudgetCalculatorForm";
+import { useAuthContext } from "../../../common/context";
 
 export default function Main() {
+  const { authUser } = useAuthContext();
   return (
     <>
-      <h1 className="text-3xl">CALCULADORA DE PRESUPUESTOS</h1>
-      <Link to="/budgets/calculator">Calcular Presupuesto</Link>
-      <Link to="/budgets"> Ver Historial de Presupuestos</Link>
+      <h1 className="text-3xl text-right">¡Hola {authUser?.fullName}!</h1>
+      <BudgetCalculatorForm />
     </>
   );
 }

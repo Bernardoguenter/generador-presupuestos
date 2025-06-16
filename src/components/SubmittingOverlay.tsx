@@ -12,7 +12,7 @@ export const SubmittingOverlay = ({
   if (!isSubmitting) return <>{children}</>;
 
   return (
-    <div className=" ">
+    <div>
       <div className="absolute top-0 left-0 w-full h-full bg-black opacity-60 flex justify-center items-center">
         <span className="sending"></span>
       </div>

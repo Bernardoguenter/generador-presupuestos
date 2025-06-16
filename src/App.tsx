@@ -1,6 +1,7 @@
 import {
   AuthProvider,
   CompanyProvider,
+  PDFProvider,
   PreferencesProvider,
 } from "./common/context";
 import AppRoutes from "./routes";
@@ -10,7 +11,9 @@ const App = () => {
     <AuthProvider>
       <PreferencesProvider>
         <CompanyProvider>
-          <AppRoutes />
+          <PDFProvider>
+            <AppRoutes />
+          </PDFProvider>
         </CompanyProvider>
       </PreferencesProvider>
     </AuthProvider>
