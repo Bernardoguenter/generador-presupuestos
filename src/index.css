@@ -83,3 +83,84 @@ button {
 .submitting-overlay > div.absolute {
   z-index: 0;
 }
+
+/* PDF */
+
+#pdf {
+  width: 100%;
+  max-width: 20cm;
+}
+
+.pdf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.pdf-logo {
+  max-width: 120px;
+  aspect-ratio: 1/1;
+  object-fit: contain;
+}
+
+.pdf-info {
+  text-align: right;
+}
+
+.pdf-body,
+.pdf-presupuesto,
+.pdf-materiales,
+.pdf-formas-pago {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.pdf-presupuesto > h2 {
+  font-size: 18px;
+}
+
+.pdf-body > h2,
+.pdf-materiales > h2,
+.pdf-formas-pago > h2 {
+  text-align: left;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.table-pdf {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 14px;
+  text-align: left;
+  th,
+  td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    text-align: center;
+  }
+  th {
+    background-color: #f4f4f4;
+  }
+}
+
+.string-to-list ul {
+  list-style-type: disc;
+  margin: 0;
+  padding: 0;
+}
+
+.string-to-list li {
+  margin-bottom: 3px;
+}
+
+.text-size {
+  font-size: 12px;
+  line-height: 14px;
+}
+
+.firma-span {
+  font-weight: 400;
+  text-transform: uppercase;
+  font-size: inherit;
+}

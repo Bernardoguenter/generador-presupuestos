@@ -70,6 +70,7 @@ type AreaShed =
   | 400
   | 500
   | 600
+  | 700
   | 800
   | 1000;
 
@@ -99,6 +100,8 @@ export interface Budget {
   gates_measurements: GatesMeasurements[] | null;
   has_gutter: boolean;
   gutter_metters: number;
+  description: string;
+  paymentMethods: string;
 }
 
 export type GatesMeasurements = {
@@ -116,3 +119,48 @@ export type Address = {
   lat: number;
   lng: number;
 };
+
+export interface PDFBudget {
+  budget_id: string;
+  customer: string;
+  details: string;
+  payment_method: string;
+  width: number;
+  length: number;
+  height: number;
+  enclousure_height: number;
+  structure_type: string;
+  material: string;
+  color_roof_sheet: boolean;
+  color_side_sheet: boolean;
+  gutter_metters: number;
+  gates_measurements: GatesMeasurements[] | [];
+  includes_gate: boolean;
+  includes_taxes: boolean;
+  freight_price: number;
+  has_gutter: boolean;
+}
+
+export interface PDFInfo {
+  customer: string;
+  details: string;
+  structure_type: string;
+  width: number;
+  length: number;
+  height: number;
+  enclousure_height: number;
+  includes_gate: boolean;
+  includes_taxes: boolean;
+  freight_price: number;
+  includes_freight: boolean;
+  totals: Totals;
+  distance: number;
+  customer_address: string;
+  dataToSubmit: Omit<Budget, "created_at" | "id">;
+}
+
+export interface Totals {
+  priceWithMarkup: number;
+  finalPriceInDollars: number;
+  totalArea: number;
+}

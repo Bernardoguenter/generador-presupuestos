@@ -13,10 +13,9 @@ export const GutterInput = () => {
     }
   }, [hasGutter, length, setValue]);
 
-  // Limpia gutter_metters si has_gutter es false
   useEffect(() => {
     if (!hasGutter) {
-      setValue("gutter_metters", undefined);
+      setValue("gutter_metters", 0);
     }
   }, [hasGutter, setValue]);
 
