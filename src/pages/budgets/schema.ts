@@ -6,12 +6,10 @@ export const calculateBudgetSchema = z
       required_error: "Debes ingresar un marterial",
       invalid_type_error: "El material debe ser una cadena de texto",
     }),
-    customer: z
-      .string({
-        required_error: "Debes ingresar un Cliente",
-        invalid_type_error: "El cliente debe ser una cadena de texto",
-      })
-      .min(1, "Debes ingresar el nombre del cliente"),
+    customer: z.string({
+      required_error: "Debes ingresar un Cliente",
+      invalid_type_error: "El cliente debe ser una cadena de texto",
+    }),
     structure_type: z.string({
       required_error: "Debes ingresar un tipo de estructura",
       invalid_type_error: "El tipo de estructura debe ser una cadena de texto",
@@ -54,17 +52,9 @@ export const calculateBudgetSchema = z
         message: "El alto del cerramiento  debe tener como máximo 2 decimales",
       }),
     includes_freight: z.boolean(),
-    address: z
-      .string({
-        required_error: "Debes ingresar una ciudad",
-        invalid_type_error: "El ciudad debe ser una cadena de texto",
-      })
-      .min(
-        1,
-        "Debes ingresar la dirección (puede ser localidad, ciudad o dirección exacta)"
-      ),
-    lng: z.coerce.number(),
-    lat: z.coerce.number(),
+    address: z.string().optional(),
+    lng: z.coerce.number().optional(),
+    lat: z.coerce.number().optional(),
     color_roof_sheet: z.boolean(),
     color_side_sheet: z.boolean(),
     includes_taxes: z.boolean(),
@@ -144,7 +134,20 @@ export const calculateBudgetSchema = z
     message:
       "El metraje de las canaletas no puede ser mayor al doble del largo de la estructura.",
     path: ["gutter_metters"],
-  });
+  })
+  .refine(
+    (data) =>
+      !data.includes_freight ||
+      (typeof data.address === "string" &&
+        data.address.trim().length > 0 &&
+        typeof data.lat === "number" &&
+        typeof data.lng === "number"),
+    {
+      message:
+        "Si el presupuesto incluye flete, debes ingresar la dirección y su ubicación.",
+      path: ["address"],
+    }
+  );
 
 export type BudgetFormData = z.infer<typeof calculateBudgetSchema>;
 
@@ -153,6 +156,7 @@ export const ConfirmPDFhema = z.object({
   details: z.string(),
   paymentMethods: z.string(),
   total: z.coerce.number(),
+  caption: z.string(),
 });
 
 export type ConfirmPDFFormData = z.infer<typeof ConfirmPDFhema>;

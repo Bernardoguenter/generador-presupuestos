@@ -58,7 +58,7 @@ export const BudgetsHistoryList = () => {
               key={budget.id}
               className="flex items-center w-full ">
               <td className="px-2 py-2 text-xs overflow-hidden w-3/16">
-                {budget.customer}
+                {budget.customer.length > 0 ? budget.customer : "-"}
               </td>
               <td className="px-2 py-2 text-xs overflow-hidden w-3/16">
                 {budget.width} x {budget.height} x {budget.length} mts
@@ -67,7 +67,7 @@ export const BudgetsHistoryList = () => {
                 {budget.structure_type}
               </td>
               <td className="px-2 py-2 text-xs overflow-hidden w-3/16">
-                {budget.address.address}
+                {(budget.address && budget.address.address) || "-"}
               </td>
               <td className="px-2 py-2 flex justify-center items-center w-2/16">
                 <DeleteBudgetButton

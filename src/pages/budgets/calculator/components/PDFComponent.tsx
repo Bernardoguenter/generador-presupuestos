@@ -6,10 +6,7 @@ import {
   usePDFContext,
   usePreferencesContext,
 } from "../../../../common/context";
-import {
-  CreateBudgetToastError,
-  CreateBudgetToastSuccess,
-} from "../../../../utils/alerts";
+import { CreateBudgetToastError } from "../../../../utils/alerts";
 import { createBudget } from "../../../../common/lib";
 import { useNavigate } from "react-router";
 
@@ -30,12 +27,24 @@ export const PDFComponent = () => {
     totals,
     details,
     dataToSubmit,
+    includes_freight,
   } = pdfInfo;
 
   const defaultDescription =
     structure_type === "Galpón"
       ? `${structure_type} de ${width}mts x ${length}mts x ${height}mts de altura libre con ${enclousure_height}mts cerramiento de chapa en los laterales.`
       : `${structure_type} de ${width}mts x ${length}mts x ${height}mts de altura libre`;
+
+  const defaultCaption = `${
+    includes_freight
+      ? "* El precio inlcuye el flete"
+      : "* El precio no inlcuye el flete"
+  }; * Montaje incluído; ${
+    pdfInfo?.includes_taxes
+      ? `* Incluye IVA ${preferences.iva_percentage}%`
+      : `* No Incluye IVA ${preferences.iva_percentage}%`
+  };
+    `;
 
   const totalARS = totals.finalPriceInDollars * preferences.dollar_quote;
 
@@ -44,6 +53,7 @@ export const PDFComponent = () => {
     details: details,
     paymentMethods: paymentMethods,
     total: totalARS,
+    caption: defaultCaption,
   };
 
   const handleSubmit = async (formData: ConfirmPDFFormData) => {
@@ -53,12 +63,12 @@ export const PDFComponent = () => {
       details: formData.details,
       description: formData.description,
       total: formData.total / preferences.dollar_quote,
+      caption: formData.caption,
     };
 
     const { data, error } = await createBudget(createBudgetSubmitData);
 
     if (!error) {
-      CreateBudgetToastSuccess();
       setPdfInfo(null);
       setShowPDF(false);
       if (data.id) {

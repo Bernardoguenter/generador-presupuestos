@@ -28,12 +28,12 @@ export interface Preferences {
   company_id: string;
   dollar_quote: number;
   default_markup: number;
-  wharehouse_prices: WharehousePriceMap;
-  shed_prices: ShedhousePriceMap;
   km_price: number;
   colored_sheet_difference: number;
-  solid_web_difference: number;
-  u_profile_difference: number;
+  solid_web_cost: number;
+  u_profile_cost: number;
+  twisted_iron_cost: number;
+  enclousure_cost: number;
   gutter_price: number;
   gate_price: number;
   iva_percentage: number;
@@ -89,7 +89,7 @@ export interface Budget {
   enclousure_height: number;
   includes_freight: boolean;
   freight_price: number;
-  address: Address;
+  address: Address | null;
   color_roof_sheet: boolean;
   color_side_sheet: boolean;
   includes_taxes: boolean;
@@ -102,6 +102,7 @@ export interface Budget {
   gutter_metters: number;
   description: string;
   paymentMethods: string;
+  caption: string;
 }
 
 export type GatesMeasurements = {
@@ -154,8 +155,8 @@ export interface PDFInfo {
   freight_price: number;
   includes_freight: boolean;
   totals: Totals;
-  distance: number;
-  customer_address: string;
+  distance: number | null;
+  customer_address: string | null;
   dataToSubmit: Omit<Budget, "created_at" | "id">;
 }
 

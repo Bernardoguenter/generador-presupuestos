@@ -25,7 +25,7 @@ export const PDFViewComponent = ({ budget }: Props) => {
         color: "#000000",
         boxSizing: "border-box",
       }}
-      className="overflow-hidden p-4 lg:p-8 w-full max-w-[20cm]  max-h-max">
+      className="overflow-hidden p-4 lg:p-8 lg:w-1/2 w-full max-w-[20cm] max-h-max">
       <div className="flex justify-between items-start mb-8">
         <Logo
           containerStyles="t"
@@ -71,19 +71,10 @@ export const PDFViewComponent = ({ budget }: Props) => {
         </table>
       </div>
       <div className="text-xs w-max mt-2 leading-3.5 m-2.5">
-        <ul className="w-full text-left">
-          <li>
-            {budget?.includes_freight
-              ? "* El precio inlcuye el flete"
-              : "* El precio no inlcuye el flete"}
-          </li>
-          <li>* Montaje incluído</li>
-          <li>
-            {budget?.includes_taxes
-              ? `* Incluye IVA ${preferences.iva_percentage}%`
-              : `* No Incluye IVA ${preferences.iva_percentage}%`}
-          </li>
-        </ul>
+        <StringToList
+          inputString={budget.caption}
+          textSize="text-xs"
+        />
       </div>
       <div className="m-2.5 text-left text-base ">
         <h2 className=" mb-1 font-bold">Detalle de materiales:</h2>
