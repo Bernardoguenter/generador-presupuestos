@@ -9,7 +9,6 @@ import {
   useAuthContext,
   useCompanyContext,
   usePDFContext,
-  usePreferencesContext,
 } from "../../../../common/context";
 import { useFormContext, useWatch } from "react-hook-form";
 
@@ -17,16 +16,20 @@ export const PDFFormContent = () => {
   const { authUser } = useAuthContext();
   const { company } = useCompanyContext();
   const { pdfInfo } = usePDFContext();
-  const { preferences } = usePreferencesContext();
   const { control, setValue } = useFormContext();
   const description = useWatch({ control, name: "description" });
   const details = useWatch({ control, name: "details" });
   const paymentMethods = useWatch({ control, name: "paymentMethods" });
   const total = useWatch({ control, name: "total" });
+  const caption = useWatch({ control, name: "caption" });
 
   useEffect(() => {
     setValue("total", total);
   }, [total]);
+
+  useEffect(() => {
+    setValue("caption", caption);
+  }, [caption]);
 
   useEffect(() => {
     setValue("paymentMethods", paymentMethods);
@@ -89,22 +92,17 @@ export const PDFFormContent = () => {
               </td>
             </tr>
           </tbody>
-          <caption className="caption-bottom text-sm  w-max mt-4 leading-3.5">
-            <ul className="w-full text-left">
-              <li className="w-full ">
-                {pdfInfo?.includes_freight
-                  ? "* El precio inlcuye el flete"
-                  : "* El precio no inlcuye el flete"}
-              </li>
-              <li className="w-full">* Montaje incluído</li>
-              <li className="w-full">
-                {pdfInfo?.includes_taxes
-                  ? `* Incluye IVA ${preferences.iva_percentage}%`
-                  : `* No Incluye IVA ${preferences.iva_percentage}%`}
-              </li>
-            </ul>
-          </caption>
         </table>
+        <div className="caption-bottom text-sm  mt-4 leading-3.5 ">
+          <h2 className="text-left mb-2.5 text-sm">
+            Detalles adicionales (Para agregar una nueva línea separar con ";")
+          </h2>
+          <TextAreaInput
+            name="caption"
+            containerStyles="p-0 m-0"
+            inputStyles="min-h-[50px] w-full p-0 m-0 text-left border-2 border-amber-600"
+          />
+        </div>
       </div>
       <div className="m-2.5">
         <h2 className="text-left mb-2.5 text-sm">

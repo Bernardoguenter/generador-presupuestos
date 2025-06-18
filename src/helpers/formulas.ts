@@ -1,6 +1,6 @@
 import type { Address, GatesMeasurements, Preferences } from "./types";
 
-export function interp1d(area: number[], price: number[]) {
+/* export function interp1d(area: number[], price: number[]) {
   return function (floor_area: number) {
     if (floor_area <= area[0]) return price[0];
     if (floor_area >= price[area.length - 1]) return price[price.length - 1];
@@ -16,7 +16,7 @@ export function interp1d(area: number[], price: number[]) {
     return price_per_meter;
   };
 }
-
+ */
 const calculateGatePrice = (
   gates_measurements: GatesMeasurements[],
   gate_price: number
@@ -90,24 +90,15 @@ export const getBudgetTotal = (
     default_markup,
     gate_price,
     gutter_price,
-    shed_prices,
-    solid_web_difference,
-    u_profile_difference,
-    wharehouse_prices,
+    enclousure_cost,
+    solid_web_cost,
+    twisted_iron_cost,
+    u_profile_cost,
     iva_percentage,
     solid_web_column_cost,
     twisted_iron_column_cost,
     u_profile_column_cost,
   } = preferences;
-
-  const wharehouse_priceList = {
-    area: Object.keys(wharehouse_prices).map(Number),
-    price: Object.values(wharehouse_prices),
-  };
-  const shed_priceList = {
-    area: Object.keys(shed_prices).map(Number),
-    price: Object.values(shed_prices),
-  };
 
   const floorArea = width * length;
   const perimeter = 2 * (width + length);
@@ -115,17 +106,15 @@ export const getBudgetTotal = (
   const enclousureArea = perimeter * enclousure_height;
   const totalArea = floorArea + wallsArea;
 
-  //SELECCINOAR LISTA DE PRECIOS
-  const priceList =
-    structure_type === "Galpón" ? wharehouse_priceList : shed_priceList;
-  const interp = interp1d(priceList.area, priceList.price);
-  let pricePerMeter = interp(floorArea);
+  const price_per_meter =
+    material === "Hierro Torsionado"
+      ? twisted_iron_cost
+      : material === "Perfil U Ángulo"
+      ? u_profile_cost
+      : solid_web_cost;
 
-  if (material === "Perfil U Ángulo") {
-    pricePerMeter += u_profile_difference;
-  } else if (material === "Alma Llena") {
-    pricePerMeter += solid_web_difference;
-  }
+  //CALCULAR TINGLADO
+  const floorCost = floorArea * price_per_meter;
 
   //CALCULAR COLUMNAS
   const numberOfColumns = Math.floor(length / 5) + 1;
@@ -150,18 +139,15 @@ export const getBudgetTotal = (
   const enclousureCost =
     structure_type === "Tinglado"
       ? 0
-      : Math.abs(enclousure_height - 4.5) *
+      : enclousureArea * enclousure_cost; /* Math.abs(enclousure_height - 4.5) *
         perimeter *
         25 *
-        (enclousure_height > 4.5 ? 1 : -1);
+        (enclousure_height > 4.5 ? 1 : -1); */
 
   //CALCULAR COSTO CERRAMIENTO COLOR
   const enclousureColorCost = color_side_sheet
     ? enclousureArea * colored_sheet_difference
     : 0;
-
-  //CALCULO COSTO PISO
-  const floorCost = floorArea * pricePerMeter;
 
   //CAMBIO DE COSTO TECHO POR CHAPA A COLOR
   const roofShettColor = color_roof_sheet

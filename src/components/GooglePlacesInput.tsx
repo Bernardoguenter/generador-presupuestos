@@ -52,8 +52,6 @@ const PlaceAutocomplete = ({ name, label }: PlaceAutocompleteProps) => {
   const handleCleanInput = useCallback(() => {
     setInputValue("");
     setHasTyped(false);
-
-    /* setSelectedPlace(null); */
   }, []);
 
   const handleSuggestionClick = useCallback(

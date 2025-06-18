@@ -1,8 +1,6 @@
 import {
   Button,
   Form,
-  GooglePlacesInput,
-  HiddenInput,
   NumberInput,
   TextInput,
   CheckboxInput,
@@ -28,6 +26,7 @@ import {
 } from "../../../../helpers/formulas";
 import { formatDetails } from "../../../../helpers/formatData";
 import { PDFComponent } from "./PDFComponent";
+import { FreightInput } from "../../../../components/FreightInput";
 
 export const BudgetCalculatorForm = () => {
   const { authUser } = useAuthContext();
@@ -58,14 +57,16 @@ export const BudgetCalculatorForm = () => {
       customer,
     } = formData;
 
-    const newAddress = {
-      address: address,
-      lat: lat,
-      lng: lng,
-    };
+    const newAddress = includes_freight
+      ? {
+          address: address ?? "",
+          lat: lat ?? 0,
+          lng: lng ?? 0,
+        }
+      : null;
 
     let newDistance = 0;
-    if (company && company.address && includes_freight) {
+    if (company && company.address && includes_freight && newAddress !== null) {
       newDistance = await calculateDistance(company?.address, newAddress);
     }
     const freight_price = includes_freight
@@ -137,6 +138,7 @@ export const BudgetCalculatorForm = () => {
         address: newAddress,
         description: "",
         paymentMethods: "",
+        caption: "",
       };
 
       setPdfInfo({
@@ -153,7 +155,7 @@ export const BudgetCalculatorForm = () => {
         includes_freight,
         totals: total,
         distance: newDistance,
-        customer_address: newAddress.address,
+        customer_address: newAddress?.address || null,
         dataToSubmit: dataToSubmit,
       });
 
@@ -171,17 +173,17 @@ export const BudgetCalculatorForm = () => {
       length: 25,
       height: 5,
       enclousure_height: 4.5,
-      address: "",
       includes_freight: false,
       color_roof_sheet: false,
       color_side_sheet: false,
-      includes_taxes: false,
+      includes_taxes: true,
       customer: "",
       has_gutter: false,
       gutter_metters: 0,
       gates_measurements: [],
       includes_gate: false,
       number_of_gates: 0,
+      address: "",
       lng: 0,
       lat: 0,
     }),
@@ -211,12 +213,7 @@ export const BudgetCalculatorForm = () => {
           name="height"
         />
         <EnclousureHeightInput />
-        <GooglePlacesInput
-          name="address"
-          label="Dirección"
-        />
-        <HiddenInput name="lng" />
-        <HiddenInput name="lat" />
+        <FreightInput />
         <TextInput
           name="customer"
           label="Cliente"
@@ -225,10 +222,6 @@ export const BudgetCalculatorForm = () => {
           <GutterInput />
         </div>
         <IncludesGatesInput />
-        <CheckboxInput
-          name="includes_freight"
-          label="Incluye flete?"
-        />
         <CheckboxInput
           name="color_roof_sheet"
           label="Techo a color?"
