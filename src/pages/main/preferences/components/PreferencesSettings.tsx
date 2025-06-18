@@ -63,6 +63,23 @@ export default function PreferencesSettings() {
           name="default_markup"
         />
         <NumberInput
+          label="Costo Hierro torsionado m2"
+          name="twisted_iron_cost"
+        />
+
+        <NumberInput
+          label="Costo Alma Llena m2"
+          name="solid_web_cost"
+        />
+        <NumberInput
+          label="Costo Perfil U m2"
+          name="u_profile_cost"
+        />
+        <NumberInput
+          label="Costo Cerramiento m2"
+          name="enclousure_cost"
+        />
+        <NumberInput
           label="Precio Portón por m2"
           name="gate_price"
         />
@@ -77,14 +94,6 @@ export default function PreferencesSettings() {
         <NumberInput
           label="Diferencia Chapa Color"
           name="colored_sheet_difference"
-        />
-        <NumberInput
-          label="Diferencia Alma Llena"
-          name="solid_web_difference"
-        />
-        <NumberInput
-          label="Diferencia Perfil U"
-          name="u_profile_difference"
         />
         <NumberInput
           label="Costo columna Hierro torsionado"

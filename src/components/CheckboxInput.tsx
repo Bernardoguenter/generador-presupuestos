@@ -25,10 +25,11 @@ export const CheckboxInput = ({ name, label }: Props) => {
         control={control}
         render={({ field }) => (
           <input
-            className="bg-white placeholder:text-gray-400 text-black px-2 py-2 rounded focus:outline-2 focus:outline-gray-100"
             id={name}
             type="checkbox"
-            {...field}
+            className="bg-white placeholder:text-gray-400 text-black px-2 py-2 rounded focus:outline-2 focus:outline-gray-100"
+            checked={field.value}
+            onChange={(e) => field.onChange(e.target.checked)}
           />
         )}
       />

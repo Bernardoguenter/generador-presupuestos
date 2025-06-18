@@ -55,23 +55,43 @@ export const preferencesSchema = z.object({
     .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
       message: "La diferencia chapa color debe tener como máximo 2 decimales",
     }),
-  solid_web_difference: z.coerce
+  solid_web_cost: z.coerce
     .number({
-      required_error: "Debes ingresar un valor para diferencia alma llena",
-      invalid_type_error: "La diferencia alma llena debe ser un número",
+      required_error: "Debes ingresar un valor para el costo alma llena",
+      invalid_type_error: "El costo de alma llena debe ser un número",
     })
-    .nonnegative("La diferencia alma llena debe ser un número positivo")
+    .nonnegative("El costo de alma llena debe ser un número positivo")
     .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
-      message: "La diferencia alma llena debe tener como máximo 2 decimales",
+      message: "El costo de alma llena debe tener como máximo 2 decimales",
     }),
-  u_profile_difference: z.coerce
+  u_profile_cost: z.coerce
     .number({
-      required_error: "Debes ingresar un valor para diferencia perfil U",
-      invalid_type_error: "La diferencia perfil U debe ser un número",
+      required_error: "Debes ingresar un valor para el costo de perfil U",
+      invalid_type_error: "El costo de perfil U debe ser un número",
     })
-    .nonnegative("La diferencia perfil U debe ser un número positivo")
+    .nonnegative("El costo de perfil U debe ser un número positivo")
     .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
-      message: "La diferencia perfil U debe tener como máximo 2 decimales",
+      message: "El costo de  perfil U debe tener como máximo 2 decimales",
+    }),
+  twisted_iron_cost: z.coerce
+    .number({
+      required_error:
+        "Debes ingresar un valor para el costo de hierro torsionado",
+      invalid_type_error: "El costo de hierro torsionado debe ser un número",
+    })
+    .nonnegative("El costo de hierro torsionado debe ser un número positivo")
+    .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
+      message:
+        "El costo de hierro torsionado debe tener como máximo 2 decimales",
+    }),
+  enclousure_cost: z.coerce
+    .number({
+      required_error: "Debes ingresar un valor para el costo de cerramiento",
+      invalid_type_error: "El costo de cerramiento debe ser un número",
+    })
+    .nonnegative("El costo de cerramiento debe ser un número positivo")
+    .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
+      message: "El costo de cerramiento debe tener como máximo 2 decimales",
     }),
   iva_percentage: z.coerce
     .number({

@@ -1,9 +1,10 @@
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { NumberInput } from "../../../../components";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export const GatesInput = () => {
   const { control, setValue } = useFormContext();
+  const hasInitialized = useRef(false);
   const includesGate = useWatch({ control, name: "includes_gate" });
   const numberOfGates = useWatch({ control, name: "number_of_gates" });
 
@@ -16,6 +17,14 @@ export const GatesInput = () => {
     if (!includesGate) {
       setValue("number_of_gates", 0);
       setValue("gates_measurements", []);
+      hasInitialized.current = false;
+      return;
+    }
+
+    if (includesGate && !hasInitialized.current) {
+      setValue("number_of_gates", 1);
+      setValue("gates_measurements", [{ width: 5, height: 4.5 }]);
+      hasInitialized.current = true;
       return;
     }
 

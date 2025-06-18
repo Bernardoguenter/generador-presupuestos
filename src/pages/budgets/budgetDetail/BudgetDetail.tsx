@@ -2,8 +2,6 @@ import { usePreferencesContext } from "../../../common/context";
 import { StringToList } from "../../../components/StringToList";
 import { formatDate, formatNumber } from "../../../helpers/formatData";
 import type { Budget } from "../../../helpers/types";
-import { DownloadBudgetButton } from "./DownloadBudgetButton";
-import { SendBudgetButton } from "./SendBudgetButton";
 
 interface Props {
   budget: Budget;
@@ -13,7 +11,7 @@ export const BudgetDetailComponent = ({ budget }: Props) => {
   const { preferences } = usePreferencesContext();
 
   return (
-    <div className="py-4 flex flex-col gap-4 w-full">
+    <div className="py-4 flex flex-col gap-4 w-full lg:w-1/2">
       <h2>
         <strong>Presupuesto para </strong>
         {budget.customer}
@@ -31,7 +29,7 @@ export const BudgetDetailComponent = ({ budget }: Props) => {
         </li>
         <li>
           <strong>Dirección: </strong>
-          {budget.address.address}
+          {(budget.address && budget.address.address) || ""}
         </li>
         <li>
           <strong>Tipo de estructura: </strong>
@@ -117,8 +115,6 @@ export const BudgetDetailComponent = ({ budget }: Props) => {
           {formatNumber(budget.total * preferences.dollar_quote)}
         </li>
       </ul>
-      <DownloadBudgetButton customer={budget.customer} />
-      <SendBudgetButton customer={budget.customer} />
     </div>
   );
 };
