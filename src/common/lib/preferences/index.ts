@@ -17,13 +17,13 @@ const updateUserPreferences = async (
   dataToUpdate: PreferencesUpdate,
   id: string
 ) => {
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("company_settings")
     .update(dataToUpdate)
     .eq("company_id", id)
     .select();
 
-  return { error };
+  return { data, error };
 };
 
 export { getUserPreferences, updateUserPreferences };

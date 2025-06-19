@@ -107,21 +107,21 @@ export const getBudgetTotal = (
   const totalArea = floorArea + wallsArea;
 
   const price_per_meter =
-    material === "Hierro Torsionado"
+    material === "Hierro torsionado"
       ? twisted_iron_cost
       : material === "Perfil U Ángulo"
       ? u_profile_cost
       : solid_web_cost;
 
-  //CALCULAR TINGLADO
-  const floorCost = floorArea * price_per_meter;
+  //CALCULAR PRECIO DE ESTRUCTURA
+  const structure_cost = floorArea * price_per_meter;
 
   //CALCULAR COLUMNAS
   const numberOfColumns = Math.floor(length / 5) + 1;
   const totalColumns = numberOfColumns * 2;
 
   const columnsPrice =
-    material === "Hierro Torsionado"
+    material === "Hierro torsionado"
       ? twisted_iron_column_cost
       : material === "Perfil U Ángulo"
       ? u_profile_column_cost
@@ -137,12 +137,7 @@ export const getBudgetTotal = (
 
   //CALCULAR COSTO CERRAMIENTO
   const enclousureCost =
-    structure_type === "Tinglado"
-      ? 0
-      : enclousureArea * enclousure_cost; /* Math.abs(enclousure_height - 4.5) *
-        perimeter *
-        25 *
-        (enclousure_height > 4.5 ? 1 : -1); */
+    structure_type === "Tinglado" ? 0 : enclousureArea * enclousure_cost;
 
   //CALCULAR COSTO CERRAMIENTO COLOR
   const enclousureColorCost = color_side_sheet
@@ -166,7 +161,7 @@ export const getBudgetTotal = (
 
   //CALCULAR PRECIO TOTAL
   const totalPrice =
-    floorCost +
+    structure_cost +
     columnsCost +
     enclousureCost +
     enclousureColorCost +
