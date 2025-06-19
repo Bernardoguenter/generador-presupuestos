@@ -102,6 +102,46 @@ export const preferencesSchema = z.object({
     .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
       message: "El porcentaje del IVA debe tener como máximo 2 decimales",
     }),
+  twisted_iron_column_cost: z.coerce
+    .number({
+      required_error:
+        "Debes ingresar un para el costo de columnas de hierro torsionado",
+      invalid_type_error:
+        "el costo de columnas de hierro torsionado debe ser un número",
+    })
+    .nonnegative(
+      "el costo de columnas de hierro torsionadodebe ser un número positivo"
+    )
+    .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
+      message:
+        "el costo de columnas de hierro torsionado debe tener como máximo 2 decimales",
+    }),
+  solid_web_column_cost: z.coerce
+    .number({
+      required_error:
+        "Debes ingresar un para el costo de columnas de alma llena",
+      invalid_type_error:
+        "El costo de columnas de alma llena debe ser un número",
+    })
+    .nonnegative(
+      "El costo de columnas de alma llena debe ser un número positivo"
+    )
+    .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
+      message:
+        "El costo de columnas de alma llena debe tener como máximo 2 decimales",
+    }),
+  u_profile_column_cost: z.coerce
+    .number({
+      required_error:
+        "Debes ingresar un valor para el costo de columnas de Perfil U",
+      invalid_type_error:
+        "El costo de columnas de Perfil UA debe ser un número",
+    })
+    .nonnegative("El costo de columnas de Perfil U debe ser un número positivo")
+    .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
+      message:
+        "costo de columnas de Perfil U debe tener como máximo 2 decimales",
+    }),
 });
 
 export type PreferencesFormData = z.infer<typeof preferencesSchema>;

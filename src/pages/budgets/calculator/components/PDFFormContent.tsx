@@ -44,7 +44,7 @@ export const PDFFormContent = () => {
   }, [details]);
 
   return (
-    <div className="mt-16 bg-white  p-4 lg:p-8 w-full max-w-[20cm] text-black">
+    <div className="mt-16 bg-white  p-4 lg:p-8 w-full text-black">
       <div className="flex justify-between items-start">
         <Logo
           containerStyles="t"
