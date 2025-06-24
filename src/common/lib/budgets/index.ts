@@ -14,12 +14,12 @@ const createBudget = async (
 };
 
 const getAllBudgets = async (id: string) => {
-  const { data, error } = await supabase
+  const { data, error, count } = await supabase
     .from("budgets")
-    .select("*")
+    .select("*", { count: "exact" })
     .eq("created_by", id);
 
-  return { data, error };
+  return { data, count, error };
 };
 
 const deleteBudget = async (id: string) => {
