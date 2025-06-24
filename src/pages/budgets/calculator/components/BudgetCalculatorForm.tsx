@@ -191,7 +191,7 @@ export const BudgetCalculatorForm = () => {
   );
 
   return (
-    <div className="flex w-full  gap-8 ">
+    <div className="flex lg:flex-row flex-col w-full gap-8 ">
       <Form
         onSubmit={handleSubmit}
         schema={calculateBudgetSchema}

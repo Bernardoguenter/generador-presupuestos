@@ -1,55 +1,21 @@
-import { useEffect, useMemo, useState } from "react";
-import { FormWatch, TextInput } from "../../components";
+import { useMemo, useState } from "react";
 
 interface Props<T> {
-  dataToFilter: T[];
-  fieldsToSearch: string[];
-  onFilteredData: (filtered: T[]) => void;
+  data: T[];
+  filterFn: (item: T, searchInput: string) => boolean;
 }
 
-export function UseSearchableTable<T>({
-  dataToFilter,
-  fieldsToSearch,
-  onFilteredData,
-}: Props<T>) {
-  const [searchText, setSearchText] = useState<string>("");
+export function UseSearchableTable<T>({ data, filterFn }: Props<T>) {
+  const [searchInput, setSearchInput] = useState("");
 
-  // Solo se crea una vez, evitando el error de React Hook Form
-  const defaultValues = useMemo(() => ({ search: "" }), []);
+  const filteredData = useMemo(() => {
+    if (!searchInput) return data;
+    return data.filter((item) => filterFn(item, searchInput));
+  }, [searchInput, data, filterFn]);
 
-  useEffect(() => {
-    if (!dataToFilter || dataToFilter.length === 0) {
-      onFilteredData([]);
-      return;
-    }
-
-    const term = searchText.trim().toLowerCase();
-
-    if (term === "") {
-      onFilteredData(dataToFilter);
-      return;
-    }
-
-    const filtered = dataToFilter.filter((item) =>
-      fieldsToSearch.some((field) => {
-        const value = (item as Record<string, unknown>)[field];
-        return typeof value === "string" && value.toLowerCase().includes(term);
-      })
-    );
-
-    onFilteredData(filtered);
-  }, [searchText, dataToFilter, fieldsToSearch, onFilteredData]);
-
-  return (
-    <FormWatch
-      defaultValues={defaultValues}
-      onWatch={(values: Record<string, string>) =>
-        setSearchText(values.search || "")
-      }>
-      <TextInput
-        label="Buscar..."
-        name="search"
-      />
-    </FormWatch>
-  );
+  return {
+    searchInput,
+    setSearchInput,
+    filteredData,
+  };
 }

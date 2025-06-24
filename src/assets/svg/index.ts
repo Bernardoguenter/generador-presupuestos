@@ -11,3 +11,5 @@ export * from "./PreferencesIcon";
 export * from "./VisibilityIcon";
 export * from "./VisibilityOffIcon";
 export * from "./CloseIcon";
+export * from "./PaginationBack";
+export * from "./PaginationForward";
