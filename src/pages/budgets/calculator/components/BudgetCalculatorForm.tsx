@@ -197,7 +197,6 @@ export const BudgetCalculatorForm = () => {
         schema={calculateBudgetSchema}
         defaultValues={defaultValues}
         className="mt-4 w-full lg:w-2/5">
-        <h2 className="my-4 text-2xl font-medium">Nuevo Presupuesto</h2>
         <MaterialsSelect />
         <StructureSelect />
         <NumberInput

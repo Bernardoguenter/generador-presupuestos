@@ -96,21 +96,23 @@ export default function CompanyDetailForm({ company }: Props) {
         />
         <HiddenInput name="lat" />
         <HiddenInput name="lng" />
-        <Button
-          type="submit"
-          color="info"
-          styles="mt-4"
-          disabled={isSubmitting}>
-          Editar empresa
-        </Button>
+        <div className="w-full flex flex-col items-center justify-center">
+          <Button
+            type="submit"
+            color="info"
+            styles="mt-4"
+            disabled={isSubmitting}>
+            Editar empresa
+          </Button>
 
-        <DeleteCompanyButton
-          logo_url={company.logo_url}
-          id={company.id}
-          company_name={company.company_name}
-          isSubmitting={isSubmitting}
-          setIsSubmitting={setIsSubmitting}
-        />
+          <DeleteCompanyButton
+            logo_url={company.logo_url}
+            id={company.id}
+            company_name={company.company_name}
+            isSubmitting={isSubmitting}
+            setIsSubmitting={setIsSubmitting}
+          />
+        </div>
       </Form>
     </SubmittingOverlay>
   );

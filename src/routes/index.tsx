@@ -5,6 +5,7 @@ import { lazy } from "react";
 import AppLayout from "../layout/AppLayout";
 import DefaultLayout from "../layout/DefaultLayout";
 import { useAuthContext } from "../common/context";
+import { useFavicon } from "../common/hooks";
 
 // Páginas públicas (account)
 const Login = lazy(() => import("../pages/account/Login"));
@@ -29,6 +30,7 @@ const CompanyDetail = lazy(() => import("../pages/companies/companyDetail"));
 
 export default function AppRoutes() {
   const { authUser } = useAuthContext();
+  useFavicon();
 
   return (
     <Routes>

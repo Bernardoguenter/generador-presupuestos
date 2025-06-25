@@ -95,18 +95,20 @@ export default function UserDetail() {
         />
         <RolesSelect />
         <CompanySelect />
-        <Button
-          type="submit"
-          color="info"
-          children="Editar usuario"
-          styles="mt-4"
-          disabled={isSubmitting}
-        />
-        <DeleteUserButton
-          isSubmitting={isSubmitting}
-          email={user.email}
-          id={user.id}
-        />
+        <div className="w-full flex flex-col items-center justify-center">
+          <Button
+            type="submit"
+            color="info"
+            children="Editar usuario"
+            styles="mt-4"
+            disabled={isSubmitting}
+          />
+          <DeleteUserButton
+            isSubmitting={isSubmitting}
+            email={user.email}
+            id={user.id}
+          />
+        </div>
       </Form>
     </SubmittingOverlay>
   );

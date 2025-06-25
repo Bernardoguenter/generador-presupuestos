@@ -13,6 +13,7 @@ export const CompanyList = () => {
 
   const getCompanies = async () => {
     try {
+      setIsLoading(true);
       const { data, error } = await getAllCompanies();
       if (!error) {
         setCompanies(data);
@@ -20,12 +21,14 @@ export const CompanyList = () => {
       setIsLoading(false);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     getCompanies();
-  }, [isLoading]);
+  }, []);
 
   const {
     searchInput,
@@ -56,6 +59,8 @@ export const CompanyList = () => {
   }, [searchInput]);
 
   const paginatedCompanies = paginatedData;
+
+  if (isLoading) return <p>Cargando listado de Empresas</p>;
 
   return (
     <>
@@ -116,6 +121,7 @@ export const CompanyList = () => {
         setPageSize={setPageSize}
         totalPages={totalPages}
         pageSize={pageSize}
+        setCurrentPage={setCurrentPage}
       />
     </>
   );

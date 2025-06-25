@@ -15,16 +15,22 @@ export const BudgetsHistoryList = () => {
 
   useEffect(() => {
     const getBudgets = async () => {
-      if (authUser?.id) {
-        const { data, error } = await getAllBudgets(authUser.id);
-        if (!error && data) {
-          setBudgets(data);
+      try {
+        setIsLoading(true);
+        if (authUser?.id) {
+          const { data, error } = await getAllBudgets(authUser.id);
+          if (!error && data) {
+            setBudgets(data);
+          }
         }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
     getBudgets();
-  }, [authUser?.id, isLoading]);
+  }, [authUser?.id]);
 
   const {
     searchInput,
@@ -62,6 +68,8 @@ export const BudgetsHistoryList = () => {
   }, [searchInput]);
 
   const paginatedBudgets = paginatedData;
+
+  if (isLoading) return <p>Cargando listado de Presupuestos</p>;
 
   return (
     <>
@@ -138,6 +146,7 @@ export const BudgetsHistoryList = () => {
         setPageSize={setPageSize}
         totalPages={totalPages}
         pageSize={pageSize}
+        setCurrentPage={setCurrentPage}
       />
     </>
   );

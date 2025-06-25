@@ -50,7 +50,7 @@ export const Form = <
   return (
     <FormProvider {...methods}>
       <form
-        className="w-full flex flex-col "
+        className="w-full"
         onSubmit={methods.handleSubmit(onSubmit)}
         {...props}>
         {children}

@@ -144,36 +144,45 @@ export default function CreateCompany() {
         schema={createCompanySchema}
         defaultValues={defaultValues}>
         <h2 className="my-4 text-2xl font-medium">Crea una nueva empresa</h2>
-        <TextInput
-          label="Nombre de Empresa"
-          name="company_name"
-        />
-        <FileInput
-          label="Logo"
-          name="file"
-        />
-        <TextInput
-          label="E-mail de Empresa"
-          name="email"
-          type="email"
-        />
-        <TextInput
-          label="Teléfono"
-          name="phone"
-        />
-        <GooglePlacesInput
-          name="address"
-          label="Dirección"
-        />
-        <HiddenInput name="lng" />
-        <HiddenInput name="lat" />
-        <Button
-          type="submit"
-          color="info"
-          styles="mt-4"
-          disabled={isSubmitting}>
-          Crear empresa
-        </Button>
+        <div className="w-full flex flex-col lg:flex-row lg:gap-8">
+          <div className="flex flex-col w-full">
+            <TextInput
+              label="Nombre de Empresa"
+              name="company_name"
+            />
+            <FileInput
+              label="Logo"
+              name="file"
+            />
+          </div>
+          <div className="flex flex-col w-full">
+            <TextInput
+              label="E-mail de Empresa"
+              name="email"
+              type="email"
+            />
+            <TextInput
+              label="Teléfono"
+              name="phone"
+            />
+            <GooglePlacesInput
+              name="address"
+              label="Dirección"
+            />
+            <HiddenInput name="lng" />
+            <HiddenInput name="lat" />
+          </div>
+        </div>
+        <div className="w-full flex justify-center">
+          {" "}
+          <Button
+            type="submit"
+            color="info"
+            styles="mt-4"
+            disabled={isSubmitting}>
+            Crear empresa
+          </Button>
+        </div>
       </Form>
     </SubmittingOverlay>
   );

@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-export const usePaginatedData = <T>(data: T[] | null, initialPageSize = 5) => {
+export const usePaginatedData = <T>(data: T[] | null, initialPageSize = 10) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(initialPageSize);
   const totalCount = data?.length || 0;

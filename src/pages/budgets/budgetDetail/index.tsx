@@ -39,7 +39,7 @@ export default function BudgetDetail() {
         {viewDetail && <BudgetDetailComponent budget={budget} />}
         <PDFViewComponent budget={budget} />
       </div>
-      <div className="mt-4 flex flex-col gap-2 lg:w-1/2 ">
+      <div className="mt-4 flex flex-col  gap-2 lg:w-2/5 ">
         <DownloadBudgetButton customer={budget.customer} />
         <SendBudgetButton customer={budget.customer} />
         <CustomLink

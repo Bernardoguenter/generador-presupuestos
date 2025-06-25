@@ -85,13 +85,15 @@ export default function CreateUsers() {
 
         <RolesSelect />
         <CompanySelect />
-        <Button
-          type="submit"
-          color="info"
-          children={isSubmitting ? "Creando Usuario..." : "Crear Usuario"}
-          styles="mt-4"
-          disabled={isSubmitting}
-        />
+        <div className="w-full flex flex-col items-center justify-center">
+          <Button
+            type="submit"
+            color="info"
+            children={isSubmitting ? "Creando Usuario..." : "Crear Usuario"}
+            styles="mt-4"
+            disabled={isSubmitting}
+          />
+        </div>
       </Form>
     </SubmittingOverlay>
   );
