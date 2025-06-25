@@ -143,3 +143,24 @@ export const formatDetails = (
 
   return details;
 };
+
+export function getMimeTypeFromUrl(url: string): string {
+  const extension = url.split(".").pop()?.toLowerCase();
+
+  switch (extension) {
+    case "png":
+      return "image/png";
+    case "jpg":
+      return "image/jpg";
+    case "jpeg":
+      return "image/jpeg";
+    case "webp":
+      return "image/webp";
+    case "svg":
+      return "image/svg+xml";
+    case "ico":
+      return "image/x-icon";
+    default:
+      return "image/png";
+  }
+}

@@ -5,7 +5,7 @@ export default function ListCompany() {
   return (
     <section className="py-4 flex flex-col gap-4 w-full">
       <div className="flex items-center justify-between">
-        <h2>Listado de Empresas</h2>
+        <h2 className="text-2xl font-medium">Listado de Empresas</h2>
         <CustomLink
           href="create-company"
           color="danger"

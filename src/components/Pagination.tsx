@@ -8,6 +8,7 @@ interface Props {
   pages: number[];
   totalPages: number;
   pageSize: number;
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export const Pagination = ({
@@ -18,6 +19,7 @@ export const Pagination = ({
   pages,
   totalPages,
   pageSize,
+  setCurrentPage,
 }: Props) => {
   return (
     <aside className="w-full flex items-center justify-end gap-6 mt-4">
@@ -45,14 +47,15 @@ export const Pagination = ({
       <div className="flex gap-2 text-black font-bold items-center">
         <button
           disabled={currentPage === 1}
-          className="disabled:bg-gray-500"
+          className="w-6 aspect-square flex items-center justify-center bg-white rounded disabled:bg-gray-400"
           onClick={handlePrevPage}>
-          <PaginationBack />
+          <PaginationBack isDisabled={currentPage === 1} />
         </button>
         {pages.map((p) => (
           <span
+            onClick={() => setCurrentPage(Number(p))}
             key={p}
-            className={` p-2 flex items-center justify-center rounded focus:outline-2 focus:outline-gray-100  aspect-square ${
+            className={`p-2 flex items-center justify-center rounded focus:outline-2 focus:outline-gray-100 w-9 aspect-square ${
               currentPage === p ? "bg-amber-600 text-white" : "bg-amber-50"
             }`}>
             {p}
@@ -60,9 +63,9 @@ export const Pagination = ({
         ))}
         <button
           disabled={currentPage === totalPages}
-          className="disabled:bg-gray-500"
+          className=" w-6 aspect-square flex items-center justify-center bg-white rounded disabled:bg-gray-400"
           onClick={handleNextPage}>
-          <PaginationForward />
+          <PaginationForward isDisabled={currentPage === totalPages} />
         </button>
       </div>
     </aside>

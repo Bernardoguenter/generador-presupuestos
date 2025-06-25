@@ -16,17 +16,23 @@ export const UserList = () => {
   useEffect(() => {
     if (id) {
       const getUsers = async () => {
-        const { data: users, error } = await getAllUsers(id);
-        if (!error) {
-          setUsers(users);
-        } else {
-          throw new Error("Error al obtener usuarios");
+        try {
+          setIsLoading(true);
+          const { data: users, error } = await getAllUsers(id);
+          if (!error) {
+            setUsers(users);
+          } else {
+            throw new Error("Error al obtener usuarios");
+          }
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setIsLoading(false);
         }
-        setIsLoading(false);
       };
       getUsers();
     }
-  }, [isLoading, id]);
+  }, [id]);
 
   const {
     searchInput,
@@ -57,6 +63,8 @@ export const UserList = () => {
   }, [searchInput]);
 
   const paginatedUsers = paginatedData;
+
+  if (isLoading) return <p>Cargando listado de usuarios</p>;
 
   return (
     <>
@@ -122,6 +130,7 @@ export const UserList = () => {
         setPageSize={setPageSize}
         totalPages={totalPages}
         pageSize={pageSize}
+        setCurrentPage={setCurrentPage}
       />
     </>
   );

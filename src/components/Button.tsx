@@ -24,7 +24,7 @@ export const Button = ({
         color === "info"
           ? "bg-[#FF8303] disabled:bg-[#ff8103b3] hover:bg-[#ff6c03] "
           : "bg-[#ff3503] disabled:bg-[#ff3503a2] hover:bg-[#ff2108]"
-      } p-1 rounded min-w-[100px] cursor-pointer ${styles} `}
+      } p-1 rounded min-w-[100px] w-full lg:max-w-xl font-medium cursor-pointer ${styles} `}
       onClick={onClick}
       disabled={disabled}>
       {children}

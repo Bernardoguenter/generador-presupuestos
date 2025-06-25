@@ -28,7 +28,7 @@ export default function CompanyDetail() {
   if (!company) return <h2>No se encontró información para esta empresa</h2>;
 
   return (
-    <section>
+    <section className="w-full flex flex-col lg:flex-row lg:gap-8">
       <CompanyDetailHeader company={company} />
       <CompanyDetailForm company={company} />
     </section>

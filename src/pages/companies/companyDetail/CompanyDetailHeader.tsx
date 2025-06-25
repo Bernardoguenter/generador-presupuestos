@@ -121,13 +121,15 @@ export const CompanyDetailHeader = ({ company }: Props) => {
             name="file"
             defaultPreviewUrl={logoUrl ?? undefined}
           />
-          <Button
-            type="submit"
-            children="Actualizar Logo"
-            color="danger"
-            styles="mt-4"
-            disabled={isSubmitting}
-          />
+          <div className="w-full flex justify-center">
+            <Button
+              type="submit"
+              children="Actualizar Logo"
+              color="danger"
+              styles="mt-4"
+              disabled={isSubmitting}
+            />
+          </div>
         </div>
       </Form>
     </SubmittingOverlay>

@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
-import { useCompanyContext } from "../common/context";
-import { retriveFileFromBucket } from "../common/lib";
+import { useLogo } from "../common/hooks";
 
 interface LogoProps {
   containerStyles: string;
@@ -8,21 +6,7 @@ interface LogoProps {
 }
 
 export const Logo = ({ containerStyles, logoStyles }: LogoProps) => {
-  const [logoUrl, setLogoUrl] = useState<string | null>(null);
-  const { company } = useCompanyContext();
-
-  useEffect(() => {
-    const fetchLogo = async () => {
-      if (company && company.logo_url) {
-        const { data } = await retriveFileFromBucket(
-          "companies-logos",
-          company.logo_url
-        );
-        if (data) setLogoUrl(data.publicUrl);
-      }
-    };
-    fetchLogo();
-  }, [company]);
+  const { logoUrl, logoAlt } = useLogo();
 
   return (
     <>
@@ -31,11 +15,11 @@ export const Logo = ({ containerStyles, logoStyles }: LogoProps) => {
           <img
             className={logoStyles}
             src={logoUrl}
-            alt={company ? company.company_name : "Logo"}
+            alt={logoAlt}
           />
         </div>
       ) : (
-        <h1>{company?.company_name}</h1>
+        <h1>{logoAlt}</h1>
       )}
     </>
   );
