@@ -1,9 +1,12 @@
 interface Props {
   inputString: string;
-  textSize: "text-xs" | "text-sm" | "text-md";
+  textSize?: "text-xs" | "text-sm" | "text-md" | "text-base";
 }
 
-export const StringToList = ({ inputString, textSize }: Props) => {
+export const StringToList = ({
+  inputString,
+  textSize = "text-base",
+}: Props) => {
   const itemsArray = inputString
     .split(";")
     .map((item) => item.trim())
