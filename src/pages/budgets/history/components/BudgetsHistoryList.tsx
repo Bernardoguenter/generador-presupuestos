@@ -14,23 +14,24 @@ export const BudgetsHistoryList = () => {
   const { authUser } = useAuthContext();
 
   useEffect(() => {
-    const getBudgets = async () => {
-      try {
-        setIsLoading(true);
-        if (authUser?.id) {
-          const { data, error } = await getAllBudgets(authUser.id);
-          if (!error && data) {
-            setBudgets(data);
-          }
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
     getBudgets();
   }, [authUser?.id]);
+
+  const getBudgets = async () => {
+    try {
+      setIsLoading(true);
+      if (authUser?.id) {
+        const { data, error } = await getAllBudgets(authUser.id);
+        if (!error && data) {
+          setBudgets(data);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const {
     searchInput,
@@ -123,7 +124,7 @@ export const BudgetsHistoryList = () => {
                 <td className="px-2 py-2 flex justify-center items-center w-2/16">
                   <DeleteBudgetButton
                     id={budget.id}
-                    setIsLoading={setIsLoading}
+                    getBudgets={getBudgets}
                   />
                 </td>
                 <td className="px-2 py-2 flex justify-center items-center w-2/16">

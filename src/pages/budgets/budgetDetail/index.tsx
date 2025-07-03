@@ -31,7 +31,7 @@ export default function BudgetDetail() {
     <section>
       <Button
         color="danger"
-        styles="mt-4"
+        styles="mt-4 w-1/2"
         onClick={() => setViewDetail(!viewDetail)}>
         {viewDetail ? "Ocultar Detalle" : "Ver Detalle"}
       </Button>

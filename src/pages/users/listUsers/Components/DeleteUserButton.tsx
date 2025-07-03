@@ -1,4 +1,5 @@
 import { DeleteIcon } from "../../../../assets/svg";
+import { useAuthContext } from "../../../../common/context";
 import useSweetAlertModal from "../../../../common/hooks";
 import { deleteUser } from "../../../../common/lib";
 import { DeleteUserToastError } from "../../../../utils/alerts";
@@ -6,11 +7,12 @@ import { DeleteUserToastError } from "../../../../utils/alerts";
 interface Props {
   id: string;
   email: string;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  getUsers: (id: string) => Promise<void>;
 }
 
-export const DeleteUserButton = ({ id, email, setIsLoading }: Props) => {
+export const DeleteUserButton = ({ id, email, getUsers }: Props) => {
   const { showAlert } = useSweetAlertModal();
+  const { authUser } = useAuthContext();
 
   const handleDeleteUser = async (id: string, email: string) => {
     try {
@@ -35,7 +37,9 @@ export const DeleteUserButton = ({ id, email, setIsLoading }: Props) => {
               icon: "success",
               confirmButtonColor: "#FF8303",
             });
-            setIsLoading(true);
+            if (authUser) {
+              getUsers(authUser?.id);
+            }
           } else {
             DeleteUserToastError(email);
           }

@@ -11,7 +11,7 @@ export const SearchInput = ({ searchInput, setSearchInput }: Props) => {
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-4">
       <label
         htmlFor="searchInput"
         className="mb-1 font-medium">
