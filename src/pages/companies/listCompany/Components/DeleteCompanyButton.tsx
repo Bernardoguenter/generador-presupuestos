@@ -38,7 +38,14 @@ export const DeleteCompanyButton = ({
 
         if (result.isConfirmed) {
           const { error } = await deleteCompany(id);
-
+          if (error?.code === "23503") {
+            await showAlert({
+              title: "No es posible eliminar esta empresa",
+              text: `Hay usuarios asinados a la empresa ${company_name}, eliminalos o asignalos a otra empresa antes de eliminar esta empresa`,
+              icon: "warning",
+              confirmButtonColor: "#FF8303",
+            });
+          }
           if (!error) {
             if (logo_url !== null && logo_url !== undefined) {
               const { error: bucketError } = await deleteFileInBucket(

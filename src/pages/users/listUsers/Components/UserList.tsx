@@ -15,24 +15,25 @@ export const UserList = () => {
 
   useEffect(() => {
     if (id) {
-      const getUsers = async () => {
-        try {
-          setIsLoading(true);
-          const { data: users, error } = await getAllUsers(id);
-          if (!error) {
-            setUsers(users);
-          } else {
-            throw new Error("Error al obtener usuarios");
-          }
-        } catch (error) {
-          console.error(error);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      getUsers();
+      getUsers(id);
     }
   }, [id]);
+
+  const getUsers = async (id: string) => {
+    try {
+      setIsLoading(true);
+      const { data: users, error } = await getAllUsers(id);
+      if (!error) {
+        setUsers(users);
+      } else {
+        throw new Error("Error al obtener usuarios");
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const {
     searchInput,
@@ -107,7 +108,7 @@ export const UserList = () => {
                   <DeleteUserButton
                     email={user.email}
                     id={user.id}
-                    setIsLoading={setIsLoading}
+                    getUsers={getUsers}
                   />
                 </td>
                 <td className="px-2 py-2 w-1/6 flex justify-center items">

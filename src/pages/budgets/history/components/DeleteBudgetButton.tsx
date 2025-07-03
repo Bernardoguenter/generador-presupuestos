@@ -4,11 +4,11 @@ import { deleteBudget } from "../../../../common/lib";
 import { DeleteBudgetToastError } from "../../../../utils/alerts";
 
 interface Props {
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  getBudgets: () => Promise<void>;
   id: string;
 }
 
-export const DeleteBudgetButton = ({ setIsLoading, id }: Props) => {
+export const DeleteBudgetButton = ({ getBudgets, id }: Props) => {
   const { showAlert } = useSweetAlertModal();
 
   const handleDeleteBudget = async (id: string) => {
@@ -34,6 +34,7 @@ export const DeleteBudgetButton = ({ setIsLoading, id }: Props) => {
             icon: "success",
             confirmButtonColor: "#FF8303",
           });
+          getBudgets();
         } else {
           DeleteBudgetToastError();
         }
@@ -41,8 +42,6 @@ export const DeleteBudgetButton = ({ setIsLoading, id }: Props) => {
     } catch (error) {
       console.error(error);
       DeleteBudgetToastError();
-    } finally {
-      setIsLoading(true);
     }
   };
   return (
