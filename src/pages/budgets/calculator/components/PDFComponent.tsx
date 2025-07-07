@@ -24,7 +24,7 @@ export const PDFComponent = () => {
     width,
     height,
     enclousure_height,
-    totals,
+    total,
     details,
     dataToSubmit,
     includes_freight,
@@ -46,7 +46,8 @@ export const PDFComponent = () => {
   };
     `;
 
-  const totalARS = totals.finalPriceInDollars * preferences.dollar_quote;
+  const totalARS =
+    total * preferences.dollar_quote * (1 + dataToSubmit.budget_markup / 100);
 
   const defaultValues = {
     description: defaultDescription,
@@ -62,7 +63,10 @@ export const PDFComponent = () => {
       paymentMethods: formData.paymentMethods,
       details: formData.details,
       description: formData.description,
-      total: formData.total / preferences.dollar_quote,
+      total:
+        formData.total /
+        (1 + dataToSubmit.budget_markup / 100) /
+        preferences.dollar_quote,
       caption: formData.caption,
     };
 

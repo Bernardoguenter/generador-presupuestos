@@ -13,6 +13,19 @@ const createBudget = async (
   return { data, error };
 };
 
+const updateBudget = async (
+  dataToSubmit: Omit<Budget, "created_at" | "id">,
+  id: string
+) => {
+  const { data, error } = await supabase
+    .from("budgets")
+    .update(dataToSubmit)
+    .eq("id", id)
+    .select();
+
+  return { data, error };
+};
+
 const getAllBudgets = async (id: string) => {
   const { data, error, count } = await supabase
     .from("budgets")
@@ -45,4 +58,10 @@ const getBudgetById = async (id: string) => {
   return { data, error };
 };
 
-export { createBudget, getAllBudgets, deleteBudget, getBudgetById };
+export {
+  createBudget,
+  getAllBudgets,
+  deleteBudget,
+  getBudgetById,
+  updateBudget,
+};

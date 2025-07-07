@@ -7,14 +7,14 @@ type Props = {
   company_name: string;
   company_id: string;
   logo_url: string | null;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  getCompanies: () => Promise<void>;
 };
 
 export const DeleteCompanyButton = ({
   company_name,
   company_id,
   logo_url,
-  setIsLoading,
+  getCompanies,
 }: Props) => {
   const { showAlert } = useSweetAlertModal();
 
@@ -62,7 +62,7 @@ export const DeleteCompanyButton = ({
               icon: "success",
               confirmButtonColor: "#FF8303",
             });
-            setIsLoading(true);
+            getCompanies();
           } else {
             DeleteUserToastError(company_name);
           }

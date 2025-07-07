@@ -6,22 +6,26 @@ import { PDFViewComponent } from "./PDFViewComponent";
 import { BudgetDetailComponent } from "./BudgetDetail";
 import { Button, CustomLink } from "../../../components";
 import { DownloadBudgetButton } from "./DownloadBudgetButton";
-import { SendBudgetButton } from "./SendBudgetButton";
 
 export default function BudgetDetail() {
   const { id } = useParams();
   const [budget, setBudget] = useState<Budget | null>(null);
   const [viewDetail, setViewDetail] = useState(false);
 
+  const getBudget = async (id: string) => {
+    try {
+      const { data, error } = await getBudgetById(id);
+      if (!error) {
+        setBudget(data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     if (id) {
-      const getBudget = async () => {
-        const { data, error } = await getBudgetById(id);
-        if (!error) {
-          setBudget(data);
-        }
-      };
-      getBudget();
+      getBudget(id);
     }
   }, [id]);
 
@@ -41,7 +45,8 @@ export default function BudgetDetail() {
       </div>
       <div className="mt-4 flex flex-col  gap-2 lg:w-2/5 ">
         <DownloadBudgetButton customer={budget.customer} />
-        <SendBudgetButton customer={budget.customer} />
+        {/*         <SendBudgetButton customer={budget.customer} />
+         */}{" "}
         <CustomLink
           href="/budgets/calculator"
           color="danger"

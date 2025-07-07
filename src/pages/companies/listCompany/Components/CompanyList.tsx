@@ -98,7 +98,7 @@ export const CompanyList = () => {
                     company_name={company.company_name}
                     company_id={company.id}
                     logo_url={company.logo_url}
-                    setIsLoading={setIsLoading}
+                    getCompanies={getCompanies}
                   />
                 </td>
                 <td className="px-2 py-2 flex justify-center items-center w-1/5">
