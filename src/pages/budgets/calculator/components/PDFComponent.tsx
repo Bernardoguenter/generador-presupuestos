@@ -6,11 +6,20 @@ import {
   usePDFContext,
   usePreferencesContext,
 } from "../../../../common/context";
-import { CreateBudgetToastError } from "../../../../utils/alerts";
-import { createBudget } from "../../../../common/lib";
-import { useNavigate } from "react-router";
+import {
+  CreateBudgetToastError,
+  UpdateBudgetToastError,
+} from "../../../../utils/alerts";
+import { createBudget, updateBudget } from "../../../../common/lib";
+import { useNavigate, useParams } from "react-router";
 
-export const PDFComponent = () => {
+interface Props {
+  getBudget?: (id: string) => void;
+  handleView?: () => void;
+}
+
+export const PDFComponent = ({ getBudget, handleView }: Props) => {
+  const { id } = useParams();
   const { pdfInfo, setPdfInfo, setShowPDF } = usePDFContext();
   const { preferences } = usePreferencesContext();
   const navigate = useNavigate();
@@ -70,16 +79,29 @@ export const PDFComponent = () => {
       caption: formData.caption,
     };
 
-    const { data, error } = await createBudget(createBudgetSubmitData);
+    const { data, error } = id
+      ? await updateBudget(createBudgetSubmitData, id)
+      : await createBudget(createBudgetSubmitData);
 
-    if (!error) {
+    if (!error && !id) {
       setPdfInfo(null);
       setShowPDF(false);
       if (data.id) {
         navigate(`/budgets/${data.id}`);
       }
-    } else {
+    } else if (!error && id) {
+      setPdfInfo(null);
+      setShowPDF(false);
+      if (getBudget) {
+        getBudget(id);
+      }
+      if (handleView) {
+        handleView();
+      }
+    } else if (error && !id) {
       CreateBudgetToastError();
+    } else if (error && id) {
+      UpdateBudgetToastError();
     }
   };
 
