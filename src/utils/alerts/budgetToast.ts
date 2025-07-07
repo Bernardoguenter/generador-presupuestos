@@ -36,6 +36,42 @@ const CreateBudgetToastError = () => {
   });
 };
 
+const UpdateBudgetToastSuccess = () => {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    },
+  });
+  Toast.fire({
+    icon: "success",
+    title: `El presupuesto se ha actualizado correctamente`,
+  });
+};
+
+const UpdateBudgetToastError = () => {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    },
+  });
+  Toast.fire({
+    icon: "error",
+    title: `Ha ocurrido un error al actualizar el presupuesto`,
+  });
+};
+
 const DeleteBudgetToastError = () => {
   const Toast = Swal.mixin({
     toast: true,
@@ -58,4 +94,6 @@ export {
   CreateBudgetToastError,
   CreateBudgetToastSuccess,
   DeleteBudgetToastError,
+  UpdateBudgetToastError,
+  UpdateBudgetToastSuccess,
 };

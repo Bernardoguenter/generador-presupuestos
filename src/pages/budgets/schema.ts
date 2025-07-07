@@ -51,6 +51,15 @@ export const calculateBudgetSchema = z
       .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
         message: "El alto del cerramiento  debe tener como máximo 2 decimales",
       }),
+    budget_markup: z.coerce
+      .number({
+        required_error: "Debes ingresar un margen extra para el presupuesto ",
+        invalid_type_error: "El margen extra  debe ser un número",
+      })
+      .nonnegative("Elmargen extra debe ser un número positivo")
+      .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
+        message: "El margen extra debe tener como máximo 2 decimales",
+      }),
     includes_freight: z.boolean(),
     address: z.string().optional(),
     lng: z.coerce.number().optional(),

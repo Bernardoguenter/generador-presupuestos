@@ -27,6 +27,7 @@ import {
 import { formatDetails } from "../../../../helpers/formatData";
 import { PDFComponent } from "./PDFComponent";
 import { FreightInput } from "../../../../components/FreightInput";
+import { ResetFormButton } from "./ResetFormButton";
 
 export const BudgetCalculatorForm = () => {
   const { authUser } = useAuthContext();
@@ -55,6 +56,7 @@ export const BudgetCalculatorForm = () => {
       lat,
       lng,
       customer,
+      budget_markup,
     } = formData;
 
     const newAddress = includes_freight
@@ -127,7 +129,7 @@ export const BudgetCalculatorForm = () => {
         created_by: authUser?.id,
         details: newDetails,
         freight_price,
-        total: total.priceWithMarkup,
+        total: total.finalPriceInDollars,
         gutter_metters: newGutter_metters,
         enclousure_height: newEnclousure_height,
         gates_measurements: newGates_measurements,
@@ -139,6 +141,7 @@ export const BudgetCalculatorForm = () => {
         description: "",
         paymentMethods: "",
         caption: "",
+        budget_markup,
       };
 
       setPdfInfo({
@@ -153,7 +156,7 @@ export const BudgetCalculatorForm = () => {
         includes_taxes,
         freight_price,
         includes_freight,
-        totals: total,
+        total: total.priceWithMarkup,
         distance: newDistance,
         customer_address: newAddress?.address || null,
         dataToSubmit: dataToSubmit,
@@ -180,12 +183,13 @@ export const BudgetCalculatorForm = () => {
       customer: "",
       has_gutter: false,
       gutter_metters: 0,
-      gates_measurements: [],
-      includes_gate: false,
-      number_of_gates: 0,
+      gates_measurements: [{ width: 5, height: 4.5 }],
+      includes_gate: true,
+      number_of_gates: 1,
       address: "",
       lng: 0,
       lat: 0,
+      budget_markup: 0,
     }),
     []
   );
@@ -226,6 +230,10 @@ export const BudgetCalculatorForm = () => {
           label="Techo a color?"
         />
         <ColorSideSheetInput />
+        <NumberInput
+          label="Margen extra de presupuesto"
+          name="budget_markup"
+        />
         <CheckboxInput
           name="includes_taxes"
           label="Incluye IVA?"
@@ -236,6 +244,10 @@ export const BudgetCalculatorForm = () => {
           styles="mt-4">
           Crear Vista Previa
         </Button>
+        <ResetFormButton
+          setShowPDF={setShowPDF}
+          defaultValues={defaultValues}
+        />
       </Form>
       {showPDF && pdfInfo && <PDFComponent />}
     </div>

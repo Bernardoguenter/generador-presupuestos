@@ -61,7 +61,10 @@ export const PDFViewComponent = ({ budget }: Props) => {
                   ? "$" +
                     formatNumber(
                       Math.floor(
-                        (budget.total * preferences.dollar_quote) / 1000
+                        (budget.total *
+                          (1 + budget.budget_markup / 100) *
+                          preferences.dollar_quote) /
+                          1000
                       ) * 1000
                     )
                   : ""}

@@ -42,40 +42,6 @@ export interface Preferences {
   u_profile_column_cost: number;
 }
 
-type AreaWharehouse =
-  | 50
-  | 75
-  | 100
-  | 150
-  | 200
-  | 250
-  | 300
-  | 400
-  | 500
-  | 600
-  | 700
-  | 800
-  | 1000;
-
-export type WharehousePriceMap = Partial<Record<AreaWharehouse, number>>;
-
-type AreaShed =
-  | 50
-  | 75
-  | 100
-  | 150
-  | 200
-  | 250
-  | 300
-  | 400
-  | 500
-  | 600
-  | 700
-  | 800
-  | 1000;
-
-export type ShedhousePriceMap = Partial<Record<AreaShed, number>>;
-
 export interface Budget {
   id: string;
   created_by: string | CreatedByObject;
@@ -103,6 +69,7 @@ export interface Budget {
   description: string;
   paymentMethods: string;
   caption: string;
+  budget_markup: number;
 }
 
 export type GatesMeasurements = {
@@ -154,9 +121,9 @@ export interface PDFInfo {
   includes_taxes: boolean;
   freight_price: number;
   includes_freight: boolean;
-  totals: Totals;
-  distance: number | null;
-  customer_address: string | null;
+  total: number;
+  distance?: number | null;
+  customer_address?: string | null;
   dataToSubmit: Omit<Budget, "created_at" | "id">;
 }
 
