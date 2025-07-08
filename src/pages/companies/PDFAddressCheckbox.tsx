@@ -8,7 +8,7 @@ export const PDFAddressCheckbox = () => {
 
   useEffect(() => {
     if (!hasPdfAddress) {
-      setValue("Dirección PDF", "");
+      setValue("pdfAddress", "");
     }
   });
 
