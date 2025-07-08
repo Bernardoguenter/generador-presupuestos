@@ -1,16 +1,13 @@
-import { paymentMethods } from "../../../../helpers/staticData";
-import { Form } from "../../../../components";
-import { ConfirmPDFhema, type ConfirmPDFFormData } from "../../schema";
+import { paymentMethods } from "../../../helpers/staticData";
+import { Form } from "../../../components";
+import { ConfirmPDFhema, type ConfirmPDFFormData } from "../schema";
 import { PDFFormContent } from "./PDFFormContent";
-import {
-  usePDFContext,
-  usePreferencesContext,
-} from "../../../../common/context";
+import { usePDFContext, usePreferencesContext } from "../../../common/context";
 import {
   CreateBudgetToastError,
   UpdateBudgetToastError,
-} from "../../../../utils/alerts";
-import { createBudget, updateBudget } from "../../../../common/lib";
+} from "../../../utils/alerts";
+import { createBudget, updateBudget } from "../../../common/lib";
 import { useNavigate, useParams } from "react-router";
 
 interface Props {
