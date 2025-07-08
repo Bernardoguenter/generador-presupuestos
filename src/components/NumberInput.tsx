@@ -39,11 +39,6 @@ export const NumberInput = ({
             id={name}
             type="number"
             {...field}
-            /*   style={{
-              appearance: "textfield",
-              MozAppearance: "textfield",
-              WebkitAppearance: "none",
-            }} */
           />
         )}
       />

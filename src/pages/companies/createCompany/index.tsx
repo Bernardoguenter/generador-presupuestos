@@ -26,6 +26,7 @@ import type { PostgrestError } from "@supabase/supabase-js";
 import { useMemo } from "react";
 import { usePreferencesContext } from "../../../common/context";
 import { useIsSubmitting } from "../../../common/hooks/useIsSubmitting";
+import { PDFAddressCheckbox } from "../PDFAddressCheckbox";
 
 export default function CreateCompany() {
   const navigate = useNavigate();
@@ -33,7 +34,17 @@ export default function CreateCompany() {
   const { isSubmitting, setIsSubmitting } = useIsSubmitting();
 
   const handleSubmit = async (formData: CreateCompanyFormData) => {
-    const { address, email, company_name, phone, file, lat, lng } = formData;
+    const {
+      address,
+      email,
+      company_name,
+      phone,
+      file,
+      lat,
+      lng,
+      hasPdfAddress,
+      pdfAddress,
+    } = formData;
 
     try {
       setIsSubmitting(true);
@@ -46,6 +57,8 @@ export default function CreateCompany() {
           lat,
           lng,
         },
+        hasPdfAddress,
+        pdfAddress,
       };
 
       const { data: company_data, error: createcompany_error } =
@@ -133,6 +146,8 @@ export default function CreateCompany() {
       address: "",
       lat: 0,
       lng: 0,
+      hasPdfAddress: false,
+      pdfAddress: "",
     }),
     []
   );
@@ -171,6 +186,7 @@ export default function CreateCompany() {
             />
             <HiddenInput name="lng" />
             <HiddenInput name="lat" />
+            <PDFAddressCheckbox />
           </div>
         </div>
         <div className="w-full flex justify-center">
