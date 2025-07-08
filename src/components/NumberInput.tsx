@@ -33,12 +33,18 @@ export const NumberInput = ({
         control={control}
         render={({ field }) => (
           <input
-            className={`bg-white placeholder:text-gray-400 text-black px-2 py-2 rounded focus:outline-2 focus:outline-gray-100 appearance-none ${
-              inputStyles && inputStyles
+            className={`bg-white placeholder:text-gray-400 text-black px-2 py-2 rounded focus:outline-2 focus:outline-gray-100  ${
+              inputStyles ?? ""
             }`}
             id={name}
             type="number"
             {...field}
+            inputMode="decimal"
+            style={{
+              appearance: "textfield",
+              MozAppearance: "textfield",
+              WebkitAppearance: "none", // Chrome, Safari, Edge
+            }}
           />
         )}
       />

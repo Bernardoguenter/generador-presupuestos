@@ -110,7 +110,7 @@ export const PDFComponent = ({ getBudget, handleView }: Props) => {
       onSubmit={handleSubmit}
       defaultValues={defaultValues}
       schema={ConfirmPDFhema}
-      className="w-full lg:w-3/5">
+      className="w-full lg:w-1/2">
       <PDFFormContent />
     </Form>
   );

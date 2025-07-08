@@ -231,7 +231,7 @@ export const BudgetEditForm = ({
         onSubmit={handleSubmit}
         schema={calculateBudgetSchema}
         defaultValues={defaultValues}
-        className="mt-4 w-full lg:w-2/5">
+        className="mt-4 w-full lg:w-1/2">
         <MaterialsSelect />
         <StructureSelect />
         <NumberInput
