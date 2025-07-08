@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { CheckboxInput, TextInput } from "../../components";
 import { useFormContext, useWatch } from "react-hook-form";
 
