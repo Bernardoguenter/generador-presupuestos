@@ -32,6 +32,8 @@ export const createCompanySchema = z.object({
       required_error: "Debes ingresar una dirección para la empresa",
     })
     .min(1, "Debes ingresar una dirección"),
+  hasPdfAddress: z.boolean(),
+  pdfAddress: z.string(),
   lng: z.coerce.number(),
   lat: z.coerce.number(),
   file: z

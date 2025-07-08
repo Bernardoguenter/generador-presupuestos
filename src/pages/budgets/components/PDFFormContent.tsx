@@ -47,7 +47,11 @@ export const PDFFormContent = () => {
         />
         <aside className="text-right ">
           <p className="text-sm leading-3.5">{company?.company_name}</p>
-          <p className="text-sm leading-3.5">{company?.address.address}</p>
+          <p className="text-sm leading-3.5">
+            {company?.hasPdfAddress
+              ? company.pdfAddress
+              : company?.address.address}
+          </p>
           <p className="text-sm leading-3.5">Tel: {company?.phone}</p>
           <p className="text-sm leading-3.5">{company?.email}</p>
         </aside>

@@ -33,7 +33,11 @@ export const PDFViewComponent = ({ budget }: Props) => {
         />
         <aside className="text-right leading-3.5">
           <p className="font-bold">{company?.company_name}</p>
-          <p>{company?.address.address}</p>
+          <p>
+            {company?.hasPdfAddress
+              ? company.pdfAddress
+              : company?.address.address}
+          </p>
           <p>Tel: {company?.phone}</p>
           <p>{company?.email}</p>
         </aside>

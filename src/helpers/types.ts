@@ -20,6 +20,8 @@ export interface Company {
   logo_url: string | null;
   phone: string;
   address: Address;
+  hasPdfAddress: boolean;
+  pdfAddress?: string;
   email: string | null;
   created_at: Date;
 }

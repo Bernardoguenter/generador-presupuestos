@@ -17,6 +17,7 @@ import { updateCompany } from "../../../common/lib";
 import { useMemo } from "react";
 import { DeleteCompanyButton } from "./DeleteCompanyButton";
 import { useIsSubmitting } from "../../../common/hooks/useIsSubmitting";
+import { PDFAddressCheckbox } from "../PDFAddressCheckbox";
 
 interface Props {
   company: Company;
@@ -27,7 +28,16 @@ export default function CompanyDetailForm({ company }: Props) {
   const { isSubmitting, setIsSubmitting } = useIsSubmitting();
 
   const handleSubmit = async (formData: CreateCompanyFormData) => {
-    const { address, email, company_name, phone, lat, lng } = formData;
+    const {
+      address,
+      email,
+      company_name,
+      phone,
+      lat,
+      lng,
+      hasPdfAddress,
+      pdfAddress,
+    } = formData;
     try {
       setIsSubmitting(true);
       const dataToUpdate = {
@@ -39,6 +49,8 @@ export default function CompanyDetailForm({ company }: Props) {
           lat,
           lng,
         },
+        hasPdfAddress,
+        pdfAddress,
       };
       const { data, error } = await updateCompany(dataToUpdate, company.id);
 
@@ -66,6 +78,8 @@ export default function CompanyDetailForm({ company }: Props) {
       address: company.address.address,
       lat: company.address.lat,
       lng: company.address.lng,
+      hasPdfAddress: company.hasPdfAddress,
+      pdfAddress: company.pdfAddress ?? "",
     };
   }, [company]);
 
@@ -96,6 +110,7 @@ export default function CompanyDetailForm({ company }: Props) {
         />
         <HiddenInput name="lat" />
         <HiddenInput name="lng" />
+        <PDFAddressCheckbox />
         <div className="w-full flex flex-col items-center justify-center">
           <Button
             type="submit"
