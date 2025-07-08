@@ -1,15 +1,10 @@
 import { useEffect } from "react";
-import {
-  Button,
-  Logo,
-  NumberInput,
-  TextAreaInput,
-} from "../../../../components";
+import { Button, Logo, NumberInput, TextAreaInput } from "../../../components";
 import {
   useAuthContext,
   useCompanyContext,
   usePDFContext,
-} from "../../../../common/context";
+} from "../../../common/context";
 import { useFormContext, useWatch } from "react-hook-form";
 
 export const PDFFormContent = () => {

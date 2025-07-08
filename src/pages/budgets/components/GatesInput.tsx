@@ -1,5 +1,5 @@
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
-import { NumberInput } from "../../../../components";
+import { NumberInput } from "../../../components";
 import { useEffect, useRef } from "react";
 
 export const GatesInput = () => {

@@ -1,6 +1,6 @@
 import { useFormContext } from "react-hook-form";
-import { Button } from "../../../../components";
-import type { BudgetFormData } from "../../schema";
+import { Button } from "../../../components";
+import type { BudgetFormData } from "../schema";
 
 interface Props {
   setShowPDF: (value: React.SetStateAction<boolean>) => void;

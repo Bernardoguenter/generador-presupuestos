@@ -1,6 +1,6 @@
 import { useFormContext, useWatch } from "react-hook-form";
 import { GatesInput } from "./GatesInput";
-import { CheckboxInput } from "../../../../components";
+import { CheckboxInput } from "../../../components";
 
 export const IncludesGatesInput = () => {
   const { control } = useFormContext();

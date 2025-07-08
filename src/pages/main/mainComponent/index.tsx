@@ -1,5 +1,5 @@
-import { BudgetCalculatorForm } from "../../budgets/calculator/components/BudgetCalculatorForm";
 import { useAuthContext } from "../../../common/context";
+import { BudgetCalculatorForm } from "../../budgets/calculator/BudgetCalculatorForm";
 
 export default function Main() {
   const { authUser } = useAuthContext();

@@ -1,4 +1,4 @@
-import { BudgetCalculatorForm } from "./components/BudgetCalculatorForm";
+import { BudgetCalculatorForm } from "./BudgetCalculatorForm";
 
 export default function Calculator() {
   return (

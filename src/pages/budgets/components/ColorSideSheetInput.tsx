@@ -1,5 +1,5 @@
 import { useFormContext, useWatch } from "react-hook-form";
-import { CheckboxInput } from "../../../../components";
+import { CheckboxInput } from "../../../components";
 import { useEffect } from "react";
 
 export const ColorSideSheetInput = () => {
