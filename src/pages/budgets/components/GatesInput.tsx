@@ -1,13 +1,18 @@
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { NumberInput } from "../../../components";
 import { useEffect, useRef } from "react";
+import type { GatesMeasurements } from "../../../helpers/types";
 
 export const GatesInput = () => {
   const { control, setValue } = useFormContext();
   const hasInitialized = useRef(false);
   const includesGate = useWatch({ control, name: "includes_gate" });
   const numberOfGates = useWatch({ control, name: "number_of_gates" });
-
+  const height = useWatch({ control, name: "height" });
+  const gates_measurementsWatch = useWatch({
+    control,
+    name: "gates_measurements",
+  });
   const { fields, append, remove } = useFieldArray({
     control,
     name: "gates_measurements",
@@ -39,6 +44,27 @@ export const GatesInput = () => {
       }
     }
   }, [numberOfGates, includesGate]);
+
+  useEffect(() => {
+    const parsedHeight =
+      typeof height === "string" ? parseFloat(height) : height;
+
+    if (
+      !gates_measurementsWatch ||
+      gates_measurementsWatch.length === 0 ||
+      isNaN(parsedHeight)
+    ) {
+      return;
+    }
+
+    gates_measurementsWatch.forEach(
+      (gate: GatesMeasurements, index: number) => {
+        if (gate.height > parsedHeight || parsedHeight <= 4.5) {
+          setValue(`gates_measurements.${index}.height`, parsedHeight);
+        }
+      }
+    );
+  }, [height]);
 
   if (!includesGate) return null;
 

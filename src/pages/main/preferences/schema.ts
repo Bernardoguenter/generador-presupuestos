@@ -146,7 +146,7 @@ export const preferencesSchema = z.object({
 
 export type PreferencesFormData = z.infer<typeof preferencesSchema>;
 
-export const galponPricesSchema = z.record(
+/* export const galponPricesSchema = z.record(
   z.string(),
   z.coerce
     .number({
@@ -173,5 +173,4 @@ export const tingladoPricesSchema = z.record(
 );
 
 export type GalponPricesFormData = z.infer<typeof galponPricesSchema>;
-export type TingladoPricesFormData = z.infer<typeof tingladoPricesSchema>;
-// ...existing code...
+export type TingladoPricesFormData = z.infer<typeof tingladoPricesSchema>; */

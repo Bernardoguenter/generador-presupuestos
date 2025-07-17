@@ -136,7 +136,7 @@ export const calculateBudgetSchema = z
     {
       message:
         "Las medidas de los portones no pueden superar el ancho ni el alto general.",
-      path: ["gates_measurements"],
+      path: ["includes_gate"],
     }
   )
   .refine((data) => data.gutter_metters <= data.length * 2, {
