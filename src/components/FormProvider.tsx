@@ -7,12 +7,12 @@ import {
   type FieldValues,
   type SubmitHandler,
 } from "react-hook-form";
-import type { ZodSchema } from "zod";
+import type { ZodTypeAny } from "zod";
 
 type FormProps<TFormValues extends FieldValues> = {
   id?: string;
   name?: string;
-  schema?: ZodSchema<TFormValues>;
+  schema?: ZodTypeAny;
   onSubmit: SubmitHandler<TFormValues>;
   children: ReactNode;
   defaultValues?: DefaultValues<TFormValues>;

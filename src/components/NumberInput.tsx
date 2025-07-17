@@ -38,6 +38,7 @@ export const NumberInput = ({
             }`}
             id={name}
             type="number"
+            step="any"
             {...field}
           />
         )}
