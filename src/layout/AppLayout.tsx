@@ -1,5 +1,5 @@
-import { Suspense, useEffect } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Suspense } from "react";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { BackButton, PageLoader } from "../components";
@@ -7,17 +7,20 @@ import { useAuthContext } from "../common/context";
 
 const AppLayout = () => {
   const { authUser } = useAuthContext();
-  const navigate = useNavigate();
+  /*   const navigate = useNavigate(); */
   const location = useLocation();
 
-  useEffect(() => {
-    if (
-      !authUser?.isPasswordChanged &&
-      location.pathname !== "/account/change-password"
-    ) {
-      navigate("/account/change-password", { replace: true });
-    }
-  }, [authUser]);
+  if (
+    !authUser?.isPasswordChanged &&
+    location.pathname !== "/account/change-password"
+  ) {
+    return (
+      <Navigate
+        to="/account/change-password"
+        replace
+      />
+    );
+  }
 
   return (
     <main className="flex flex-col w-full min-h-screen bg-gray-900 text-white">
