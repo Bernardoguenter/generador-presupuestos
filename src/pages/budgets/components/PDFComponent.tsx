@@ -74,6 +74,10 @@ export const PDFComponent = ({ getBudget, handleView }: Props) => {
         (1 + dataToSubmit.budget_markup / 100) /
         preferences.dollar_quote,
       caption: formData.caption,
+      created_by:
+        typeof dataToSubmit.created_by === "object"
+          ? dataToSubmit.created_by.id
+          : dataToSubmit.created_by,
     };
 
     const { data, error } = id
