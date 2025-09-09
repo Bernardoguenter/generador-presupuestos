@@ -95,7 +95,7 @@ export const getBudgetTotal = (
   const price_per_meter =
     material === "Hierro torsionado"
       ? twisted_iron_cost
-      : material === "Perfil U Ángulo"
+      : material === "Perfil u Ángulo"
       ? u_profile_cost
       : solid_web_cost;
 

@@ -15,9 +15,7 @@ export const CompanyContext = createContext<
 export function useCompanyContext() {
   const context = use(CompanyContext);
   if (!context) {
-    throw new Error(
-      "usePreferencesContext must be used within an AuthProvider"
-    );
+    throw new Error("useCompanyContext must be used within an AuthProvider");
   }
   return context;
 }
