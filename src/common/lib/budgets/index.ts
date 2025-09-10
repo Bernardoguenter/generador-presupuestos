@@ -5,7 +5,7 @@ const createBudget = async (
   dataToSubmit: Omit<Budget, "created_at" | "id">
 ) => {
   const { data, error } = await supabase
-    .from("budgets")
+    .from("budgets_structures")
     .insert([dataToSubmit])
     .select()
     .single();
@@ -18,7 +18,7 @@ const updateBudget = async (
   id: string
 ) => {
   const { data, error } = await supabase
-    .from("budgets")
+    .from("budgets_structures")
     .update(dataToSubmit)
     .eq("id", id)
     .select();
@@ -28,7 +28,7 @@ const updateBudget = async (
 
 const getAllBudgets = async (id: string) => {
   const { data, error, count } = await supabase
-    .from("budgets")
+    .from("budgets_structures")
     .select("*", { count: "exact" })
     .eq("created_by", id);
 
@@ -43,7 +43,7 @@ const deleteBudget = async (id: string) => {
 
 const getBudgetById = async (id: string) => {
   const { data, error } = await supabase
-    .from("budgets")
+    .from("budgets_structures")
     .select(
       `
     *,
