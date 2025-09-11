@@ -7,14 +7,14 @@ type Props = {
   company_name: string;
   company_id: string;
   logo_url: string | null;
-  getCompanies: () => Promise<void>;
+  removeCompany: (id: string) => void;
 };
 
 export const DeleteCompanyButton = ({
   company_name,
   company_id,
   logo_url,
-  getCompanies,
+  removeCompany,
 }: Props) => {
   const { showAlert } = useSweetAlertModal();
 
@@ -47,6 +47,8 @@ export const DeleteCompanyButton = ({
             });
           }
           if (!error) {
+            removeCompany(id);
+
             if (logo_url !== null && logo_url !== undefined) {
               const { error: bucketError } = await deleteFileInBucket(
                 "companies-logos",
@@ -62,7 +64,6 @@ export const DeleteCompanyButton = ({
               icon: "success",
               confirmButtonColor: "#FF8303",
             });
-            getCompanies();
           } else {
             DeleteUserToastError(company_name);
           }

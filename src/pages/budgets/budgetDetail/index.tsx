@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Budget } from "../../../helpers/types";
+import type { StructureBudget } from "../../../helpers/types";
 import { useParams } from "react-router";
 import { getBudgetById } from "../../../common/lib";
 import { PDFViewComponent } from "./PDFViewComponent";
@@ -10,7 +10,7 @@ import { usePDFContext } from "../../../common/context";
 
 export default function BudgetDetail() {
   const { id } = useParams();
-  const [budget, setBudget] = useState<Budget | null>(null);
+  const [budget, setBudget] = useState<StructureBudget | null>(null);
   const [viewDetail, setViewDetail] = useState(false);
   const { setPdfInfo, pdfInfo } = usePDFContext();
 

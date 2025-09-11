@@ -16,12 +16,12 @@ import { PDFComponent } from "../components/PDFComponent";
 import { ResetFormButton } from "../components/ResetFormButton";
 import { StructureSelect } from "../components/StructureSelect";
 import { calculateBudgetSchema } from "../schema";
-import type { Budget } from "../../../helpers/types";
+import type { StructureBudget } from "../../../helpers/types";
 import { usePDFContext } from "../../../common/context";
 import { useBudgetSubmit } from "../../../common/hooks";
 
 interface Props {
-  budget: Budget;
+  budget: StructureBudget;
   getBudget: (id: string) => void;
   handleView: () => void;
   viewDetail: boolean;
@@ -52,7 +52,7 @@ export const BudgetEditForm = ({
       total: budget.total * (1 + budget.budget_markup / 100),
       dataToSubmit: budget,
     });
-  }, []);
+  }, [budget, setPdfInfo]);
 
   const defaultValues = useMemo(
     () => ({

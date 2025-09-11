@@ -32,7 +32,6 @@ export function useAutocompleteSuggestions(
 
   useEffect(() => {
     if (!placesLib) return;
-
     const { AutocompleteSessionToken, AutocompleteSuggestion } = placesLib;
 
     if (ignoreInputChangeRef.current) {

@@ -20,23 +20,23 @@ export const PDFFormContent = () => {
 
   useEffect(() => {
     setValue("total", total);
-  }, [total]);
+  }, [total, setValue]);
 
   useEffect(() => {
     setValue("caption", caption);
-  }, [caption]);
+  }, [caption, setValue]);
 
   useEffect(() => {
     setValue("paymentMethods", paymentMethods);
-  }, [paymentMethods]);
+  }, [paymentMethods, setValue]);
 
   useEffect(() => {
     setValue("description", description);
-  }, [description]);
+  }, [description, setValue]);
 
   useEffect(() => {
     setValue("details", details);
-  }, [details]);
+  }, [details, setValue]);
 
   return (
     <div className="mt-16 bg-white  p-4 lg:p-8 w-full text-black">

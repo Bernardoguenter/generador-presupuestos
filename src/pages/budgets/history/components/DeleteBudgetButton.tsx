@@ -4,11 +4,11 @@ import { deleteBudget } from "../../../../common/lib";
 import { DeleteBudgetToastError } from "../../../../utils/alerts";
 
 interface Props {
-  getBudgets: () => Promise<void>;
   id: string;
+  removeBudget: (id: string) => void;
 }
 
-export const DeleteBudgetButton = ({ getBudgets, id }: Props) => {
+export const DeleteBudgetButton = ({ removeBudget, id }: Props) => {
   const { showAlert } = useSweetAlertModal();
 
   const handleDeleteBudget = async (id: string) => {
@@ -28,13 +28,13 @@ export const DeleteBudgetButton = ({ getBudgets, id }: Props) => {
         const { error } = await deleteBudget(id);
 
         if (!error) {
+          removeBudget(id);
           await showAlert({
             title: "¡Eliminado!",
             text: `El presupuesto fue eliminado correctamente.`,
             icon: "success",
             confirmButtonColor: "#FF8303",
           });
-          getBudgets();
         } else {
           DeleteBudgetToastError();
         }

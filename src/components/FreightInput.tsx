@@ -14,7 +14,7 @@ export const FreightInput = () => {
       setValue("lng", 0);
       setValue("address", "");
     }
-  });
+  }, [includes_freight, setValue]);
 
   return (
     <>

@@ -32,17 +32,16 @@ const PlaceAutocomplete = ({ name, label }: PlaceAutocompleteProps) => {
   const places = useMapsLibrary("places");
   const [inputValue, setInputValue] = useState<string>("");
   const [hasTyped, setHasTyped] = useState(false);
-
   const { suggestions, resetSession } = useAutocompleteSuggestions(inputValue);
   const { setValue, control } = useFormContext();
 
   const watchedValue = useWatch({ name, control });
 
   useEffect(() => {
-    if (watchedValue && inputValue === "") {
+    if (!inputValue && watchedValue) {
       setInputValue(watchedValue);
     }
-  }, [watchedValue]);
+  }, [watchedValue, inputValue]);
 
   const handleInput = useCallback((event: FormEvent<HTMLInputElement>) => {
     setInputValue((event.target as HTMLInputElement).value);

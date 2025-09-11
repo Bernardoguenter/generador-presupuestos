@@ -7,7 +7,7 @@ import { useAuthContext } from "../common/context";
 
 const AppLayout = () => {
   const { authUser } = useAuthContext();
-  /*   const navigate = useNavigate(); */
+
   const location = useLocation();
 
   if (
@@ -35,7 +35,6 @@ const AppLayout = () => {
           <Outlet />
         </Suspense>
       </section>
-
       <Suspense fallback={<PageLoader />}>
         <Footer />
       </Suspense>

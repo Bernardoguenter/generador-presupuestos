@@ -4,12 +4,12 @@ import {
   useCompanyContext,
   usePreferencesContext,
 } from "../../../common/context";
-import type { Budget } from "../../../helpers/types";
+import type { StructureBudget } from "../../../helpers/types";
 import { formatNumber } from "../../../helpers/formatData";
 import { StringToList } from "../../../components/StringToList";
 
 interface Props {
-  budget: Budget;
+  budget: StructureBudget;
 }
 
 export const PDFViewComponent = ({ budget }: Props) => {
