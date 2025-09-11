@@ -44,7 +44,7 @@ export interface Preferences {
   u_profile_column_cost: number;
 }
 
-export interface Budget {
+export interface StructureBudget {
   id: string;
   created_by: string | CreatedByObject;
   created_at: string;
@@ -72,6 +72,25 @@ export interface Budget {
   paymentMethods: string;
   caption: string;
   budget_markup: number;
+}
+
+export interface SiloBudget {
+  id: string;
+  created_by: string | CreatedByObject;
+  created_at: string;
+  customer: string;
+  silo_type: string;
+  includes_freight: boolean;
+  freight_price: number;
+  address: Address | null;
+  includes_taxes: boolean;
+  total: number;
+  details: string;
+  description: string;
+  paymentMethods: string;
+  caption: string;
+  budget_markup: number;
+  cone_base: string;
 }
 
 export type GatesMeasurements = {
@@ -126,11 +145,9 @@ export interface PDFInfo {
   total: number;
   distance?: number | null;
   customer_address?: string | null;
-  dataToSubmit: Omit<Budget, "created_at" | "id">;
+  dataToSubmit: Omit<StructureBudget, "created_at" | "id">;
 }
 
 export interface Totals {
-  priceWithMarkup: number;
   finalPriceInDollars: number;
-  totalArea: number;
 }

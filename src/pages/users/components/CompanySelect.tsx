@@ -15,6 +15,7 @@ export const CompanySelect = () => {
     };
     getCompanies();
   }, []);
+
   return (
     <SelectInput
       name="company_id"

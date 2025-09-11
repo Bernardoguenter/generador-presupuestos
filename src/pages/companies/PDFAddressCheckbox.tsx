@@ -10,7 +10,7 @@ export const PDFAddressCheckbox = () => {
     if (!hasPdfAddress) {
       setValue("pdfAddress", "");
     }
-  });
+  }, [hasPdfAddress, setValue]);
 
   return (
     <>

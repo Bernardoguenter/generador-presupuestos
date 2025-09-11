@@ -12,9 +12,8 @@ export const ColorSideSheetInput = () => {
       setValue("color_side_sheet", false);
       return;
     }
-
     setValue("color_side_sheet", color_side_sheet);
-  }, [structureType]);
+  }, [structureType, setValue, color_side_sheet]);
 
   return (
     <>

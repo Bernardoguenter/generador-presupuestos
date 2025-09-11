@@ -1,5 +1,4 @@
 import { DeleteIcon } from "../../../../assets/svg";
-import { useAuthContext } from "../../../../common/context";
 import useSweetAlertModal from "../../../../common/hooks";
 import { deleteUser } from "../../../../common/lib";
 import { DeleteUserToastError } from "../../../../utils/alerts";
@@ -7,12 +6,11 @@ import { DeleteUserToastError } from "../../../../utils/alerts";
 interface Props {
   id: string;
   email: string;
-  getUsers: (id: string) => Promise<void>;
+  removeUser: (id: string) => void;
 }
 
-export const DeleteUserButton = ({ id, email, getUsers }: Props) => {
+export const DeleteUserButton = ({ id, email, removeUser }: Props) => {
   const { showAlert } = useSweetAlertModal();
-  const { authUser } = useAuthContext();
 
   const handleDeleteUser = async (id: string, email: string) => {
     try {
@@ -31,15 +29,13 @@ export const DeleteUserButton = ({ id, email, getUsers }: Props) => {
         if (result.isConfirmed) {
           const { error } = await deleteUser(id);
           if (!error) {
+            removeUser(id);
             await showAlert({
               title: "¡Eliminado!",
               text: `El usuario ${email} fue eliminado correctamente.`,
               icon: "success",
               confirmButtonColor: "#FF8303",
             });
-            if (authUser) {
-              getUsers(authUser?.id);
-            }
           } else {
             DeleteUserToastError(email);
           }

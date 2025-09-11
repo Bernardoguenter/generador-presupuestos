@@ -88,9 +88,7 @@ export const getBudgetTotal = (
 
   const floorArea = width * length;
   const perimeter = 2 * (width + length);
-  const wallsArea = perimeter * height;
   const enclousureArea = perimeter * enclousure_height;
-  const totalArea = floorArea + wallsArea;
 
   const price_per_meter =
     material === "Hierro torsionado"
@@ -160,13 +158,10 @@ export const getBudgetTotal = (
     ? totalPrice
     : (totalPrice * (100 - iva_percentage)) / 100;
 
-  const priceWithMarkup =
+  const finalPriceInDollars =
     default_markup > 0
       ? priceBeforeTaxes * (1 + default_markup / 100)
       : priceBeforeTaxes;
 
-  //CALCULO DE TOTALES EN USD
-  const finalPriceInDollars = priceWithMarkup;
-
-  return { priceWithMarkup, finalPriceInDollars, totalArea };
+  return finalPriceInDollars;
 };

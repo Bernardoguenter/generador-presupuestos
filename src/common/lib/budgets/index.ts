@@ -1,8 +1,8 @@
-import type { Budget } from "../../../helpers/types";
+import type { StructureBudget } from "../../../helpers/types";
 import { supabase } from "../../../utils/supabase";
 
 const createBudget = async (
-  dataToSubmit: Omit<Budget, "created_at" | "id">
+  dataToSubmit: Omit<StructureBudget, "created_at" | "id">
 ) => {
   const { data, error } = await supabase
     .from("budgets_structures")
@@ -14,7 +14,7 @@ const createBudget = async (
 };
 
 const updateBudget = async (
-  dataToSubmit: Omit<Budget, "created_at" | "id">,
+  dataToSubmit: Omit<StructureBudget, "created_at" | "id">,
   id: string
 ) => {
   const { data, error } = await supabase
@@ -36,7 +36,10 @@ const getAllBudgets = async (id: string) => {
 };
 
 const deleteBudget = async (id: string) => {
-  const { error } = await supabase.from("budgets").delete().eq("id", id);
+  const { error } = await supabase
+    .from("budgets_structures")
+    .delete()
+    .eq("id", id);
 
   return { error };
 };

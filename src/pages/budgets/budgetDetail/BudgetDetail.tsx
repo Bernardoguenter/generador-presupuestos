@@ -1,10 +1,10 @@
 import { usePreferencesContext } from "../../../common/context";
 import { StringToList } from "../../../components/StringToList";
 import { formatDate, formatNumber } from "../../../helpers/formatData";
-import type { Budget } from "../../../helpers/types";
+import type { StructureBudget } from "../../../helpers/types";
 
 interface Props {
-  budget: Budget;
+  budget: StructureBudget;
 }
 
 export const BudgetDetailComponent = ({ budget }: Props) => {

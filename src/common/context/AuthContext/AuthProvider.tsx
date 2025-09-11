@@ -1,4 +1,10 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import { supabase } from "../../../utils/supabase";
 import type { User } from "../../../helpers/types";
 import { AuthContext } from "./AuthContext";
@@ -12,7 +18,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const getAuthUser = async (id: string) => {
+  const getAuthUser = useCallback(async (id: string) => {
     if (id) {
       const { data, error } = await getUserById(id);
 
@@ -26,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         navigate("account/change-password");
       }
     }
-  };
+  }, []);
 
   useEffect(() => {
     const getSessionUser = async () => {
@@ -45,9 +51,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setId(undefined);
         setAuthUser(undefined);
       }
-
       setLoading(false);
     };
+
     getSessionUser();
 
     const { data: listener } = supabase.auth.onAuthStateChange(
@@ -66,7 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       listener.subscription.unsubscribe();
     };
-  }, []);
+  }, [getAuthUser]);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();

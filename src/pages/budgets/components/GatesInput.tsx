@@ -13,6 +13,7 @@ export const GatesInput = () => {
     control,
     name: "gates_measurements",
   });
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: "gates_measurements",
@@ -43,7 +44,7 @@ export const GatesInput = () => {
         remove(i - 1);
       }
     }
-  }, [numberOfGates, includesGate]);
+  }, [numberOfGates, includesGate, append, remove, fields.length, setValue]);
 
   useEffect(() => {
     const parsedHeight =
@@ -64,7 +65,7 @@ export const GatesInput = () => {
         }
       }
     );
-  }, [height]);
+  }, [height, gates_measurementsWatch, setValue]);
 
   if (!includesGate) return null;
 
