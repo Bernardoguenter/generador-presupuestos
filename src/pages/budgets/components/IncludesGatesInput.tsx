@@ -1,6 +1,6 @@
 import { useFormContext, useWatch } from "react-hook-form";
 import { GatesInput } from "./GatesInput";
-import { CheckboxInput } from "../../../components";
+import { CheckboxInput, Fieldset } from "../../../components";
 
 export const IncludesGatesInput = () => {
   const { control } = useFormContext();
@@ -9,13 +9,13 @@ export const IncludesGatesInput = () => {
   return (
     <>
       {structureType === "Galpón" && (
-        <div className="flex-justify-between ite">
+        <Fieldset title="Portones">
           <CheckboxInput
             name="includes_gate"
             label="¿Incluye portón?"
           />
           <GatesInput />
-        </div>
+        </Fieldset>
       )}
     </>
   );

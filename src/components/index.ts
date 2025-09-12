@@ -16,3 +16,5 @@ export { TextAreaInput } from "./TextAreaInput";
 export { Logo } from "./Logo";
 export { Pagination } from "./Pagination";
 export { SearchInput } from "./SearchInput";
+export { RadioInput } from "./RadioInput";
+export { Fieldset } from "./Fieldset";
