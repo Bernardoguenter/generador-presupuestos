@@ -6,6 +6,7 @@ import {
   CheckboxInput,
   Button,
   Form,
+  Fieldset,
 } from "../../../components";
 import { FreightInput } from "../../../components/FreightInput";
 import { ColorSideSheetInput } from "../components/ColorSideSheetInput";
@@ -32,6 +33,8 @@ export const BudgetCalculatorForm = () => {
       height: 5,
       enclousure_height: 4.5,
       includes_freight: false,
+      distanceCalculation: "distance",
+      distanceInKms: 0,
       color_roof_sheet: false,
       color_side_sheet: false,
       includes_taxes: true,
@@ -56,43 +59,55 @@ export const BudgetCalculatorForm = () => {
         schema={calculateBudgetSchema}
         defaultValues={defaultValues}
         className="mt-4 w-full lg:w-1/2">
-        <MaterialsSelect />
-        <StructureSelect />
-        <NumberInput
-          label="Ancho"
-          name="width"
-        />
-        <NumberInput
-          label="Largo"
-          name="length"
-        />
-        <NumberInput
-          label="Alto"
-          name="height"
-        />
-        <EnclousureHeightInput />
+        <Fieldset title="Cliente">
+          {" "}
+          <TextInput
+            name="customer"
+            label="Nombre de cliente"
+          />
+        </Fieldset>
+
+        <Fieldset title="Material y Estructura">
+          <MaterialsSelect />
+          <StructureSelect />
+        </Fieldset>
+        <Fieldset title="Medidas">
+          <NumberInput
+            label="Ancho"
+            name="width"
+          />
+          <NumberInput
+            label="Largo"
+            name="length"
+          />
+          <NumberInput
+            label="Alto"
+            name="height"
+          />
+          <EnclousureHeightInput />
+        </Fieldset>
         <FreightInput />
-        <TextInput
-          name="customer"
-          label="Cliente"
-        />
-        <div className="flex justify-between items-start">
-          <GutterInput />
-        </div>
+        <GutterInput />
+        <Fieldset title="Chapa Color">
+          <CheckboxInput
+            name="color_roof_sheet"
+            label="Techo a color?"
+          />
+          <ColorSideSheetInput />
+        </Fieldset>
         <IncludesGatesInput />
-        <CheckboxInput
-          name="color_roof_sheet"
-          label="Techo a color?"
-        />
-        <ColorSideSheetInput />
-        <NumberInput
-          label="Margen extra de presupuesto"
-          name="budget_markup"
-        />
-        <CheckboxInput
-          name="includes_taxes"
-          label="Incluye IVA?"
-        />
+
+        <Fieldset title="Margen e Impuestos">
+          <NumberInput
+            label="Margen extra de presupuesto"
+            name="budget_markup"
+          />
+          <CheckboxInput
+            name="includes_taxes"
+            label="Incluye IVA?"
+          />
+        </Fieldset>
+
         <Button
           type="submit"
           color="info"

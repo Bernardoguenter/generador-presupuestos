@@ -76,6 +76,10 @@ export const BudgetEditForm = ({
       lng: budget.address?.lng,
       lat: budget.address?.lat,
       budget_markup: budget.budget_markup,
+      distanceCalculation:
+        budget.distance && budget.distance > 0 ? "distance" : "address",
+      distanceInKms:
+        budget.includes_freight && budget.distance ? budget.distance : 0,
     }),
     [budget]
   );

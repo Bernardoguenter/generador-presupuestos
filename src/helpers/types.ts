@@ -72,6 +72,7 @@ export interface StructureBudget {
   paymentMethods: string;
   caption: string;
   budget_markup: number;
+  distance: number | null;
 }
 
 export interface SiloBudget {
