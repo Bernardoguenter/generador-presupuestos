@@ -40,20 +40,26 @@ export const useBudgetSubmit = () => {
       lng,
       customer,
       budget_markup,
+      distanceCalculation,
+      distanceInKms,
     } = formData;
 
-    const newAddress = includes_freight
-      ? {
-          address: address ?? "",
-          lat: lat ?? 0,
-          lng: lng ?? 0,
-        }
-      : null;
+    const newAddress =
+      includes_freight && distanceCalculation === "address"
+        ? {
+            address: address ?? "",
+            lat: lat ?? 0,
+            lng: lng ?? 0,
+          }
+        : null;
 
     let newDistance = 0;
     if (company && company.address && includes_freight && newAddress !== null) {
       newDistance = await calculateDistance(company.address, newAddress);
+    } else {
+      newDistance = distanceInKms;
     }
+
     const freight_price = includes_freight
       ? calculateFreightPrice(newDistance, preferences.km_price)
       : 0;
@@ -125,6 +131,10 @@ export const useBudgetSubmit = () => {
         paymentMethods: "",
         caption: "",
         budget_markup,
+        distance:
+          includes_freight && distanceCalculation === "distance"
+            ? newDistance
+            : null,
       };
 
       setPdfInfo({

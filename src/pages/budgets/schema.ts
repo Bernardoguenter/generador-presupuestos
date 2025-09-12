@@ -68,6 +68,13 @@ export const calculateBudgetSchema = z
     color_side_sheet: z.boolean(),
     includes_taxes: z.boolean(),
     includes_gate: z.boolean(),
+    distanceCalculation: z.string(),
+    distanceInKms: z.coerce
+      .number({
+        invalid_type_error: "La distancia en kilómetros debe ser un número",
+      })
+      .int("La cantidad de portones debe ser un número entero")
+      .nonnegative("La distancia en kilómetros  debe ser un número positivo"),
     number_of_gates: z.coerce
       .number({
         invalid_type_error: "La cantidad de portones debe ser un número",
@@ -145,16 +152,36 @@ export const calculateBudgetSchema = z
     path: ["gutter_metters"],
   })
   .refine(
-    (data) =>
-      !data.includes_freight ||
-      (typeof data.address === "string" &&
-        data.address.trim().length > 0 &&
-        typeof data.lat === "number" &&
-        typeof data.lng === "number"),
+    (data) => {
+      if (!data.includes_freight) return true;
+      if (data.distanceCalculation === "address") {
+        return (
+          typeof data.address === "string" &&
+          data.address.trim().length > 0 &&
+          typeof data.lat === "number" &&
+          typeof data.lng === "number"
+        );
+      }
+      return true;
+    },
     {
       message:
-        "Si el presupuesto incluye flete, debes ingresar la dirección y su ubicación.",
+        "Si el presupuesto incluye flete por dirección, debes ingresar la dirección y su ubicación.",
       path: ["address"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (!data.includes_freight) return true;
+      if (data.distanceCalculation === "distance") {
+        return typeof data.distanceInKms === "number" && data.distanceInKms > 0;
+      }
+      return true;
+    },
+    {
+      message:
+        "Si el presupuesto incluye flete por kilómetros, la distancia debe ser mayor a 0.",
+      path: ["distanceCalculation"],
     }
   );
 

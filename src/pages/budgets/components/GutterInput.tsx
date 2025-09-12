@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { NumberInput, CheckboxInput } from "../../../components";
+import { Fieldset } from "../../../components/Fieldset";
 
 export const GutterInput = () => {
   const { control, setValue } = useFormContext();
@@ -20,7 +21,7 @@ export const GutterInput = () => {
   }, [hasGutter, setValue]);
 
   return (
-    <div className="flex justify-between items-start">
+    <Fieldset title="Canaletas">
       <CheckboxInput
         name="has_gutter"
         label="Agregar canaletas?"
@@ -31,6 +32,6 @@ export const GutterInput = () => {
           name="gutter_metters"
         />
       )}
-    </div>
+    </Fieldset>
   );
 };
