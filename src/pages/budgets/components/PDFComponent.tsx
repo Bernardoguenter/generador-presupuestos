@@ -10,7 +10,7 @@ import {
   UpdateBudgetToastSuccess,
 } from "../../../utils/alerts";
 import { createBudget, updateBudget } from "../../../common/lib";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { convertPDF } from "../../../helpers/generatePDF";
 import { useState } from "react";
 import { PDFViewComponent } from "../budgetDetail/PDFViewComponent";
@@ -32,6 +32,7 @@ export const PDFComponent = ({ getBudget, handleView }: Props) => {
   const { preferences } = usePreferencesContext();
   const [viewPdf, setViewPdf] = useState<boolean>(false);
   const [budget, setBudget] = useState<StructureBudget | null>(null);
+  const navigate = useNavigate();
 
   if (!pdfInfo) {
     return;
@@ -88,7 +89,7 @@ export const PDFComponent = ({ getBudget, handleView }: Props) => {
       setPdfInfo(null);
       setShowPDF(false);
       if (isNew) {
-        window.location.replace("/budgets/calculator");
+        navigate("/budgets/calculator");
       }
     }, 1000);
   };
