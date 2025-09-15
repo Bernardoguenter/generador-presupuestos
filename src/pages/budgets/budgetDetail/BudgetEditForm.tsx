@@ -1,24 +1,12 @@
 import { useEffect, useMemo } from "react";
-import {
-  NumberInput,
-  TextInput,
-  CheckboxInput,
-  Button,
-  Form,
-} from "../../../components";
-import { FreightInput } from "../../../components/FreightInput";
-import { ColorSideSheetInput } from "../components/ColorSideSheetInput";
-import { EnclousureHeightInput } from "../components/EnclousureHeightInput";
-import { GutterInput } from "../components/GutterInput";
-import { IncludesGatesInput } from "../components/IncludesGatesInput";
-import { MaterialsSelect } from "../components/MaterialsSelect";
+import { Button, Form } from "../../../components";
 import { PDFComponent } from "../components/PDFComponent";
 import { ResetFormButton } from "../components/ResetFormButton";
-import { StructureSelect } from "../components/StructureSelect";
 import { calculateBudgetSchema } from "../schema";
 import type { StructureBudget } from "../../../helpers/types";
 import { usePDFContext } from "../../../common/context";
 import { useBudgetSubmit } from "../../../common/hooks";
+import { BudgetFormContent } from "../components/BudgetFormContent";
 
 interface Props {
   budget: StructureBudget;
@@ -91,43 +79,7 @@ export const BudgetEditForm = ({
         schema={calculateBudgetSchema}
         defaultValues={defaultValues}
         className="mt-4 w-full lg:w-1/2">
-        <MaterialsSelect />
-        <StructureSelect />
-        <NumberInput
-          label="Ancho"
-          name="width"
-        />
-        <NumberInput
-          label="Largo"
-          name="length"
-        />
-        <NumberInput
-          label="Alto"
-          name="height"
-        />
-        <EnclousureHeightInput />
-        <FreightInput />
-        <TextInput
-          name="customer"
-          label="Cliente"
-        />
-        <div className="flex justify-between items-start">
-          <GutterInput />
-        </div>
-        <IncludesGatesInput />
-        <CheckboxInput
-          name="color_roof_sheet"
-          label="Techo a color?"
-        />
-        <ColorSideSheetInput />
-        <NumberInput
-          label="Margen extra de presupuesto"
-          name="budget_markup"
-        />
-        <CheckboxInput
-          name="includes_taxes"
-          label="Incluye IVA?"
-        />
+        <BudgetFormContent />
         <Button
           type="submit"
           color="info"

@@ -16,6 +16,7 @@ export const Logo = ({ containerStyles, logoStyles }: LogoProps) => {
             className={logoStyles}
             src={logoUrl}
             alt={logoAlt}
+            crossOrigin="anonymous"
           />
         </div>
       ) : (
