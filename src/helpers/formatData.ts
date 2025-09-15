@@ -164,3 +164,40 @@ export function getMimeTypeFromUrl(url: string): string {
       return "image/png";
   }
 }
+
+export const getDefaultDescription = (
+  structure_type: string,
+  width: number,
+  length: number,
+  height: number,
+  enclousure_height: number
+) => {
+  return structure_type === "Galpón"
+    ? `${structure_type} de ${width}mts x ${length}mts x ${height}mts de altura libre con ${enclousure_height}mts cerramiento de chapa en los laterales.`
+    : `${structure_type} de ${width}mts x ${length}mts x ${height}mts de altura libre`;
+};
+
+export const getDefaultCaption = (
+  includes_freight: boolean,
+  includes_taxes: boolean,
+  iva_percentage: number
+) => {
+  return `${
+    includes_freight
+      ? "* El precio inlcuye el flete"
+      : "* El precio no inlcuye el flete"
+  }; * Montaje incluído; ${
+    includes_taxes
+      ? `* Incluye IVA ${iva_percentage}%`
+      : `* No Incluye IVA ${iva_percentage}%`
+  };
+    `;
+};
+
+export const getTotalArs = (
+  total: number,
+  dollar_quote: number,
+  budget_markup: number
+) => {
+  return total * dollar_quote * (1 + budget_markup / 100);
+};

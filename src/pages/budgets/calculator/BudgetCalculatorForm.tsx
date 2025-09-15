@@ -1,30 +1,17 @@
 import { useMemo } from "react";
 import { usePDFContext } from "../../../common/context";
-import {
-  NumberInput,
-  TextInput,
-  CheckboxInput,
-  Button,
-  Form,
-  Fieldset,
-} from "../../../components";
-import { FreightInput } from "../../../components/FreightInput";
-import { ColorSideSheetInput } from "../components/ColorSideSheetInput";
-import { EnclousureHeightInput } from "../components/EnclousureHeightInput";
-import { GutterInput } from "../components/GutterInput";
-import { IncludesGatesInput } from "../components/IncludesGatesInput";
-import { MaterialsSelect } from "../components/MaterialsSelect";
+import { Button, Form } from "../../../components";
 import { PDFComponent } from "../components/PDFComponent";
 import { ResetFormButton } from "../components/ResetFormButton";
-import { StructureSelect } from "../components/StructureSelect";
-import { calculateBudgetSchema } from "../schema";
+import { calculateBudgetSchema, type BudgetFormData } from "../schema";
 import { useBudgetSubmit } from "../../../common/hooks";
+import { BudgetFormContent } from "../components/BudgetFormContent";
 
 export const BudgetCalculatorForm = () => {
   const { setShowPDF, showPDF, pdfInfo } = usePDFContext();
   const { handleBudgetSubmit } = useBudgetSubmit();
 
-  const defaultValues = useMemo(
+  const defaultValues: BudgetFormData = useMemo(
     () => ({
       material: "Hierro torsionado",
       structure_type: "Galpón",
@@ -59,55 +46,7 @@ export const BudgetCalculatorForm = () => {
         schema={calculateBudgetSchema}
         defaultValues={defaultValues}
         className="mt-4 w-full lg:w-1/2">
-        <Fieldset title="Cliente">
-          {" "}
-          <TextInput
-            name="customer"
-            label="Nombre de cliente"
-          />
-        </Fieldset>
-
-        <Fieldset title="Material y Estructura">
-          <MaterialsSelect />
-          <StructureSelect />
-        </Fieldset>
-        <Fieldset title="Medidas">
-          <NumberInput
-            label="Ancho"
-            name="width"
-          />
-          <NumberInput
-            label="Largo"
-            name="length"
-          />
-          <NumberInput
-            label="Alto"
-            name="height"
-          />
-          <EnclousureHeightInput />
-        </Fieldset>
-        <FreightInput />
-        <GutterInput />
-        <Fieldset title="Chapa Color">
-          <CheckboxInput
-            name="color_roof_sheet"
-            label="Techo a color?"
-          />
-          <ColorSideSheetInput />
-        </Fieldset>
-        <IncludesGatesInput />
-
-        <Fieldset title="Margen e Impuestos">
-          <NumberInput
-            label="Margen extra de presupuesto"
-            name="budget_markup"
-          />
-          <CheckboxInput
-            name="includes_taxes"
-            label="Incluye IVA?"
-          />
-        </Fieldset>
-
+        <BudgetFormContent />
         <Button
           type="submit"
           color="info"
