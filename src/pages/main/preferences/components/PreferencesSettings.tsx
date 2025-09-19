@@ -112,16 +112,6 @@ export default function PreferencesSettings() {
             name="u_profile_column_cost"
           />
         </Fieldset>
-        <Fieldset title="Alma LLena">
-          <NumberInput
-            label="Costo Alma Llena m2"
-            name="solid_web_cost"
-          />
-          <NumberInput
-            label="Costo columna Alma Llena"
-            name="solid_web_column_cost"
-          />
-        </Fieldset>
         <SolidWebPrices
           solid_web_price_list={preferences.solid_web_price_list}
           solid_web_columns_price_list={
