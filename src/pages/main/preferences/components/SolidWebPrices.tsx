@@ -21,7 +21,7 @@ export const SolidWebPrices = ({ solid_web_price_list }: Props) => {
             <NumberInput
               key={key}
               name={`solid_web_columns_price_list.${key}`}
-              label={`Columna Ancho hasta ${key} m2`}
+              label={`Columna Ancho hasta ${key} m`}
             />
           </>
         ))}
