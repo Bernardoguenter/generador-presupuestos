@@ -8,8 +8,6 @@ const initialPreferencies = {
   company_id: "",
   dollar_quote: 0,
   default_markup: 0,
-  wharehouse_prices: {},
-  shed_prices: {},
   gate_price: 0,
   gutter_price: 0,
   km_price: 0,
@@ -22,6 +20,8 @@ const initialPreferencies = {
   twisted_iron_column_cost: 0,
   solid_web_column_cost: 0,
   u_profile_column_cost: 0,
+  solid_web_price_list: {},
+  solid_web_columns_price_list: {},
 };
 
 export function PreferencesProvider({ children }: { children: ReactNode }) {
