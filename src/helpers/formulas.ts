@@ -1,4 +1,9 @@
-import type { Address, GatesMeasurements, Preferences } from "./types";
+import type {
+  Address,
+  GatesMeasurements,
+  Preferences,
+  SolidWebPriceMap,
+} from "./types";
 
 const calculateGatePrice = (
   gates_measurements: GatesMeasurements[],
@@ -54,6 +59,23 @@ export const calculateFreightPrice = (
   return distance * price_per_km;
 };
 
+const calculateSolidWebStructure = (
+  width: number,
+  solid_web_price_list: SolidWebPriceMap
+) => {
+  return width <= 8
+    ? solid_web_price_list["8"]
+    : width <= 12
+    ? solid_web_price_list["12"]
+    : width <= 16
+    ? solid_web_price_list["16"]
+    : width <= 20
+    ? solid_web_price_list["20"]
+    : width <= 25
+    ? solid_web_price_list["25"]
+    : solid_web_price_list["30"];
+};
+
 export const getBudgetTotal = (
   preferences: Preferences,
   width: number,
@@ -77,13 +99,13 @@ export const getBudgetTotal = (
     gate_price,
     gutter_price,
     enclousure_cost,
-    solid_web_cost,
     twisted_iron_cost,
     u_profile_cost,
     iva_percentage,
-    solid_web_column_cost,
     twisted_iron_column_cost,
     u_profile_column_cost,
+    solid_web_price_list,
+    solid_web_columns_price_list,
   } = preferences;
 
   const floorArea = width * length;
@@ -95,7 +117,7 @@ export const getBudgetTotal = (
       ? twisted_iron_cost
       : material === "Perfil u Ángulo"
       ? u_profile_cost
-      : solid_web_cost;
+      : calculateSolidWebStructure(width, solid_web_price_list!);
 
   //CALCULAR PRECIO DE ESTRUCTURA
   const structure_cost = floorArea * price_per_meter;
@@ -107,9 +129,9 @@ export const getBudgetTotal = (
   const columnsPrice =
     material === "Hierro torsionado"
       ? twisted_iron_column_cost
-      : material === "Perfil U Ángulo"
+      : material === "Perfil u Ángulo"
       ? u_profile_column_cost
-      : solid_web_column_cost;
+      : calculateSolidWebStructure(width, solid_web_columns_price_list);
 
   const columnsCost =
     height === 5

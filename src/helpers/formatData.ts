@@ -33,6 +33,58 @@ export const formatNumber = (num: number) => {
   return valorFormateado;
 };
 
+const getAlmaLLena = (width: number, details: string) => {
+  if (width > 8 && width <= 12) {
+    return details
+      .replace("perfil W 200 x 15.0", "perfil W 250 x 22.3")
+      .replace(
+        "alma 151mm, espesor 4.3mm; ala 100mm espesor 5.2mm",
+        "alma 211mm, espesor 5.6mm; ala 102mm espesor 6.1mm"
+      );
+  }
+  if (width > 12 && width <= 16) {
+    return details
+      .replace("perfil W 200 x 15.0", "perfil W 310 x 28.3")
+      .replace(
+        "alma 151mm, espesor 4.3mm; ala 100mm espesor 5.2mm",
+        "alma 305mm, espesor 6.8mm; ala 165mm espesor 7.1mm"
+      );
+  }
+  if (width > 16 && width <= 20) {
+    return details
+      .replace("perfil W 200 x 15.0", "perfil W 410 x 38.8")
+      .replace(
+        "alma 151mm, espesor 4.3mm; ala 100mm espesor 5.2mm",
+        "alma 399mm, espesor 6.4mm; ala 140mm espesor 8.8mm"
+      );
+  }
+  if (width > 20 && width <= 25) {
+    return details
+      .replace("perfil W 200 x 15.0", "perfil W 460 x 52.0")
+      .replace(
+        "alma 151mm, espesor 4.3mm; ala 100mm espesor 5.2mm",
+        "alma 399mm, espesor 8.8mm; ala 152mm espesor 10.8mm"
+      )
+      .replace(
+        "Perfilería (techo): Perfil galvanizado de 100x50x2mm; Perfilería (laterales): Perfil galvanizado 100x50x2mm",
+        "Perfilería (techo): Perfil galvanizado de 120x50x2mm; Perfilería (laterales): Perfil galvanizado 120x50x2mm"
+      );
+  }
+  if (width > 25) {
+    return details
+      .replace("perfil W 200 x 15.0", "perfil W 530 x 66.0")
+      .replace(
+        "alma 151mm, espesor 4.3mm; ala 100mm espesor 5.2mm",
+        "alma 522mm, espesor 9mm; ala 204mm espesor 13.6mm"
+      )
+      .replace(
+        "Perfilería (techo): Perfil galvanizado de 100x50x2mm; Perfilería (laterales): Perfil galvanizado 100x50x2mm",
+        "Perfilería (techo): Perfil galvanizado de 120x50x2mm; Perfilería (laterales): Perfil galvanizado 120x50x2mm"
+      );
+  }
+  return details;
+};
+
 const getHierroTorsionado = (width: number, details: string) => {
   if (width <= 8) {
     return details
@@ -115,19 +167,35 @@ export const formatDetails = (
     details = getHierroTorsionado(width, details);
   } else if (material === "Perfil u Ángulo") {
     details = getPerfilUAngulo(width, details);
+  } else if (material === "Alma llena") {
+    details = getAlmaLLena(width, details);
   }
 
   if (color_roof_sheet) {
-    details = details.replace(
-      "Chapa de techo: Sincalum",
-      "Chapa de techo: Color"
-    );
+    if (material !== "Alma llena") {
+      details = details.replace(
+        "Chapa de techo: Sincalum",
+        "Chapa de techo: Color"
+      );
+    } else {
+      details = details.replace(
+        "Techo: Chapa acanalada color blanco n25",
+        "Techo: Chapa acanalada color n25"
+      );
+    }
   }
   if (color_side_sheet && structure_type === "Galpón") {
-    details = details.replace(
-      "Chapa de lateral: Sincalum",
-      "Chapa de lateral: Color"
-    );
+    if (material !== "Alma llena") {
+      details = details.replace(
+        "Chapa de lateral: Sincalum",
+        "Chapa de lateral: Color"
+      );
+    } else {
+      details = details.replace(
+        "Laterales: Chapa T101 color blanco n25;",
+        "Laterales: Chapa T101 blanco n25;"
+      );
+    }
   }
 
   if (includes_gate && structure_type === "Galpón") {
@@ -184,9 +252,9 @@ export const getDefaultCaption = (
 ) => {
   return `${
     includes_freight
-      ? "* El precio inlcuye el flete"
-      : "* El precio no inlcuye el flete"
-  }; * Montaje incluído; ${
+      ? "* El precio incluye el flete"
+      : "* El precio no incluye el flete"
+  }; * Montaje incluido; ${
     includes_taxes
       ? `* Incluye IVA ${iva_percentage}%`
       : `* No Incluye IVA ${iva_percentage}%`
