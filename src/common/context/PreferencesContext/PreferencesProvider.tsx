@@ -20,8 +20,24 @@ const initialPreferencies = {
   twisted_iron_column_cost: 0,
   solid_web_column_cost: 0,
   u_profile_column_cost: 0,
-  solid_web_price_list: {},
-  solid_web_columns_price_list: {},
+  solid_web_price_list: {
+    8: 0,
+    12: 0,
+    16: 0,
+    20: 0,
+    25: 0,
+    30: 0,
+    32: 0,
+  },
+  solid_web_columns_price_list: {
+    8: 0,
+    12: 0,
+    16: 0,
+    20: 0,
+    25: 0,
+    30: 0,
+    32: 0,
+  },
 };
 
 export function PreferencesProvider({ children }: { children: ReactNode }) {
