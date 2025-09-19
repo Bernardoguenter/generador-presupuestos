@@ -1,5 +1,14 @@
 import { z } from "zod";
 
+const solidWebPriceListSchema = z.object({
+  8: z.coerce.number().positive(),
+  12: z.coerce.number().positive(),
+  16: z.coerce.number().positive(),
+  20: z.coerce.number().positive(),
+  25: z.coerce.number().positive(),
+  30: z.coerce.number().positive(),
+});
+
 export const preferencesSchema = z.object({
   dollar_quote: z.coerce
     .number({
@@ -142,6 +151,8 @@ export const preferencesSchema = z.object({
       message:
         "costo de columnas de Perfil U debe tener como máximo 2 decimales",
     }),
+  solid_web_price_list: solidWebPriceListSchema,
+  solid_web_columns_price_list: solidWebPriceListSchema,
 });
 
 export type PreferencesFormData = z.infer<typeof preferencesSchema>;

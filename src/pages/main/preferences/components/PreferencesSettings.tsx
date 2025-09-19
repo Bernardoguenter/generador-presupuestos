@@ -15,6 +15,7 @@ import { updateUserPreferences } from "../../../../common/lib";
 import type { Preferences } from "../../../../helpers/types";
 import { usePreferencesContext } from "../../../../common/context";
 import { useIsSubmitting } from "../../../../common/hooks/useIsSubmitting";
+import { SolidWebPrices } from "./SolidWebPrices";
 
 export default function PreferencesSettings() {
   const { preferences, setIsLoading } = usePreferencesContext();
@@ -111,16 +112,12 @@ export default function PreferencesSettings() {
             name="u_profile_column_cost"
           />
         </Fieldset>
-        <Fieldset title="Alma LLena">
-          <NumberInput
-            label="Costo Alma Llena m2"
-            name="solid_web_cost"
-          />
-          <NumberInput
-            label="Costo columna Alma Llena"
-            name="solid_web_column_cost"
-          />
-        </Fieldset>
+        <SolidWebPrices
+          solid_web_price_list={preferences.solid_web_price_list}
+          solid_web_columns_price_list={
+            preferences.solid_web_columns_price_list
+          }
+        />
         <div className="w-full flex justify-center">
           <Button
             styles="mt-4"

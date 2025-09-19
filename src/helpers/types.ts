@@ -42,6 +42,8 @@ export interface Preferences {
   twisted_iron_column_cost: number;
   solid_web_column_cost: number;
   u_profile_column_cost: number;
+  solid_web_price_list: SolidWebPriceMap;
+  solid_web_columns_price_list: SolidWebPriceMap;
 }
 
 export interface StructureBudget {
@@ -152,3 +154,6 @@ export interface PDFInfo {
 export interface Totals {
   finalPriceInDollars: number;
 }
+
+export type WidthSolidWeb = 8 | 12 | 16 | 20 | 25 | 30;
+export type SolidWebPriceMap = Record<WidthSolidWeb, number>;

@@ -8,7 +8,7 @@ export const ColorSideSheetInput = () => {
   const color_side_sheet = useWatch({ control, name: "color_side_sheet" });
 
   useEffect(() => {
-    if (structureType === "Galpón") {
+    if (structureType !== "Galpón") {
       setValue("color_side_sheet", false);
       return;
     }
