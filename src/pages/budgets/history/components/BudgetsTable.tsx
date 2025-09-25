@@ -132,7 +132,7 @@ const StructureBudgetTable = ({
             </td>
           </tr>
         ) : (
-          (paginatedBudgets as SiloBudget[])?.map((budget) => (
+          (paginatedBudgets as StructureBudget[])?.map((budget) => (
             <tr
               key={budget.id}
               className="flex items-center w-full ">
@@ -140,10 +140,10 @@ const StructureBudgetTable = ({
                 {budget.customer.length > 0 ? budget.customer : "-"}
               </td>
               <td className="px-2 py-2 text-xs overflow-hidden w-3/16">
-                {/*  {budget.width} x {budget.height} x {budget.length} mts */}
+                {budget.width} x {budget.height} x {budget.length} mts
               </td>
               <td className="px-2 py-2 text-xs overflow-hidden w-3/16">
-                {/*  {budget.structure_type} */}
+                {budget.structure_type}
               </td>
               <td className="px-2 py-2 text-xs overflow-hidden w-3/16">
                 {(budget.address && budget.address.address) || "-"}
@@ -157,7 +157,7 @@ const StructureBudgetTable = ({
               </td>
               <td className="px-2 py-2 flex justify-center items-center w-2/16">
                 <CustomLink
-                  href={`silo/${budget.id}`}
+                  href={`structure/${budget.id}`}
                   styles="flex items-center justify-center">
                   <EditIcon />
                 </CustomLink>
