@@ -1,7 +1,6 @@
 import { paymentMethods } from "../../../helpers/staticData";
 import { Form } from "../../../components";
-import { ConfirmPDFhema, type ConfirmPDFFormData } from "../schema";
-import { PDFFormContent } from "./PDFFormContent";
+import { ConfirmPDFSchema, type ConfirmPDFFormData } from "../schema";
 import { usePDFContext, usePreferencesContext } from "../../../common/context";
 import {
   CreateBudgetToastError,
@@ -14,19 +13,20 @@ import { useNavigate, useParams } from "react-router";
 import { convertPDF } from "../../../helpers/generatePDF";
 import { useState } from "react";
 import { PDFViewComponent } from "../budgetDetail/PDFViewComponent";
-import type { StructureBudget } from "../../../helpers/types";
+import type { StructureBudget, StructurePDFInfo } from "../../../helpers/types";
 import {
   getDefaultCaption,
-  getDefaultDescription,
+  getStructureDefaultDescription,
   getTotalArs,
 } from "../../../helpers/formatData";
+import { PDFStructureFormContent } from "./PDFStructureFormContent";
 
 interface Props {
-  getBudget?: (id: string) => void;
+  getBudget?: (id: string, type: "silo" | "structure") => void;
   handleView?: () => void;
 }
 
-export const PDFComponent = ({ getBudget, handleView }: Props) => {
+export const PDFStructureComponent = ({ getBudget, handleView }: Props) => {
   const { id } = useParams();
   const { pdfInfo, setPdfInfo, setShowPDF } = usePDFContext();
   const { preferences } = usePreferencesContext();
@@ -48,9 +48,9 @@ export const PDFComponent = ({ getBudget, handleView }: Props) => {
     details,
     dataToSubmit,
     includes_freight,
-  } = pdfInfo;
+  } = pdfInfo as StructurePDFInfo;
 
-  const defaultDescription = getDefaultDescription(
+  const defaultDescription = getStructureDefaultDescription(
     structure_type,
     width,
     length,
@@ -127,7 +127,7 @@ export const PDFComponent = ({ getBudget, handleView }: Props) => {
       UpdateBudgetToastSuccess();
 
       if (getBudget) {
-        getBudget(id);
+        getBudget(id, "structure");
       }
       if (handleView) {
         handleView();
@@ -143,12 +143,15 @@ export const PDFComponent = ({ getBudget, handleView }: Props) => {
     <Form
       onSubmit={handleSubmit}
       defaultValues={defaultValues}
-      schema={ConfirmPDFhema}
+      schema={ConfirmPDFSchema}
       className="w-full lg:w-1/2">
       {viewPdf && budget ? (
-        <PDFViewComponent budget={budget} />
+        <PDFViewComponent
+          budget={budget}
+          type={"structure"}
+        />
       ) : (
-        <PDFFormContent />
+        <PDFStructureFormContent />
       )}
     </Form>
   );

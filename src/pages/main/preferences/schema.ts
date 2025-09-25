@@ -9,6 +9,19 @@ const solidWebPriceListSchema = z.object({
   30: z.coerce.number().positive(),
 });
 
+export const silosPriceSchema = z.record(
+  z.string(),
+  z.coerce
+    .number({
+      required_error: "Debes ingresar un precio",
+      invalid_type_error: "El precio debe ser un número",
+    })
+    .positive("El precio debe ser un número positivo")
+    .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
+      message: "El precio debe tener como máximo 2 decimales",
+    })
+);
+
 export const preferencesSchema = z.object({
   dollar_quote: z.coerce
     .number({
@@ -64,15 +77,6 @@ export const preferencesSchema = z.object({
     .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
       message: "La diferencia chapa color debe tener como máximo 2 decimales",
     }),
-  solid_web_cost: z.coerce
-    .number({
-      required_error: "Debes ingresar un valor para el costo alma llena",
-      invalid_type_error: "El costo de alma llena debe ser un número",
-    })
-    .nonnegative("El costo de alma llena debe ser un número positivo")
-    .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
-      message: "El costo de alma llena debe tener como máximo 2 decimales",
-    }),
   u_profile_cost: z.coerce
     .number({
       required_error: "Debes ingresar un valor para el costo de perfil U",
@@ -125,20 +129,6 @@ export const preferencesSchema = z.object({
       message:
         "el costo de columnas de hierro torsionado debe tener como máximo 2 decimales",
     }),
-  solid_web_column_cost: z.coerce
-    .number({
-      required_error:
-        "Debes ingresar un para el costo de columnas de alma llena",
-      invalid_type_error:
-        "El costo de columnas de alma llena debe ser un número",
-    })
-    .nonnegative(
-      "El costo de columnas de alma llena debe ser un número positivo"
-    )
-    .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
-      message:
-        "El costo de columnas de alma llena debe tener como máximo 2 decimales",
-    }),
   u_profile_column_cost: z.coerce
     .number({
       required_error:
@@ -153,35 +143,8 @@ export const preferencesSchema = z.object({
     }),
   solid_web_price_list: solidWebPriceListSchema,
   solid_web_columns_price_list: solidWebPriceListSchema,
+  airbase_silos: silosPriceSchema,
+  feeder_silos: silosPriceSchema,
 });
 
 export type PreferencesFormData = z.infer<typeof preferencesSchema>;
-
-/* export const galponPricesSchema = z.record(
-  z.string(),
-  z.coerce
-    .number({
-      required_error: "Debes ingresar un precio",
-      invalid_type_error: "El precio debe ser un número",
-    })
-    .positive("El precio debe ser un número positivo")
-    .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
-      message: "El precio debe tener como máximo 2 decimales",
-    })
-);
-
-export const tingladoPricesSchema = z.record(
-  z.string(),
-  z.coerce
-    .number({
-      required_error: "Debes ingresar un precio",
-      invalid_type_error: "El precio debe ser un número",
-    })
-    .positive("El precio debe ser un número positivo")
-    .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
-      message: "El precio debe tener como máximo 2 decimales",
-    })
-);
-
-export type GalponPricesFormData = z.infer<typeof galponPricesSchema>;
-export type TingladoPricesFormData = z.infer<typeof tingladoPricesSchema>; */

@@ -44,6 +44,10 @@ export interface Preferences {
   u_profile_column_cost: number;
   solid_web_price_list: SolidWebPriceMap;
   solid_web_columns_price_list: SolidWebPriceMap;
+  feeder_silos: FeederSilosPriceMap;
+  airbase_silos: AirbaseSilosPriceMap;
+  cone_base_45: number;
+  cone_base_55: number;
 }
 
 export interface StructureBudget {
@@ -82,19 +86,33 @@ export interface SiloBudget {
   created_by: string | CreatedByObject;
   created_at: string;
   customer: string;
-  silo_type: string;
   includes_freight: boolean;
   freight_price: number;
   address: Address | null;
+  distance: number | null;
   includes_taxes: boolean;
   total: number;
-  details: string;
+  totals: SilosTotals;
   description: string;
   paymentMethods: string;
   caption: string;
   budget_markup: number;
-  cone_base: string;
+  silos: Silos;
 }
+
+export interface SilosTotals {
+  silos: number[];
+  freight_price: number;
+  total: number;
+}
+
+export interface Silo {
+  type: string;
+  capacity: string;
+  cone_base?: string;
+}
+
+export type Silos = Silo[];
 
 export type GatesMeasurements = {
   width: number;
@@ -112,7 +130,7 @@ export type Address = {
   lng: number;
 };
 
-export interface PDFBudget {
+/* export interface PDFBudget {
   budget_id: string;
   customer: string;
   details: string;
@@ -131,9 +149,20 @@ export interface PDFBudget {
   includes_taxes: boolean;
   freight_price: number;
   has_gutter: boolean;
+} */
+
+export interface SiloPDFInfo {
+  customer: string;
+  includes_taxes: boolean;
+  freight_price: number;
+  includes_freight: boolean;
+  total: number;
+  distance?: number | null;
+  customer_address?: string | null;
+  dataToSubmit: Omit<SiloBudget, "created_at" | "id">;
 }
 
-export interface PDFInfo {
+export interface StructurePDFInfo {
   customer: string;
   details: string;
   structure_type: string;
@@ -157,3 +186,5 @@ export interface Totals {
 
 export type WidthSolidWeb = 8 | 12 | 16 | 20 | 25 | 30;
 export type SolidWebPriceMap = Record<WidthSolidWeb, number>;
+export type AirbaseSilosPriceMap = Record<string, number>;
+export type FeederSilosPriceMap = Record<string, number>;

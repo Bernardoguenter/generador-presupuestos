@@ -1,17 +1,20 @@
 import { useMemo } from "react";
 import { usePDFContext } from "../../../common/context";
 import { Button, Form } from "../../../components";
-import { PDFComponent } from "../components/PDFComponent";
 import { ResetFormButton } from "../components/ResetFormButton";
-import { calculateBudgetSchema, type BudgetFormData } from "../schema";
-import { useBudgetSubmit } from "../../../common/hooks";
-import { BudgetFormContent } from "../components/BudgetFormContent";
+import {
+  calculateStructureBudgetSchema,
+  type StructureBudgetFormData,
+} from "../schema";
+import { useStructureBudgetSubmit } from "../../../common/hooks";
+import { StructureBudgetFormContent } from "../components/StructureBudgetFormContent";
+import { PDFStructureComponent } from "../components/PDFStructureComponent";
 
-export const BudgetCalculatorForm = () => {
+export const StructureBudgetCalculatorForm = () => {
   const { setShowPDF, showPDF, pdfInfo } = usePDFContext();
-  const { handleBudgetSubmit } = useBudgetSubmit();
+  const { handleStructureBudgetSubmit } = useStructureBudgetSubmit();
 
-  const defaultValues: BudgetFormData = useMemo(
+  const defaultValues: StructureBudgetFormData = useMemo(
     () => ({
       material: "Hierro torsionado",
       structure_type: "Galpón",
@@ -42,23 +45,23 @@ export const BudgetCalculatorForm = () => {
   return (
     <div className="flex lg:flex-row flex-col w-full gap-8 ">
       <Form
-        onSubmit={handleBudgetSubmit}
-        schema={calculateBudgetSchema}
+        onSubmit={handleStructureBudgetSubmit}
+        schema={calculateStructureBudgetSchema}
         defaultValues={defaultValues}
         className="mt-4 w-full lg:w-1/2">
-        <BudgetFormContent />
+        <StructureBudgetFormContent />
         <Button
           type="submit"
           color="info"
           styles="mt-4">
           Crear Vista Previa
         </Button>
-        <ResetFormButton
+        <ResetFormButton<StructureBudgetFormData>
           setShowPDF={setShowPDF}
           defaultValues={defaultValues}
         />
       </Form>
-      {showPDF && pdfInfo && <PDFComponent />}
+      {showPDF && pdfInfo && <PDFStructureComponent />}
     </div>
   );
 };

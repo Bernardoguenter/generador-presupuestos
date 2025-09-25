@@ -1,4 +1,5 @@
 import { Controller, useFormContext } from "react-hook-form";
+import { getErrorByPath } from "./getErrorByPath";
 import { CloseIcon } from "../assets/svg";
 
 interface Props {
@@ -30,8 +31,7 @@ export const TextInputWithCloseIcon = ({
     control,
     formState: { errors },
   } = useFormContext();
-
-  const fieldError = errors?.[name]?.message;
+  const fieldError = getErrorByPath(errors, name);
 
   return (
     <div className={`flex flex-col mb-1 ${containerStyles || ""}`}>
