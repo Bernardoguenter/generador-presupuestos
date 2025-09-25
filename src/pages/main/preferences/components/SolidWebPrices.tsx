@@ -1,25 +1,22 @@
+import { usePreferencesContext } from "../../../../common/context";
 import { NumberInput, Fieldset } from "../../../../components";
-import type { SolidWebPriceMap } from "../../../../helpers/types";
 
-interface Props {
-  solid_web_price_list: SolidWebPriceMap;
-  solid_web_columns_price_list: SolidWebPriceMap;
-}
+export const SolidWebPrices = () => {
+  const { preferences } = usePreferencesContext();
+  const { solid_web_price_list } = preferences;
 
-export const SolidWebPrices = ({ solid_web_price_list }: Props) => {
   return (
     <>
       <Fieldset title="Alma LLena">
         {Object.entries(solid_web_price_list).map(([key]) => (
           <>
-            {" "}
             <NumberInput
-              key={key}
+              key={`solid_web_price_list.${key}`}
               name={`solid_web_price_list.${key}`}
               label={`Ancho hasta ${key}m`}
             />
             <NumberInput
-              key={key}
+              key={`solid_web_columns_price_list.${key}`}
               name={`solid_web_columns_price_list.${key}`}
               label={`Columna Ancho hasta ${key}m`}
             />

@@ -2,9 +2,10 @@ import { formatDetails } from "../../helpers/formatData";
 import {
   calculateDistance,
   calculateFreightPrice,
-  getBudgetTotal,
+  getStructureBudgetTotal,
 } from "../../helpers/formulas";
-import type { BudgetFormData } from "../../pages/budgets/schema";
+import type { StructurePDFInfo } from "../../helpers/types";
+import type { StructureBudgetFormData } from "../../pages/budgets/schema";
 import {
   useAuthContext,
   usePreferencesContext,
@@ -12,13 +13,19 @@ import {
   usePDFContext,
 } from "../context";
 
-export const useBudgetSubmit = () => {
+export const useStructureBudgetSubmit = () => {
   const { authUser } = useAuthContext();
   const { preferences } = usePreferencesContext();
   const { company } = useCompanyContext();
-  const { setPdfInfo, setShowPDF } = usePDFContext();
+  const { setPdfInfo: setPdfInfoGeneric, setShowPDF } = usePDFContext();
 
-  const handleBudgetSubmit = async (formData: BudgetFormData) => {
+  const setPdfInfo = setPdfInfoGeneric as React.Dispatch<
+    React.SetStateAction<StructurePDFInfo | null>
+  >;
+
+  const handleStructureBudgetSubmit = async (
+    formData: StructureBudgetFormData
+  ) => {
     const {
       color_roof_sheet,
       color_side_sheet,
@@ -74,7 +81,7 @@ export const useBudgetSubmit = () => {
     const newColor_side_sheet =
       structure_type === "Galpón" ? color_side_sheet : false;
 
-    const total = getBudgetTotal(
+    const total = getStructureBudgetTotal(
       preferences,
       width,
       length,
@@ -115,7 +122,7 @@ export const useBudgetSubmit = () => {
         includes_freight,
         includes_gate,
         includes_taxes,
-        created_by: authUser.id,
+        created_by: authUser?.id,
         details: newDetails,
         freight_price,
         total: total,
@@ -161,5 +168,5 @@ export const useBudgetSubmit = () => {
     }
   };
 
-  return { handleBudgetSubmit };
+  return { handleStructureBudgetSubmit };
 };

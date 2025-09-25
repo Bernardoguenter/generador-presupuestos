@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import { getErrorByPath } from "./getErrorByPath";
 import { VisibilityIcon, VisibilityOffIcon } from "../assets/svg";
 
 interface Props {
@@ -15,7 +16,7 @@ export const PasswordInput = ({ name, label }: Props) => {
 
   const [showText, setShowText] = useState<boolean>(false);
 
-  const fieldError = errors?.[name]?.message;
+  const fieldError = getErrorByPath(errors, name);
 
   return (
     <div className="flex flex-col mb-1">

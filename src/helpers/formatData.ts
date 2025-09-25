@@ -1,5 +1,5 @@
-import { materialsMap } from "./staticData";
-import type { GatesMeasurements } from "./types";
+import { materialsMap, silosMap } from "./staticData";
+import type { GatesMeasurements, Silos } from "./types";
 
 export const formatCompanyName = (name: string) => {
   return name.includes(" ")
@@ -233,7 +233,27 @@ export function getMimeTypeFromUrl(url: string): string {
   }
 }
 
-export const getDefaultDescription = (
+export function getSilosDescriptions(silos: Silos): string[] {
+  return silos.map((silo) => {
+    const typeMap = silosMap[silo.type as keyof typeof silosMap];
+    const baseDescription =
+      typeMap && silo.capacity in typeMap
+        ? typeMap[silo.capacity as keyof typeof typeMap]
+        : "Silo no definido";
+
+    if (
+      silo.type === "airbase_silos" &&
+      silo.cone_base &&
+      silo.cone_base !== "estandar"
+    ) {
+      return `${baseDescription}, base cono: ${silo.cone_base}°`;
+    }
+
+    return baseDescription;
+  });
+}
+
+export const getStructureDefaultDescription = (
   structure_type: string,
   width: number,
   length: number,

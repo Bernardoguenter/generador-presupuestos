@@ -6,9 +6,10 @@ import { DeleteBudgetToastError } from "../../../../utils/alerts";
 interface Props {
   id: string;
   removeBudget: (id: string) => void;
+  type: "silo" | "structure";
 }
 
-export const DeleteBudgetButton = ({ removeBudget, id }: Props) => {
+export const DeleteBudgetButton = ({ removeBudget, id, type }: Props) => {
   const { showAlert } = useSweetAlertModal();
 
   const handleDeleteBudget = async (id: string) => {
@@ -25,7 +26,7 @@ export const DeleteBudgetButton = ({ removeBudget, id }: Props) => {
       });
 
       if (result.isConfirmed) {
-        const { error } = await deleteBudget(id);
+        const { error } = await deleteBudget(id, type);
 
         if (!error) {
           removeBudget(id);

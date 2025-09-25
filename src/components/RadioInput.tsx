@@ -1,4 +1,5 @@
 import { Controller, useFormContext } from "react-hook-form";
+import { getErrorByPath } from "./getErrorByPath";
 
 interface Option {
   label: string;
@@ -17,7 +18,7 @@ export const RadioInput = ({ name, label, options }: Props) => {
     formState: { errors },
   } = useFormContext();
 
-  const fieldError = errors?.[name]?.message;
+  const fieldError = getErrorByPath(errors, name);
 
   return (
     <div className="flex flex-col gap-2 mb-2">

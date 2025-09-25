@@ -38,6 +38,10 @@ const initialPreferencies = {
     30: 0,
     32: 0,
   },
+  feeder_silos: {},
+  airbase_silos: {},
+  cone_base_45: 0,
+  cone_base_55: 0,
 };
 
 export function PreferencesProvider({ children }: { children: ReactNode }) {

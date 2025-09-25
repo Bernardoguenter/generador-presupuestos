@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import { getErrorByPath } from "./getErrorByPath";
 
 interface Props {
   name: string;
@@ -17,7 +18,7 @@ export const FileInput = ({ name, label, defaultPreviewUrl }: Props) => {
   );
   const [fileName, setFileName] = useState<string | null>(null);
 
-  const fieldError = errors?.[name]?.message;
+  const fieldError = getErrorByPath(errors, name);
 
   useEffect(() => {
     if (defaultPreviewUrl) {

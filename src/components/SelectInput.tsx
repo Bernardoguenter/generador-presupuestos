@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import { getErrorByPath } from "./getErrorByPath";
 
 interface Props {
   name: string;
@@ -13,7 +14,7 @@ export const SelectInput = ({ name, label, children }: Props) => {
     formState: { errors },
   } = useFormContext();
 
-  const fieldError = errors?.[name]?.message;
+  const fieldError = getErrorByPath(errors, name);
 
   return (
     <div className="flex flex-col mb-1">
