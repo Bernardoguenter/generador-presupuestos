@@ -1,18 +1,21 @@
 import { useFormContext } from "react-hook-form";
+import type { FieldValues } from "react-hook-form";
 import { Button } from "../../../components";
-import type { BudgetFormData } from "../schema";
 
-interface Props {
-  setShowPDF: (value: React.SetStateAction<boolean>) => void;
-  defaultValues: BudgetFormData;
+interface Props<T extends FieldValues> {
+  setShowPDF?: (value: React.SetStateAction<boolean>) => void;
+  defaultValues: T;
 }
 
-export const ResetFormButton = ({ setShowPDF, defaultValues }: Props) => {
+export const ResetFormButton = <T extends FieldValues>({
+  setShowPDF,
+  defaultValues,
+}: Props<T>) => {
   const { reset } = useFormContext();
 
   const handleResetForm = () => {
     reset(defaultValues);
-    setShowPDF(false);
+    if (setShowPDF) setShowPDF(false);
   };
   return (
     <Button

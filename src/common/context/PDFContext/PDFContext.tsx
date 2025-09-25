@@ -1,11 +1,13 @@
 import { createContext, use } from "react";
-import type { PDFInfo } from "../../../helpers/types";
+import type { SiloPDFInfo, StructurePDFInfo } from "../../../helpers/types";
 
 export interface PDFContextInterface {
   showPDF: boolean;
   setShowPDF: React.Dispatch<React.SetStateAction<boolean>>;
-  pdfInfo: PDFInfo | null;
-  setPdfInfo: React.Dispatch<React.SetStateAction<PDFInfo | null>>;
+  pdfInfo: SiloPDFInfo | StructurePDFInfo | null;
+  setPdfInfo: React.Dispatch<
+    React.SetStateAction<SiloPDFInfo | StructurePDFInfo | null>
+  >;
 }
 
 export const PDFContext = createContext<PDFContextInterface | undefined>(

@@ -2,6 +2,7 @@ import type {
   Address,
   GatesMeasurements,
   Preferences,
+  Silos,
   SolidWebPriceMap,
 } from "./types";
 
@@ -76,7 +77,7 @@ const calculateSolidWebStructure = (
     : solid_web_price_list["30"];
 };
 
-export const getBudgetTotal = (
+export const getStructureBudgetTotal = (
   preferences: Preferences,
   width: number,
   length: number,
@@ -186,4 +187,140 @@ export const getBudgetTotal = (
       : priceBeforeTaxes;
 
   return finalPriceInDollars;
+};
+
+export const getSiloBudgetTotal = (
+  preferences: Preferences,
+  includes_taxes: boolean,
+  freight_price: number,
+  silos: Silos
+) => {
+  const { default_markup, iva_percentage } = preferences;
+
+  if (!silos || silos.length === 0) return 0;
+  const totalSilosPrice = calculateSilosSubtotal(preferences, silos);
+
+  const totalPrice = totalSilosPrice + freight_price;
+
+  const priceBeforeTaxes = includes_taxes
+    ? totalPrice
+    : (totalPrice * (100 - iva_percentage)) / 100;
+
+  const finalPriceInDollars =
+    default_markup > 0
+      ? priceBeforeTaxes * (1 + default_markup / 100)
+      : priceBeforeTaxes;
+
+  return finalPriceInDollars;
+};
+
+export const calculateSilosSubtotal = (
+  preferences: Preferences,
+  silos: Silos
+): number => {
+  const { airbase_silos, feeder_silos, cone_base_45, cone_base_55 } =
+    preferences;
+
+  if (!silos || silos.length === 0) return 0;
+
+  return silos.reduce((acc, silo) => {
+    const { type, capacity, cone_base } = silo;
+
+    const priceList = type === "airbase_silos" ? airbase_silos : feeder_silos;
+
+    const basePrice =
+      priceList && priceList[capacity] ? priceList[capacity] : 0;
+
+    let finalSiloPrice = basePrice;
+
+    if (type === "airbase_silos" && cone_base && cone_base !== "estandar") {
+      if (cone_base === "45") {
+        finalSiloPrice = basePrice * (1 + (cone_base_45 ?? 0) / 100);
+      } else if (cone_base === "55") {
+        finalSiloPrice = basePrice * (1 + (cone_base_55 ?? 0) / 100);
+      }
+    }
+
+    return acc + finalSiloPrice;
+  }, 0);
+};
+
+export const calculateFreightArsPriceWithTaxesAndMarkup = (
+  freight_price: number,
+  dollar_quote: number,
+  default_markup: number,
+  budget_markup: number,
+  includes_taxes: boolean,
+  iva_percentage: number
+) => {
+  const totalPrice =
+    freight_price *
+    dollar_quote *
+    (1 + default_markup / 100) *
+    (1 + budget_markup / 100);
+
+  return includes_taxes
+    ? totalPrice
+    : (totalPrice * (100 - iva_percentage)) / 100;
+};
+
+export const getSilosPricestArsPriceWithTaxesAndMarkup = (
+  silosPrices: number[],
+  dollar_quote: number,
+  default_markup: number,
+  budget_markup: number,
+  includes_taxes: boolean,
+  iva_percentage: number
+) => {
+  const result = silosPrices.map((silo) => {
+    const totalPrice =
+      silo *
+      dollar_quote *
+      (1 + default_markup / 100) *
+      (1 + budget_markup / 100);
+
+    return includes_taxes
+      ? totalPrice
+      : (totalPrice * (100 - iva_percentage)) / 100;
+  });
+
+  return result;
+};
+
+export const getSilosPricesListDollars = (
+  silosPrices: number[],
+  dollar_quote: number,
+  default_markup: number,
+  budget_markup: number,
+  includes_taxes: boolean,
+  iva_percentage: number
+) => {
+  const result = silosPrices.map((silo) => {
+    const totalPrice =
+      silo /
+      dollar_quote /
+      (1 + default_markup / 100) /
+      (1 + budget_markup / 100);
+
+    return includes_taxes
+      ? totalPrice
+      : (totalPrice * (100 - iva_percentage)) / 100;
+  });
+
+  return result;
+};
+
+export const getIndividualSiloPrices = (
+  silos: Silos,
+  preferences: Preferences
+) => {
+  const siloPrices = silos.map((silo) => {
+    const prices = (
+      preferences as unknown as Record<string, Record<string, number>>
+    )[silo.type];
+    const price = prices ? prices[silo.capacity as keyof typeof prices] : 0;
+    return price || 0;
+  });
+
+  return siloPrices;
 };

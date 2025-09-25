@@ -6,9 +6,16 @@ export const BackButton = () => {
   const navigate = useNavigate();
 
   const getParentPath = (pathname: string) => {
-    const segments = pathname.split("/").filter(Boolean); // quita vacíos
+    if (
+      pathname.includes("/budgets/structure") ||
+      pathname.includes("/budgets/silo")
+    ) {
+      return "/budgets";
+    }
+
+    const segments = pathname.split("/").filter(Boolean);
     if (segments.length === 0) return null;
-    segments.pop(); // quita el último segmento
+    segments.pop();
     return "/" + segments.join("/");
   };
 

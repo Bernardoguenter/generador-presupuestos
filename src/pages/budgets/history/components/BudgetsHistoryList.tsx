@@ -86,6 +86,7 @@ export const BudgetsHistoryList = () => {
           budgets={budgets}
           paginatedBudgets={paginatedBudgets}
           removeBudget={removeBudget}
+          type="structure"
         />
       )}
       <Pagination

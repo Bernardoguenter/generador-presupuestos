@@ -1,22 +1,29 @@
 import { useEffect, useState } from "react";
-import type { StructureBudget } from "../../../helpers/types";
-import { useParams } from "react-router";
+import type { SiloBudget, StructureBudget } from "../../../helpers/types";
+import { useLocation, useParams } from "react-router";
 import { getBudgetById } from "../../../common/lib";
 import { PDFViewComponent } from "./PDFViewComponent";
 import { Button, CustomLink } from "../../../components";
 import { DownloadBudgetButton } from "./DownloadBudgetButton";
 import { BudgetEditForm } from "./BudgetEditForm";
 import { usePDFContext } from "../../../common/context";
+import { SiloBudgetEditForm } from "./SiloBudgetEditForm";
 
 export default function BudgetDetail() {
   const { id } = useParams();
-  const [budget, setBudget] = useState<StructureBudget | null>(null);
+  const location = useLocation();
+  const pathType = location.pathname.includes("/structure/")
+    ? "structure"
+    : "silo";
+  const [budget, setBudget] = useState<StructureBudget | SiloBudget | null>(
+    null
+  );
   const [viewDetail, setViewDetail] = useState(false);
   const { setPdfInfo, pdfInfo } = usePDFContext();
 
-  const getBudget = async (id: string) => {
+  const getBudget = async (id: string, type: "structure" | "silo") => {
     try {
-      const { data, error } = await getBudgetById(id);
+      const { data, error } = await getBudgetById(id, type);
       if (!error) {
         setBudget(data);
       }
@@ -27,9 +34,13 @@ export default function BudgetDetail() {
 
   useEffect(() => {
     if (id) {
-      getBudget(id);
+      const pathType = location.pathname.includes("/structure/")
+        ? "structure"
+        : "silo";
+
+      getBudget(id, pathType);
     }
-  }, [id]);
+  }, [id, location.pathname]);
 
   const handleView = () => {
     setViewDetail(!viewDetail);
@@ -50,17 +61,28 @@ export default function BudgetDetail() {
           {viewDetail ? "Cancelar" : "Editar Formulario"}
         </Button>
       </div>
-
       <div className="w-full flex flex-col lg:flex-row justify-between gap-4 mt-4">
         {viewDetail ? (
-          <BudgetEditForm
-            budget={budget}
-            getBudget={getBudget}
-            handleView={handleView}
-            viewDetail={viewDetail}
-          />
+          location.pathname.includes("/structure/") ? (
+            <BudgetEditForm
+              budget={budget as StructureBudget}
+              getBudget={getBudget}
+              handleView={handleView}
+              viewDetail={viewDetail}
+            />
+          ) : location.pathname.includes("/silo/") ? (
+            <SiloBudgetEditForm
+              budget={budget as SiloBudget}
+              getBudget={getBudget}
+              handleView={handleView}
+              viewDetail={viewDetail}
+            />
+          ) : null
         ) : (
-          <PDFViewComponent budget={budget} />
+          <PDFViewComponent
+            budget={budget}
+            type={pathType}
+          />
         )}
       </div>
       {!viewDetail && (

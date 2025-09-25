@@ -1,16 +1,19 @@
 import { useEffect, useMemo } from "react";
 import { Button, Form } from "../../../components";
-import { PDFComponent } from "../components/PDFComponent";
+import { PDFStructureComponent } from "../components/PDFStructureComponent";
 import { ResetFormButton } from "../components/ResetFormButton";
-import { calculateBudgetSchema } from "../schema";
+import {
+  calculateStructureBudgetSchema,
+  type StructureBudgetFormData,
+} from "../schema";
 import type { StructureBudget } from "../../../helpers/types";
 import { usePDFContext } from "../../../common/context";
-import { useBudgetSubmit } from "../../../common/hooks";
-import { BudgetFormContent } from "../components/BudgetFormContent";
+import { useStructureBudgetSubmit } from "../../../common/hooks";
+import { StructureBudgetFormContent } from "../components/StructureBudgetFormContent";
 
 interface Props {
   budget: StructureBudget;
-  getBudget: (id: string) => void;
+  getBudget: (id: string, type: "silo" | "structure") => void;
   handleView: () => void;
   viewDetail: boolean;
 }
@@ -22,7 +25,7 @@ export const BudgetEditForm = ({
   viewDetail,
 }: Props) => {
   const { setPdfInfo, setShowPDF } = usePDFContext();
-  const { handleBudgetSubmit } = useBudgetSubmit();
+  const { handleStructureBudgetSubmit } = useStructureBudgetSubmit();
 
   useEffect(() => {
     setPdfInfo({
@@ -75,24 +78,24 @@ export const BudgetEditForm = ({
   return (
     <div className="flex lg:flex-row flex-col w-full gap-8 ">
       <Form
-        onSubmit={handleBudgetSubmit}
-        schema={calculateBudgetSchema}
+        onSubmit={handleStructureBudgetSubmit}
+        schema={calculateStructureBudgetSchema}
         defaultValues={defaultValues}
         className="mt-4 w-full lg:w-1/2">
-        <BudgetFormContent />
+        <StructureBudgetFormContent />
         <Button
           type="submit"
           color="info"
           styles="mt-4">
           Crear Vista Previa
         </Button>
-        <ResetFormButton
+        <ResetFormButton<StructureBudgetFormData>
           setShowPDF={setShowPDF}
           defaultValues={defaultValues}
         />
       </Form>
       {viewDetail && (
-        <PDFComponent
+        <PDFStructureComponent
           getBudget={getBudget}
           handleView={handleView}
         />

@@ -12,7 +12,7 @@ import { IncludesGatesInput } from "./IncludesGatesInput";
 import { MaterialsSelect } from "./MaterialsSelect";
 import { StructureSelect } from "./StructureSelect";
 
-export const BudgetFormContent = () => {
+export const StructureBudgetFormContent = () => {
   return (
     <>
       <Fieldset title="Cliente">

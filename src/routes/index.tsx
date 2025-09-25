@@ -88,7 +88,11 @@ export default function AppRoutes() {
               element={<BudgetHistory />}
             />
             <Route
-              path=":id"
+              path="structure/:id"
+              element={<BudgetDetail />}
+            />
+            <Route
+              path="silo/:id"
               element={<BudgetDetail />}
             />
           </Route>
