@@ -70,7 +70,9 @@ export const PDFSiloTable = () => {
                 {pdfInfo.includes_freight && (
                   <tr>
                     <td className="p-2">Flete</td>
-                    <td className="p-2 text-center">{freightPrice}</td>
+                    <td className="p-2 text-center">
+                      {Math.floor(freightPrice ?? 0)}
+                    </td>
                   </tr>
                 )}
                 <tr>
