@@ -7,8 +7,10 @@ export const GatesInput = () => {
   const { control, setValue } = useFormContext();
   const hasInitialized = useRef(false);
   const includesGate = useWatch({ control, name: "includes_gate" });
+  const structure_type = useWatch({ control, name: "structure_type" });
   const numberOfGates = useWatch({ control, name: "number_of_gates" });
   const height = useWatch({ control, name: "height" });
+  const width = useWatch({ control, name: "width" });
   const gates_measurementsWatch = useWatch({
     control,
     name: "gates_measurements",
@@ -20,6 +22,13 @@ export const GatesInput = () => {
   });
 
   useEffect(() => {
+    if (structure_type === "Tinglado") {
+      setValue("includes_gate", false, {
+        shouldValidate: false,
+        shouldDirty: false,
+      });
+      hasInitialized.current = false;
+    }
     if (!includesGate) {
       setValue("number_of_gates", 0);
       setValue("gates_measurements", []);
@@ -29,7 +38,9 @@ export const GatesInput = () => {
 
     if (includesGate && !hasInitialized.current) {
       setValue("number_of_gates", 1);
-      setValue("gates_measurements", [{ width: 5, height: 4.5 }]);
+      setValue("gates_measurements", [
+        { width: width < 5 ? width : 5, height: height < 4.5 ? height : 4.5 },
+      ]);
       hasInitialized.current = true;
       return;
     }
@@ -44,7 +55,17 @@ export const GatesInput = () => {
         remove(i - 1);
       }
     }
-  }, [numberOfGates, includesGate, append, remove, fields.length, setValue]);
+  }, [
+    numberOfGates,
+    includesGate,
+    structure_type,
+    height,
+    append,
+    remove,
+    fields.length,
+    setValue,
+    width,
+  ]);
 
   useEffect(() => {
     const parsedHeight =
@@ -60,8 +81,15 @@ export const GatesInput = () => {
 
     gates_measurementsWatch.forEach(
       (gate: GatesMeasurements, index: number) => {
-        if (gate.height > parsedHeight || parsedHeight <= 4.5) {
-          setValue(`gates_measurements.${index}.height`, parsedHeight);
+        // Solo actualizar si realmente difiere
+        if (
+          (gate.height > parsedHeight || parsedHeight <= 4.5) &&
+          gate.height !== parsedHeight
+        ) {
+          setValue(`gates_measurements.${index}.height`, parsedHeight, {
+            shouldValidate: false,
+            shouldDirty: false,
+          });
         }
       }
     );

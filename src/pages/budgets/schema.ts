@@ -245,8 +245,9 @@ export const calculateStructureBudgetSchema = z
       "Debes ingresar los metros de canaleta si el presupuesto incluye canaletas.",
     path: ["gutter_metters"],
   })
-  .refine(
+  /* .refine(
     (data) =>
+      data.structure_type === "Galpón" &&
       data.gates_measurements.every(
         (gate) => gate.width <= data.width && gate.height <= data.height
       ),
@@ -255,7 +256,7 @@ export const calculateStructureBudgetSchema = z
         "Las medidas de los portones no pueden superar el ancho ni el alto general.",
       path: ["includes_gate"],
     }
-  )
+  ) */
   .refine((data) => data.gutter_metters <= data.length * 2, {
     message:
       "El metraje de las canaletas no puede ser mayor al doble del largo de la estructura.",
