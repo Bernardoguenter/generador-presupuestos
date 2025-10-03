@@ -284,6 +284,8 @@ export const ConfirmSiloPDFSchema = z.object({
   total: z.coerce.number(),
   caption: z.string(),
   silosPrices: z.array(z.coerce.number()).optional(),
+  extra_product: z.string().optional(),
+  extra_product_price: z.coerce.number().optional(),
 });
 
 export type ConfirmPDFFormData = z.infer<typeof ConfirmPDFSchema>;

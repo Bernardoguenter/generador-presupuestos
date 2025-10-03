@@ -289,3 +289,31 @@ export const getTotalArs = (
 ) => {
   return total * dollar_quote * (1 + budget_markup / 100);
 };
+
+export const priceInUSD = (
+  value: number,
+  dollar_quote: number,
+  default_markup: number,
+  budget_markup: number
+) => {
+  return (
+    value /
+    dollar_quote /
+    (1 + default_markup / 100) /
+    (1 + budget_markup / 100)
+  );
+};
+
+export const priceInARS = (
+  value: number,
+  dollar_quote: number,
+  default_markup: number,
+  budget_markup: number
+) => {
+  return (
+    value *
+    dollar_quote *
+    (1 + default_markup / 100) *
+    (1 + budget_markup / 100)
+  );
+};

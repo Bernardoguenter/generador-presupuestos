@@ -11,12 +11,7 @@ export const PDFSiloFormContent = () => {
   const { pdfInfo } = usePDFContext();
   const { control, setValue } = useFormContext();
   const paymentMethods = useWatch({ control, name: "paymentMethods" });
-  const total = useWatch({ control, name: "total" });
   const caption = useWatch({ control, name: "caption" });
-
-  useEffect(() => {
-    setValue("total", total);
-  }, [total, setValue]);
 
   useEffect(() => {
     setValue("caption", caption);

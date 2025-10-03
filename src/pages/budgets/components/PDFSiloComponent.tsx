@@ -17,6 +17,7 @@ import type { SiloBudget, SiloPDFInfo } from "../../../helpers/types";
 import {
   getDefaultCaption,
   getSilosDescriptions,
+  priceInUSD,
 } from "../../../helpers/formatData";
 import { PDFSiloFormContent } from "./PDFSiloFormContent";
 import {
@@ -88,6 +89,8 @@ export const PDFSiloComponent = ({ getBudget, handleView }: Props) => {
     caption: defaultCaption,
     silosPrices: silosPricesList,
     freight_price: newFreightPrice,
+    extra_product_price: 0,
+    extra_product: "",
   };
 
   const handleDownloadPdf = (customer: string, isNew: boolean) => {
@@ -107,6 +110,10 @@ export const PDFSiloComponent = ({ getBudget, handleView }: Props) => {
   };
 
   const handleSubmit = async (formData: ConfirmSiloPDFFormData) => {
+    if (formData.extra_product !== "" && formData.extra_product) {
+      formData.description.push(formData.extra_product);
+    }
+
     const descriptionString = Array.isArray(formData.description)
       ? formData.description.join("; ")
       : formData.description || "";
@@ -121,21 +128,38 @@ export const PDFSiloComponent = ({ getBudget, handleView }: Props) => {
         preferences.dollar_quote,
       totals: {
         silos: (formData?.silosPrices ?? []).map((silo) => {
-          const totalPrice =
-            silo /
-            preferences.dollar_quote /
-            (1 + preferences.default_markup / 100) /
-            (1 + dataToSubmit.budget_markup / 100);
+          const totalPrice = priceInUSD(
+            silo,
+            preferences.dollar_quote,
+            preferences.default_markup,
+            dataToSubmit.budget_markup
+          );
           return includes_taxes
             ? totalPrice
             : (totalPrice * (100 - preferences.iva_percentage)) / 100;
         }),
         freight_price: freight_price,
-        total:
-          formData.total /
-          (1 + dataToSubmit.budget_markup / 100) /
+        extra_product_price: formData.extra_product_price
+          ? priceInUSD(
+              formData.extra_product_price,
+              preferences.dollar_quote,
+              preferences.default_markup,
+              dataToSubmit.budget_markup
+            )
+          : 0,
+        total: priceInUSD(
+          formData.total,
           preferences.dollar_quote,
+          preferences.default_markup,
+          dataToSubmit.budget_markup
+        ),
       },
+      total: priceInUSD(
+        formData.total,
+        preferences.dollar_quote,
+        preferences.default_markup,
+        dataToSubmit.budget_markup
+      ),
       caption: formData.caption,
       created_by:
         typeof dataToSubmit.created_by === "object"
