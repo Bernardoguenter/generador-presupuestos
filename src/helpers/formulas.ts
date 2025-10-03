@@ -318,7 +318,15 @@ export const getIndividualSiloPrices = (
     const prices = (
       preferences as unknown as Record<string, Record<string, number>>
     )[silo.type];
-    const price = prices ? prices[silo.capacity as keyof typeof prices] : 0;
+
+    let price = prices ? prices[silo.capacity as keyof typeof prices] : 0;
+
+    if (silo.type === "airbase_silos" && silo.cone_base !== "estandar") {
+      price =
+        silo.cone_base === "45"
+          ? price * (1 + preferences.cone_base_45 / 100)
+          : price * (1 + preferences.cone_base_55 / 100);
+    }
     return price || 0;
   });
 

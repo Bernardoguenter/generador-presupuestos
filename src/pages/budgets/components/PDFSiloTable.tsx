@@ -8,6 +8,10 @@ export const PDFSiloTable = () => {
   const { pdfInfo } = usePDFContext();
   const { control, setValue } = useFormContext();
   const description = useWatch({ control, name: "description" });
+  const extra_product_price = useWatch({
+    control,
+    name: "extra_product_price",
+  });
   const silosPrices = useWatch({ control, name: "silosPrices" }) as
     | number[]
     | undefined;
@@ -18,15 +22,16 @@ export const PDFSiloTable = () => {
 
   useEffect(() => {
     const sumSilos = Array.isArray(silosPrices)
-      ? silosPrices.reduce((acc, v) => acc + Number(v || 0), 0)
+      ? silosPrices.reduce((acc, value) => acc + Number(value || 0), 0)
       : 0;
     const freight = Number(freightPrice || 0);
-    const newTotal = sumSilos + freight;
+    const new_extra_product_price = extra_product_price;
+    const newTotal = sumSilos + freight + Number(new_extra_product_price);
 
     if (typeof newTotal === "number" && newTotal !== total) {
       setValue("total", newTotal);
     }
-  }, [silosPrices, freightPrice, setValue, total]);
+  }, [silosPrices, freightPrice, setValue, total, extra_product_price]);
 
   return (
     <div className="m-2.5">
@@ -67,6 +72,26 @@ export const PDFSiloTable = () => {
                     </td>
                   </tr>
                 ))}
+                <tr className="border">
+                  <td className="text-sm p-1 w-3/4 border">
+                    <h2 className="text-left mb-2.5 text-sm">
+                      Puedes agregar una descripción personalizada
+                    </h2>
+                    <TextAreaInput
+                      name="extra_product"
+                      inputStyles="text-left border-2 border-amber-600"
+                      placeholder=""
+                    />
+                  </td>
+                  <td className="text-center border w-1/4 ">
+                    <NumberInput
+                      name="extra_product_price"
+                      label="Precio producto personalizado"
+                      labelStyles="text-xs font-normal"
+                      inputStyles="text-center border-2 border-amber-600"
+                    />
+                  </td>
+                </tr>
                 {pdfInfo.includes_freight && (
                   <tr>
                     <td className="p-2">Flete</td>

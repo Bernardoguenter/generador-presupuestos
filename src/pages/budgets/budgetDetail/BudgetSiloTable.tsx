@@ -9,6 +9,16 @@ interface Props {
 export const BudgetSiloTable = ({ budget }: Props) => {
   const { preferences } = usePreferencesContext();
 
+  const budgetsToRender = budget.description.split(";");
+  const pricesToRender = [...budget.totals.silos];
+
+  if (
+    budget.totals.extra_product_price &&
+    budget.totals.extra_product_price > 0
+  ) {
+    pricesToRender.push(budget.totals.extra_product_price);
+  }
+
   return (
     <div className="m-2.5">
       <table className="w-full border-collapse my-5 mx-0  text-left border table-fixed">
@@ -19,7 +29,7 @@ export const BudgetSiloTable = ({ budget }: Props) => {
           </tr>
         </thead>
         <tbody className="h-20">
-          {budget.description.split(";").map((desc) => (
+          {budgetsToRender.map((desc) => (
             <tr className="border">
               <>
                 <td
@@ -31,14 +41,12 @@ export const BudgetSiloTable = ({ budget }: Props) => {
                   {"$" +
                     formatNumber(
                       Math.floor(
-                        (((((budget as SiloBudget).totals?.silos?.[
-                          budget.description.split(";").indexOf(desc)
-                        ] ?? 0) *
+                        ((((pricesToRender[budgetsToRender.indexOf(desc)] ??
+                          0) *
                           (budget as SiloBudget).budget_markup) /
                           100 +
-                          ((budget as SiloBudget).totals?.silos?.[
-                            budget.description.split(";").indexOf(desc)
-                          ] ?? 0)) *
+                          (pricesToRender[budgetsToRender.indexOf(desc)] ??
+                            0)) *
                           preferences.dollar_quote) /
                           1000
                       ) * 1000

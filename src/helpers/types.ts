@@ -103,6 +103,7 @@ export interface SiloBudget {
 export interface SilosTotals {
   silos: number[];
   freight_price: number;
+  extra_product_price?: number;
   total: number;
 }
 
@@ -129,27 +130,6 @@ export type Address = {
   lat: number;
   lng: number;
 };
-
-/* export interface PDFBudget {
-  budget_id: string;
-  customer: string;
-  details: string;
-  payment_method: string;
-  width: number;
-  length: number;
-  height: number;
-  enclousure_height: number;
-  structure_type: string;
-  material: string;
-  color_roof_sheet: boolean;
-  color_side_sheet: boolean;
-  gutter_metters: number;
-  gates_measurements: GatesMeasurements[] | [];
-  includes_gate: boolean;
-  includes_taxes: boolean;
-  freight_price: number;
-  has_gutter: boolean;
-} */
 
 export interface SiloPDFInfo {
   customer: string;
