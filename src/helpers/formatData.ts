@@ -172,30 +172,16 @@ export const formatDetails = (
   }
 
   if (color_roof_sheet) {
-    if (material !== "Alma llena") {
-      details = details.replace(
-        "Chapa de techo: Sincalum",
-        "Chapa de techo: Color"
-      );
-    } else {
-      details = details.replace(
-        "Techo: Chapa acanalada color blanco n25",
-        "Techo: Chapa acanalada color n25"
-      );
-    }
+    details = details.replace(
+      "Chapa de techo: Sincalum",
+      "Chapa de techo: Color"
+    );
   }
   if (color_side_sheet && structure_type === "Galpón") {
-    if (material !== "Alma llena") {
-      details = details.replace(
-        "Chapa de lateral: Sincalum",
-        "Chapa de lateral: Color"
-      );
-    } else {
-      details = details.replace(
-        "Laterales: Chapa T101 color blanco n25;",
-        "Laterales: Chapa T101 blanco n25;"
-      );
-    }
+    details = details.replace(
+      "Chapa de lateral: Sincalum",
+      "Chapa de lateral: Color"
+    );
   }
 
   if (includes_gate && structure_type === "Galpón") {
