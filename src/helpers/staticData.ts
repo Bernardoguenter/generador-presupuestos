@@ -47,11 +47,11 @@ export const silosMap = {
       "Silo comedero autoconsumo 2tn, 12 bocas, cilindro 1.52mts de diámetro, base 2.16mts diámetro, techo 2.45mts diámetro",
     "2tn 18 bocas":
       "Silo comedero autoconsumo 2tn, 18 bocas, cilindro 1.52mts de diámetro, base 2.16mts diámetro, techo 2.45mts diámetro",
-    "7tn con Alero abajo":
-      "Silo comedero autoconsumo 7tn con alero abajo, 12 bocas, cilindro 2.26mts de diámetro, base 3.6mts diámetro, techo 3.7mts diámetro",
-    "12tn con Alero abajo":
-      "Silo comedero autoconsumo 12tn con alero abajo, 20 bocas, cilindro 3.15mts de diámetro, base 3.95mts diámetro, techo 3.45mts diámetro",
-    "18tn con Alero abajo":
+    "7tn con Alero al medio":
+      "Silo comedero autoconsumo 7tn con alero al medio, 12 bocas, cilindro 2.26mts de diámetro, base 3.6mts diámetro, techo 3.7mts diámetro",
+    "12tn con Alero al medio":
+      "Silo comedero autoconsumo 12tn con alero al medio, 20 bocas, cilindro 3.15mts de diámetro, base 3.95mts diámetro, techo 3.45mts diámetro",
+    "18tn con Alero al medio":
       "Silo comedero autoconsumo 18tn, 20 bocas, cilindro 3.15mts de diámetro, base 3.95mts diámetro, techo 3.45mts diámetro",
   },
 };
