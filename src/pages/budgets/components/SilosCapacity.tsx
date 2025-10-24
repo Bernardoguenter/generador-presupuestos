@@ -10,6 +10,10 @@ export const SilosCapacity = ({ type, index }: Props) => {
   const { preferences } = usePreferencesContext();
   const { feeder_silos, airbase_silos } = preferences;
 
+  const sortedFeederSilos = Object.entries(feeder_silos).sort(
+    (a, b) => a[1] - b[1]
+  );
+
   return (
     <>
       {type === "airbase_silos" && (
@@ -32,7 +36,7 @@ export const SilosCapacity = ({ type, index }: Props) => {
           name={`silos.${index}.capacity`}
           label="Capacidad silos Comederos">
           <option value="">Seleccionar...</option>
-          {Object.entries(feeder_silos).map(([cap]) => (
+          {sortedFeederSilos.map(([cap]) => (
             <option
               key={cap}
               value={cap}>
