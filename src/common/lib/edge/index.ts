@@ -21,6 +21,8 @@ type Payload = {
   userName: string | undefined;
 };
 
+type PreferencesUpdate = Omit<Preferences, "company_id">;
+
 const setCompanyPreferences = async (
   company_id: string,
   preferences: Preferences
@@ -29,6 +31,19 @@ const setCompanyPreferences = async (
     body: { company_id, preferences },
   });
   return { error };
+};
+
+const setWebPreferences = async (
+  preferences: PreferencesUpdate,
+  company_id: string
+) => {
+  const { data, error } = await supabase.functions.invoke(
+    "set-web-preferences",
+    {
+      body: { company_id, preferences },
+    }
+  );
+  return { data, error };
 };
 
 const deleteUser = async (id: string) => {
@@ -88,4 +103,5 @@ export {
   createUser,
   sendPassword,
   sendBudget,
+  setWebPreferences,
 };
