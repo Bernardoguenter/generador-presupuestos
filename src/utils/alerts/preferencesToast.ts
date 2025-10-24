@@ -18,6 +18,42 @@ const UpdatePreferencesToastSuccess = () => {
   });
 };
 
+const UpdatePreferencesToastWebSuccess = () => {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    },
+  });
+  Toast.fire({
+    icon: "success",
+    title: `Las preferencias WEB se han actualizado exitosamente`,
+  });
+};
+
+const UpdatePreferencesToastWebError = () => {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    },
+  });
+  Toast.fire({
+    icon: "error",
+    title: `Error al actualizar las preferencias WEB`,
+  });
+};
+
 const UpdatePreferencesToastError = () => {
   const Toast = Swal.mixin({
     toast: true,
@@ -77,4 +113,6 @@ export {
   UpdatePreferencesToastSuccess,
   UpdatePricesToastError,
   UpdatePricesToastSuccess,
+  UpdatePreferencesToastWebError,
+  UpdatePreferencesToastWebSuccess,
 };

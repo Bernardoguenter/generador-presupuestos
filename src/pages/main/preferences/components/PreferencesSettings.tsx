@@ -4,8 +4,13 @@ import { preferencesSchema, type PreferencesFormData } from "../schema";
 import {
   UpdatePreferencesToastError,
   UpdatePreferencesToastSuccess,
+  UpdatePreferencesToastWebError,
+  UpdatePreferencesToastWebSuccess,
 } from "../../../../utils/alerts";
-import { updateUserPreferences } from "../../../../common/lib";
+import {
+  setWebPreferences,
+  updateUserPreferences,
+} from "../../../../common/lib";
 import type { Preferences } from "../../../../helpers/types";
 import { usePreferencesContext } from "../../../../common/context";
 import { useIsSubmitting } from "../../../../common/hooks/useIsSubmitting";
@@ -22,6 +27,7 @@ export default function PreferencesSettings({ preferencesView }: Props) {
   const { isSubmitting, setIsSubmitting } = useIsSubmitting();
 
   const handleSubmit = async (formData: PreferencesFormData) => {
+    const company_id = preferences.company_id;
     try {
       setIsSubmitting(true);
       const { error } = await updateUserPreferences(
@@ -33,6 +39,15 @@ export default function PreferencesSettings({ preferencesView }: Props) {
         UpdatePreferencesToastSuccess();
       } else {
         UpdatePreferencesToastError();
+      }
+
+      if (import.meta.env.VITE_PREFERENCES_ID === company_id) {
+        const { error } = await setWebPreferences(formData, company_id);
+        if (!error) {
+          UpdatePreferencesToastWebSuccess();
+        } else {
+          UpdatePreferencesToastWebError();
+        }
       }
     } catch (error) {
       console.error(error);

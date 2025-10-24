@@ -32,7 +32,6 @@ export interface Preferences {
   default_markup: number;
   km_price: number;
   colored_sheet_difference: number;
-  solid_web_cost: number;
   u_profile_cost: number;
   twisted_iron_cost: number;
   enclousure_cost: number;
@@ -40,7 +39,6 @@ export interface Preferences {
   gate_price: number;
   iva_percentage: number;
   twisted_iron_column_cost: number;
-  solid_web_column_cost: number;
   u_profile_column_cost: number;
   solid_web_price_list: SolidWebPriceMap;
   solid_web_columns_price_list: SolidWebPriceMap;
