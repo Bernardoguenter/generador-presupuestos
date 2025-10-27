@@ -1,4 +1,4 @@
-import { materialsMap, silosMap } from "./staticData";
+import { coneAdjustments, materialsMap, silosMap } from "./staticData";
 import type { GatesMeasurements, Silos } from "./types";
 
 export const formatCompanyName = (name: string) => {
@@ -228,14 +228,22 @@ export function getSilosDescriptions(silos: Silos): string[] {
         : "Silo no definido";
 
     if (
-      silo.type === "airbase_silos" &&
-      silo.cone_base &&
-      silo.cone_base !== "estandar"
+      silo.type !== "airbase_silos" ||
+      !silo.cone_base ||
+      silo.cone_base === "estandar"
     ) {
-      return `${baseDescription}, base cono: ${silo.cone_base}°`;
+      return baseDescription;
     }
 
-    return baseDescription;
+    const adjustmentMap = coneAdjustments[silo.capacity];
+    if (adjustmentMap && adjustmentMap[silo.cone_base]) {
+      const newCone = adjustmentMap[silo.cone_base];
+
+      // reemplazamos dinámicamente la parte del cono en la descripción original
+      return baseDescription.replace(/cono\s\d+°\saltura\s[^,]+/, newCone);
+    }
+
+    return `${baseDescription}, base cono: ${silo.cone_base}°`;
   });
 }
 

@@ -5,6 +5,10 @@ export const PreferencesSilos = () => {
   const { preferences } = usePreferencesContext();
   const { airbase_silos, feeder_silos } = preferences;
 
+  const sortedFeederSilos = Object.entries(feeder_silos).sort(
+    (a, b) => a[1] - b[1]
+  );
+
   return (
     <>
       <Fieldset title="Silos Base Aérea">
@@ -30,7 +34,7 @@ export const PreferencesSilos = () => {
         />
       </Fieldset>
       <Fieldset title="Silos comederos">
-        {Object.entries(feeder_silos).map(([key]) => (
+        {sortedFeederSilos.map(([key]) => (
           <>
             {" "}
             <NumberInput
