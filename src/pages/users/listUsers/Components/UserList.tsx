@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Pagination, SearchInput } from "../../../../components";
-import type { User } from "../../../../helpers/types";
-import { getAllUsers } from "../../../../common/lib";
-import { useAuthContext } from "../../../../common/context";
-import { usePaginatedData } from "../../../../common/hooks";
-import { UseSearchableTable } from "../../../../common/hooks/useSerchableTable";
+import { Pagination, SearchInput } from "@/components";
+import type { User } from "@/helpers/types";
+import { getAllUsers } from "@/common/lib";
+import { useAuthContext } from "@/common/context";
+import { usePaginatedData } from "@/common/hooks";
+import { UseSearchableTable } from "@/common/hooks/useSerchableTable";
 import { UserTable } from "./UserTable";
 
 export const UserList = () => {

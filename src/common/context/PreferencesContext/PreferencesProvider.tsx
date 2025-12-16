@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import type { Preferences } from "../../../helpers/types";
+import type { Preferences } from "@/helpers/types";
 import { PreferencesContext } from "./PreferencesContext";
 import { getUserPreferences } from "../../lib";
 import { useAuthContext } from "../AuthContext/AuthContext";
@@ -42,6 +42,10 @@ const initialPreferencies = {
   airbase_silos: {},
   cone_base_45: 0,
   cone_base_55: 0,
+  estimated_delivery_structures: 0,
+  estimated_delivery_silos: 0,
+  sheets_options: {},
+  membrane_cost: 0,
 };
 
 export function PreferencesProvider({ children }: { children: ReactNode }) {

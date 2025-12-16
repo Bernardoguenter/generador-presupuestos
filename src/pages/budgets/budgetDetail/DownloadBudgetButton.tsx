@@ -1,5 +1,5 @@
-import { Button } from "../../../components";
-import { convertPDF } from "../../../helpers/generatePDF";
+import { Button } from "@/components";
+import { convertPDF } from "@/helpers/generatePDF";
 
 interface Props {
   customer: string;

@@ -1,4 +1,4 @@
-import { CloseIcon } from "../assets/svg";
+import { CloseIcon } from "@/assets/svg";
 
 interface Props {
   searchInput: string;

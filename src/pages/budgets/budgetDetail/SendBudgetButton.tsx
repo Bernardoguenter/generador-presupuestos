@@ -1,7 +1,7 @@
-import { getPDFBase64 } from "../../../helpers/generatePDF";
-import { Button } from "../../../components";
-import { useAuthContext, useCompanyContext } from "../../../common/context";
-import { sendBudget } from "../../../common/lib";
+import { getPDFBase64 } from "@/helpers/generatePDF";
+import { Button } from "@/components";
+import { useAuthContext, useCompanyContext } from "@/common/context";
+import { sendBudget } from "@/common/lib";
 import Swal from "sweetalert2";
 
 interface Props {
@@ -61,6 +61,7 @@ export const SendBudgetButton = ({ customer }: Props) => {
       }
     });
   };
+
   return (
     <Button
       color="info"

@@ -1,64 +1,24 @@
 import { useMemo } from "react";
-import { Form, Button, SubmittingOverlay } from "../../../../components";
-import { preferencesSchema, type PreferencesFormData } from "../schema";
-import {
-  UpdatePreferencesToastError,
-  UpdatePreferencesToastSuccess,
-  UpdatePreferencesToastWebError,
-  UpdatePreferencesToastWebSuccess,
-} from "../../../../utils/alerts";
-import {
-  setWebPreferences,
-  updateUserPreferences,
-} from "../../../../common/lib";
-import type { Preferences } from "../../../../helpers/types";
-import { usePreferencesContext } from "../../../../common/context";
-import { useIsSubmitting } from "../../../../common/hooks/useIsSubmitting";
+import { Form, Button, SubmittingOverlay } from "@/components";
+import { preferencesSchema } from "../schema";
+import type { Preferences } from "@/helpers/types";
+import { usePreferencesContext } from "@/common/context";
 import { PreferencesGenerales } from "./PreferencesGenerales";
 import { PreferencesEstrucutas } from "./PreferencesEstrucutas";
 import { PreferencesSilos } from "./PreferencesSilos";
+import { useUpdatePreferences } from "./useUpdatePreferences";
 
 interface Props {
   preferencesView: "general" | "estructuras" | "silos";
 }
 
 export default function PreferencesSettings({ preferencesView }: Props) {
-  const { preferences, setIsLoading } = usePreferencesContext();
-  const { isSubmitting, setIsSubmitting } = useIsSubmitting();
-
-  const handleSubmit = async (formData: PreferencesFormData) => {
-    const company_id = preferences.company_id;
-    try {
-      setIsSubmitting(true);
-      const { error } = await updateUserPreferences(
-        formData,
-        preferences.company_id
-      );
-      if (!error) {
-        setIsLoading(true);
-        UpdatePreferencesToastSuccess();
-      } else {
-        UpdatePreferencesToastError();
-      }
-
-      if (import.meta.env.VITE_PREFERENCES_ID === company_id) {
-        const { error } = await setWebPreferences(formData, company_id);
-        if (!error) {
-          UpdatePreferencesToastWebSuccess();
-        } else {
-          UpdatePreferencesToastWebError();
-        }
-      }
-    } catch (error) {
-      console.error(error);
-      UpdatePreferencesToastError();
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const { preferences } = usePreferencesContext();
+  const { handleSubmit, isSubmitting } = useUpdatePreferences();
 
   const defaultValues = useMemo<Preferences | undefined>(() => {
     if (!preferences) return undefined;
+
     return {
       ...preferences,
     };

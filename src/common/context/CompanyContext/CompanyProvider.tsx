@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import type { Company } from "../../../helpers/types";
+import type { Company } from "@/helpers/types";
 import { CompanyContext } from "./CompanyContext";
 import { getCompanyById } from "../../lib";
 import { useAuthContext } from "../AuthContext/AuthContext";

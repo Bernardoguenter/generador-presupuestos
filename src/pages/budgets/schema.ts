@@ -11,8 +11,7 @@ const commonSchema = z
         required_error: "Debes ingresar un margen extra para el presupuesto ",
         invalid_type_error: "El margen extra  debe ser un número",
       })
-      .nonnegative("Elmargen extra debe ser un número positivo")
-      .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
+      .refine((n) => /^-?\d+(\.\d{1,2})?$/.test(n.toString()), {
         message: "El margen extra debe tener como máximo 2 decimales",
       }),
     includes_freight: z.boolean(),
@@ -139,6 +138,16 @@ export const calculateStructureBudgetSchema = z
       required_error: "Debes ingresar un marterial",
       invalid_type_error: "El material debe ser una cadena de texto",
     }),
+    sides_sheets_option: z.string({
+      required_error: "Debes ingresar un tipo de chapa lateral",
+      invalid_type_error:
+        "El tipo de chapa lateral debe ser una cadena de texto",
+    }),
+    roof_sheets_option: z.string({
+      required_error: "Debes ingresar un tipo de chapa de techo",
+      invalid_type_error:
+        "El tipo de chapa lateral debe ser una cadena de texto",
+    }),
     structure_type: z.string({
       required_error: "Debes ingresar un tipo de estructura",
       invalid_type_error: "El tipo de estructura debe ser una cadena de texto",
@@ -217,6 +226,8 @@ export const calculateStructureBudgetSchema = z
     gutter_metters: z.coerce.number({
       invalid_type_error: "El metraje de las canaletas debe ser un número",
     }),
+    has_roof_membrane: z.boolean(),
+    has_sides_membrane: z.boolean(),
   })
   .refine(
     (data) =>
@@ -245,18 +256,6 @@ export const calculateStructureBudgetSchema = z
       "Debes ingresar los metros de canaleta si el presupuesto incluye canaletas.",
     path: ["gutter_metters"],
   })
-  /* .refine(
-    (data) =>
-      data.structure_type === "Galpón" &&
-      data.gates_measurements.every(
-        (gate) => gate.width <= data.width && gate.height <= data.height
-      ),
-    {
-      message:
-        "Las medidas de los portones no pueden superar el ancho ni el alto general.",
-      path: ["includes_gate"],
-    }
-  ) */
   .refine((data) => data.gutter_metters <= data.length * 2, {
     message:
       "El metraje de las canaletas no puede ser mayor al doble del largo de la estructura.",
@@ -276,6 +275,7 @@ export const ConfirmPDFSchema = z.object({
   paymentMethods: z.string(),
   total: z.coerce.number(),
   caption: z.string(),
+  estimatedDelivery: z.string(),
 });
 
 export const ConfirmSiloPDFSchema = z.object({
@@ -286,6 +286,7 @@ export const ConfirmSiloPDFSchema = z.object({
   silosPrices: z.array(z.coerce.number()).optional(),
   extra_product: z.string().optional(),
   extra_product_price: z.coerce.number().optional(),
+  estimatedDelivery: z.string(),
 });
 
 export type ConfirmPDFFormData = z.infer<typeof ConfirmPDFSchema>;

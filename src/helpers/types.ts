@@ -46,7 +46,13 @@ export interface Preferences {
   airbase_silos: AirbaseSilosPriceMap;
   cone_base_45: number;
   cone_base_55: number;
+  estimated_delivery_structures: number;
+  estimated_delivery_silos: number;
+  sheets_options: SheetPriceMap;
+  membrane_cost: number;
 }
+
+export type SheetPriceMap = Record<string, number>;
 
 export interface StructureBudget {
   id: string;
@@ -77,6 +83,11 @@ export interface StructureBudget {
   caption: string;
   budget_markup: number;
   distance: number | null;
+  estimatedDelivery: string;
+  has_sides_membrane: boolean;
+  has_roof_membrane: boolean;
+  sides_sheets_option: string;
+  roof_sheets_option: string;
 }
 
 export interface SiloBudget {
@@ -96,6 +107,7 @@ export interface SiloBudget {
   caption: string;
   budget_markup: number;
   silos: Silos;
+  estimatedDelivery: string;
 }
 
 export interface SilosTotals {
