@@ -1,7 +1,12 @@
-import { CustomLink } from "../../../components";
+import { useState } from "react";
+import { useDebounce } from "../../../common/hooks";
+import { CustomLink, SearchInput } from "../../../components";
 import { UserList } from "./Components/UserList";
 
 export default function ListUsers() {
+  const [searchInput, setSearchInput] = useState<string>("");
+  const debouncedSearch = useDebounce(searchInput, 300);
+
   return (
     <section className="py-4 flex flex-col gap-4 w-full">
       <div className="flex items-center justify-between">
@@ -13,7 +18,14 @@ export default function ListUsers() {
           Crear Usuario
         </CustomLink>
       </div>
-      <UserList />
+      <SearchInput
+        searchInput={searchInput}
+        setSearchInput={setSearchInput}
+      />
+      <UserList
+        debouncedSearch={debouncedSearch}
+        searchInput={searchInput}
+      />
     </section>
   );
 }

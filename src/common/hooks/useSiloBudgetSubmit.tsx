@@ -85,6 +85,7 @@ export const useSiloBudgetSubmit = () => {
         includes_freight && distanceCalculation === "distance"
           ? newDistance
           : null,
+      estimatedDelivery: "",
     };
 
     setPdfInfo({

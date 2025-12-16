@@ -9,11 +9,6 @@ export const HiddenInput = ({ name }: Props) => {
 
   return (
     <div className="flex flex-col mb-1">
-      {/*  <label
-        htmlFor={name}
-        className="mb-1 font-medium">
-        {label}
-      </label> */}
       <Controller
         name={name}
         control={control}

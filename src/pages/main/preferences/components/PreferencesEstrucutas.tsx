@@ -1,4 +1,5 @@
-import { Fieldset, NumberInput } from "../../../../components";
+import { Fieldset, NumberInput } from "@/components";
+import { SheetsPrices } from "./SheetsPrices";
 import { SolidWebPrices } from "./SolidWebPrices";
 
 export const PreferencesEstrucutas = () => {
@@ -25,6 +26,7 @@ export const PreferencesEstrucutas = () => {
           name="colored_sheet_difference"
         />
       </Fieldset>
+      <SheetsPrices />
       <Fieldset title="Hierro Torsionado">
         <NumberInput
           label="Costo Hierro torsionado m2"

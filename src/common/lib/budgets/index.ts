@@ -1,5 +1,5 @@
-import type { SiloBudget, StructureBudget } from "../../../helpers/types";
-import { supabase } from "../../../utils/supabase";
+import type { SiloBudget, StructureBudget } from "@/helpers/types";
+import { supabase } from "@/utils/supabase";
 
 const createBudget = async (
   dataToSubmit: Omit<StructureBudget | SiloBudget, "created_at" | "id">,

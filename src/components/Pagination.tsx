@@ -1,4 +1,4 @@
-import { PaginationBack, PaginationForward } from "../assets/svg";
+import { PaginationBack, PaginationForward } from "@/assets/svg";
 
 interface Props {
   setPageSize: React.Dispatch<React.SetStateAction<number>>;

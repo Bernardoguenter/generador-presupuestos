@@ -1,5 +1,5 @@
-import type { Preferences } from "../../../helpers/types";
-import { useCompanyContext } from "../../../common/context";
+import type { Preferences } from "@/helpers/types";
+import { useCompanyContext } from "@/common/context";
 import PreferencesSettings from "./components/PreferencesSettings";
 import { PreferencesViewButtons } from "./components/PreferencesViewButtons";
 import { useState } from "react";

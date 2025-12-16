@@ -1,5 +1,5 @@
-import type { Preferences } from "../../../helpers/types";
-import { supabase } from "../../../utils/supabase";
+import type { Preferences } from "@/helpers/types";
+import { supabase } from "@/utils/supabase";
 
 type PreferencesUpdate = Partial<Omit<Preferences, "company_id">>;
 

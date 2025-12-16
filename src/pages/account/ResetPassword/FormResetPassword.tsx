@@ -1,56 +1,16 @@
-import { useNavigate } from "react-router";
-import {
-  ResetPasswordToastError,
-  ResetPasswordToastSuccess,
-} from "../../../utils/alerts";
-import { resetPasswordSchema, type ResetPasswordData } from "./shema";
-import {
-  regeneratePassword,
-  sendEmailResetPassword,
-} from "../../../common/lib";
+import { resetPasswordSchema } from "./shema";
 import {
   Button,
   CustomLink,
   Form,
   SubmittingOverlay,
   TextInput,
-} from "../../../components";
+} from "@/components";
 import { useMemo } from "react";
-import { useIsSubmitting } from "../../../common/hooks/useIsSubmitting";
+import { useResetPassword } from "@/common/hooks";
 
 export const FormResetPassword = () => {
-  const navigate = useNavigate();
-  const { isSubmitting, setIsSubmitting } = useIsSubmitting();
-
-  const handleSubmit = async (formData: ResetPasswordData) => {
-    try {
-      setIsSubmitting(true);
-      const { data: regenerateData, error: regenerateError } =
-        await regeneratePassword(formData.email);
-
-      if (regenerateError) {
-        console.error(regenerateError);
-      }
-
-      const { error: sendPasswordError } = await sendEmailResetPassword(
-        formData.email,
-        regenerateData.password
-      );
-
-      if (!sendPasswordError) {
-        ResetPasswordToastSuccess();
-        setTimeout(() => {
-          navigate("/accoount/login");
-        }, 1000);
-      }
-    } catch (error) {
-      ResetPasswordToastError();
-      console.error(error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
+  const { isSubmitting, handleSubmit } = useResetPassword();
   const defaultValues = useMemo(
     () => ({
       email: "",

@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router";
-import { Button } from "../../../components";
-import { DeleteUserToastError } from "../../../utils/alerts";
-import useSweetAlertModal from "../../../common/hooks";
+import { Button } from "@/components";
+import { DeleteUserToastError } from "@/utils/alerts";
+import useSweetAlertModal from "@/common/hooks";
 import React from "react";
-import { deleteCompany, deleteFileInBucket } from "../../../common/lib";
+import { deleteCompany, deleteFileInBucket } from "@/common/lib";
 
 interface Props {
   setIsSubmitting: React.Dispatch<React.SetStateAction<boolean>>;

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { CheckboxInput, TextInput } from "../../components";
+import { CheckboxInput, TextInput } from "@/components";
 import { useFormContext, useWatch } from "react-hook-form";
 
 export const PDFAddressCheckbox = () => {

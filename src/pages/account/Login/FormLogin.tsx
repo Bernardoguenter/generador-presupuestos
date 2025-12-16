@@ -1,5 +1,4 @@
-import { loginSchema, type LoginFormData } from "./schema";
-import { LoginErrorToast, LoginSuccessToast } from "../../../utils/alerts";
+import { loginSchema } from "./schema";
 import {
   Button,
   Form,
@@ -7,36 +6,12 @@ import {
   CustomLink,
   PasswordInput,
   SubmittingOverlay,
-} from "../../../components";
-import { loginUser } from "../../../common/lib";
+} from "@/components";
 import { useMemo } from "react";
-import { useIsSubmitting } from "../../../common/hooks/useIsSubmitting";
+import { useLogin } from "@/common/hooks";
 
 export const FormLogin = () => {
-  const { isSubmitting, setIsSubmitting } = useIsSubmitting();
-
-  const handleSubmit = async (formData: LoginFormData) => {
-    try {
-      setIsSubmitting(true);
-      const { data, error } = await loginUser(
-        formData.email,
-        formData.password
-      );
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      if (data) {
-        LoginSuccessToast(formData.email);
-      }
-    } catch (error) {
-      LoginErrorToast();
-      console.error(error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const { handleSubmit, isSubmitting } = useLogin();
 
   const defaultValues = useMemo(
     () => ({

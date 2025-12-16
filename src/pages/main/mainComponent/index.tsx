@@ -1,5 +1,5 @@
-import { useAuthContext } from "../../../common/context";
-import Calculator from "../../budgets/calculator";
+import { useAuthContext } from "@/common/context";
+import Calculator from "@/pages/budgets/calculator";
 
 export default function Main() {
   const { authUser } = useAuthContext();

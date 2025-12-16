@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { PDFContext } from "./PDFContext";
-import type { SiloPDFInfo, StructurePDFInfo } from "../../../helpers/types";
+import type { SiloPDFInfo, StructurePDFInfo } from "@/helpers/types";
 
 export function PDFProvider({ children }: { children: ReactNode }) {
   const [showPDF, setShowPDF] = useState(false);

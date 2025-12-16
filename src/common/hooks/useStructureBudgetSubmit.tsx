@@ -2,6 +2,7 @@ import { formatDetails } from "../../helpers/formatData";
 import {
   calculateDistance,
   calculateFreightPrice,
+  getSheetsFactor,
   getStructureBudgetTotal,
 } from "../../helpers/formulas";
 import type { StructurePDFInfo } from "../../helpers/types";
@@ -49,6 +50,10 @@ export const useStructureBudgetSubmit = () => {
       budget_markup,
       distanceCalculation,
       distanceInKms,
+      has_roof_membrane,
+      has_sides_membrane,
+      roof_sheets_option,
+      sides_sheets_option,
     } = formData;
 
     const newAddress =
@@ -81,6 +86,9 @@ export const useStructureBudgetSubmit = () => {
     const newColor_side_sheet =
       structure_type === "Galpón" ? color_side_sheet : false;
 
+    const sideSheetFactor = getSheetsFactor(sides_sheets_option, preferences);
+    const roofSheetFactor = getSheetsFactor(roof_sheets_option, preferences);
+
     const total = getStructureBudgetTotal(
       preferences,
       width,
@@ -96,7 +104,11 @@ export const useStructureBudgetSubmit = () => {
       includes_gate,
       includes_taxes,
       freight_price,
-      has_gutter
+      has_gutter,
+      has_roof_membrane,
+      has_sides_membrane,
+      sideSheetFactor,
+      roofSheetFactor
     );
 
     const newDetails = formatDetails(
@@ -108,7 +120,11 @@ export const useStructureBudgetSubmit = () => {
       gates_measurements,
       has_gutter,
       gutter_metters,
-      width
+      width,
+      sides_sheets_option,
+      roof_sheets_option,
+      has_roof_membrane,
+      has_sides_membrane
     );
 
     if (authUser) {
@@ -142,6 +158,11 @@ export const useStructureBudgetSubmit = () => {
           includes_freight && distanceCalculation === "distance"
             ? newDistance
             : null,
+        has_roof_membrane,
+        has_sides_membrane,
+        sides_sheets_option,
+        roof_sheets_option,
+        estimatedDelivery: "",
       };
 
       setPdfInfo({

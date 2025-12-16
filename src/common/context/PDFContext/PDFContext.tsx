@@ -1,5 +1,5 @@
 import { createContext, use } from "react";
-import type { SiloPDFInfo, StructurePDFInfo } from "../../../helpers/types";
+import type { SiloPDFInfo, StructurePDFInfo } from "@/helpers/types";
 
 export interface PDFContextInterface {
   showPDF: boolean;

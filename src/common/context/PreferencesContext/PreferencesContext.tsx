@@ -1,5 +1,5 @@
 import { createContext, use } from "react";
-import type { Preferences } from "../../../helpers/types";
+import type { Preferences } from "@/helpers/types";
 
 interface PreferencesContextInterface {
   preferences: Preferences;

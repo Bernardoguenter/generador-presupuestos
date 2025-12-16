@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import type { SiloBudget, StructureBudget } from "../../../helpers/types";
+import type { SiloBudget, StructureBudget } from "@/helpers/types";
 import { useLocation, useParams } from "react-router";
-import { getBudgetById } from "../../../common/lib";
-import { PDFViewComponent } from "./PDFViewComponent";
-import { Button, CustomLink } from "../../../components";
+import { getBudgetById } from "@/common/lib";
+import { PDFViewComponent } from "./pdf/PDFViewComponent";
+import { Button, CustomLink } from "@/components";
 import { DownloadBudgetButton } from "./DownloadBudgetButton";
-import { BudgetEditForm } from "./BudgetEditForm";
-import { usePDFContext } from "../../../common/context";
-import { SiloBudgetEditForm } from "./SiloBudgetEditForm";
+import { BudgetEditForm } from "./pdf/structure/BudgetEditForm";
+import { usePDFContext } from "@/common/context";
+import { SiloBudgetEditForm } from "./pdf/silo/SiloBudgetEditForm";
 
 export default function BudgetDetail() {
   const { id } = useParams();

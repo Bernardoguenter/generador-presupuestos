@@ -1,5 +1,5 @@
-import { usePreferencesContext } from "../../../../common/context";
-import { NumberInput, Fieldset } from "../../../../components";
+import { usePreferencesContext } from "@/common/context";
+import { NumberInput, Fieldset } from "@/components";
 
 export const SolidWebPrices = () => {
   const { preferences } = usePreferencesContext();

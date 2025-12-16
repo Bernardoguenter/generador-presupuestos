@@ -1,11 +1,11 @@
 import { useMemo } from "react";
-import { Button, Form } from "../../../components";
+import { Button, Form } from "@/components";
 import { ResetFormButton } from "../components/ResetFormButton";
-import { SiloBudgetFormContent } from "../components/SiloBudgetFormContent";
+import { SiloBudgetFormContent } from "../components/silos/SiloBudgetFormContent";
 import { calculateSiloBudgetSchema, type SiloBudgetFormData } from "../schema";
-import { useSiloBudgetSubmit } from "../../../common/hooks";
-import { usePDFContext } from "../../../common/context";
-import { PDFSiloComponent } from "../components/PDFSiloComponent";
+import { useSiloBudgetSubmit } from "@/common/hooks";
+import { usePDFContext } from "@/common/context";
+import { PDFSiloComponent } from "../components/pdf/PDFSiloComponent";
 
 export const SiloBudgetCalculatorForm = () => {
   const { setShowPDF, showPDF, pdfInfo } = usePDFContext();

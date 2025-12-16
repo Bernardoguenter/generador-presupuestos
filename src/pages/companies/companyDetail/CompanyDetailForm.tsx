@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import type { Company } from "../../../helpers/types";
+import type { Company } from "@/helpers/types";
 import { createCompanySchema, type CreateCompanyFormData } from "../schema";
 import {
   Button,
@@ -8,15 +8,15 @@ import {
   GooglePlacesInput,
   HiddenInput,
   SubmittingOverlay,
-} from "../../../components";
+} from "@/components";
 import {
   UpdateCompanyToastError,
   UpdateCompanyToastSuccess,
-} from "../../../utils/alerts";
-import { updateCompany } from "../../../common/lib";
+} from "@/utils/alerts";
+import { updateCompany } from "@/common/lib";
 import { useMemo } from "react";
 import { DeleteCompanyButton } from "./DeleteCompanyButton";
-import { useIsSubmitting } from "../../../common/hooks/useIsSubmitting";
+import { useIsSubmitting } from "@/common/hooks/useIsSubmitting";
 import { PDFAddressCheckbox } from "../PDFAddressCheckbox";
 
 interface Props {

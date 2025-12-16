@@ -3,8 +3,8 @@ import {
   CompanyProvider,
   PDFProvider,
   PreferencesProvider,
-} from "./common/context";
-import AppRoutes from "./routes";
+} from "@/common/context";
+import AppRoutes from "@/routes";
 
 const App = () => {
   return (
