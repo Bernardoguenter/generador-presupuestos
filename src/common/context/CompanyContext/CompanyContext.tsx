@@ -1,5 +1,5 @@
 import { createContext, use } from "react";
-import type { Company } from "../../../helpers/types";
+import type { Company } from "@/helpers/types";
 
 interface CompanyContextInterface {
   company: Company | null;

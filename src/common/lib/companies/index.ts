@@ -1,5 +1,5 @@
-import type { Company } from "../../../helpers/types";
-import { supabase } from "../../../utils/supabase";
+import type { Company } from "@/helpers/types";
+import { supabase } from "@/utils/supabase";
 
 const getAllCompanies = async () => {
   const { data, error } = await supabase.from("companies").select("*");

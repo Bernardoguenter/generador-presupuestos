@@ -1,5 +1,5 @@
-import { usePreferencesContext } from "../../../../common/context";
-import { Fieldset, NumberInput } from "../../../../components";
+import { usePreferencesContext } from "@/common/context";
+import { Fieldset, NumberInput } from "@/components";
 
 export const PreferencesSilos = () => {
   const { preferences } = usePreferencesContext();

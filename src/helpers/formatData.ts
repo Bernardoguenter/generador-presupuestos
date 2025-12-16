@@ -156,7 +156,11 @@ export const formatDetails = (
   gates_measurements: GatesMeasurements[],
   has_gutter: boolean,
   gutter_metters: number,
-  width: number
+  width: number,
+  sides_sheets_option: string,
+  roof_sheets_option: string,
+  has_roof_membrane: boolean,
+  has_sides_membrane: boolean
 ) => {
   let details =
     materialsMap[structure_type as keyof typeof materialsMap]?.[
@@ -171,18 +175,19 @@ export const formatDetails = (
     details = getAlmaLLena(width, details);
   }
 
-  if (color_roof_sheet) {
-    details = details.replace(
-      "Chapa de techo: Sincalum",
-      "Chapa de techo: Color"
-    );
-  }
-  if (color_side_sheet && structure_type === "Galpón") {
-    details = details.replace(
-      "Chapa de lateral: Sincalum",
-      "Chapa de lateral: Color"
-    );
-  }
+  details = details.replace(
+    "Chapa de techo:",
+    `Chapa de techo: ${roof_sheets_option}${color_roof_sheet ? " color" : ""}${
+      has_roof_membrane ? ", con membrana doble cara de aluminio 10 mm" : ""
+    }`
+  );
+
+  details = details.replace(
+    "Chapa de lateral:",
+    `Chapa de lateral: ${sides_sheets_option}${
+      color_side_sheet && structure_type === "Galpón" ? " color" : ""
+    }${has_sides_membrane ? ", con membrana doble cara de aluminio 10 mm" : ""}`
+  );
 
   if (includes_gate && structure_type === "Galpón") {
     gates_measurements.forEach(
@@ -262,13 +267,16 @@ export const getStructureDefaultDescription = (
 export const getDefaultCaption = (
   includes_freight: boolean,
   includes_taxes: boolean,
-  iva_percentage: number
+  iva_percentage: number,
+  type: "silo" | "structure"
 ) => {
   return `${
     includes_freight
       ? "* El precio incluye el flete"
       : "* El precio no incluye el flete"
   }; * Montaje incluido; ${
+    type === "structure" ? "* No incluye hormigón para las columnas" : ""
+  }; ${
     includes_taxes
       ? `* Incluye IVA ${iva_percentage}%`
       : `* No Incluye IVA ${iva_percentage}%`

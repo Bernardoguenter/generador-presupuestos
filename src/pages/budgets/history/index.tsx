@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { CustomLink } from "../../../components";
-import { BudgetsHistoryList } from "./components/BudgetsHistoryList";
+import { CustomLink } from "@/components";
 import { BudgetViewButtons } from "../calculator/BudgetViewButtons";
-import { SiloBudgetsHistoryList } from "./components/SiloBudgetsHistoryList";
+import { BudgetsHistoryList } from "./BudgetsHistoryList";
+import { SiloBudgetsHistoryList } from "./SiloBudgetsHistoryList";
 
 export default function BudgetHistory() {
   const [budgetType, setBudgetType] = useState<"structure" | "silo">(

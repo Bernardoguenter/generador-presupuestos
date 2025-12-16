@@ -1,6 +1,6 @@
 import { useFormContext } from "react-hook-form";
 import type { FieldValues } from "react-hook-form";
-import { Button } from "../../../components";
+import { Button } from "@/components";
 
 interface Props<T extends FieldValues> {
   setShowPDF?: (value: React.SetStateAction<boolean>) => void;

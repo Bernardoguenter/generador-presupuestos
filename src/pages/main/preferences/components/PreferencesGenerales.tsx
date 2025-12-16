@@ -1,4 +1,4 @@
-import { Fieldset, NumberInput } from "../../../../components";
+import { Fieldset, NumberInput } from "@/components";
 
 export const PreferencesGenerales = () => {
   return (
@@ -20,6 +20,14 @@ export const PreferencesGenerales = () => {
       <NumberInput
         label="Precio por Km de flete"
         name="km_price"
+      />
+      <NumberInput
+        label="Tiempo de entrega estimado Silos (en días)"
+        name="estimated_delivery_silos"
+      />
+      <NumberInput
+        label="Tiempo de entrega estimado Estructuras (en días)"
+        name="estimated_delivery_structures"
       />
     </Fieldset>
   );

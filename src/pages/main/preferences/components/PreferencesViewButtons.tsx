@@ -1,4 +1,4 @@
-import { Button } from "../../../../components";
+import { Button } from "@/components";
 
 interface Props {
   setPreferencesView: React.Dispatch<

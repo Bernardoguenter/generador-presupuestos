@@ -22,7 +22,6 @@ export const RadioInput = ({ name, label, options }: Props) => {
 
   return (
     <div className="flex flex-col gap-2 mb-2">
-      {/* Label general */}
       <span className="font-semibold">{label}</span>
 
       <Controller

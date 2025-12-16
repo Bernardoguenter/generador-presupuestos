@@ -22,6 +22,19 @@ export const silosPriceSchema = z.record(
     })
 );
 
+export const SheetsPriceSchema = z.record(
+  z.string(),
+  z.coerce
+    .number({
+      required_error: "Debes ingresar un precio",
+      invalid_type_error: "El precio debe ser un número",
+    })
+    .positive("El precio debe ser un número positivo")
+    .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
+      message: "El precio debe tener como máximo 2 decimales",
+    })
+);
+
 export const preferencesSchema = z.object({
   dollar_quote: z.coerce
     .number({
@@ -161,6 +174,28 @@ export const preferencesSchema = z.object({
     .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
       message: "El margen debe tener como máximo 2 decimales",
     }),
+  sheets_options: SheetsPriceSchema,
+  membrane_cost: z.coerce
+    .number({
+      invalid_type_error: "El costo de la membrana debe ser un número",
+    })
+    .nonnegative("El costo de la membrana debe ser un número positivo")
+    .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
+      message: "El costo de la membrana debe tener como máximo 2 decimales",
+    }),
+  estimated_delivery_silos: z.coerce
+    .number({
+      required_error: "Debes ingresar un valor para el tiempo estimado",
+      invalid_type_error: "El tiempo estimadoA debe ser un número",
+    })
+    .nonnegative("El tiempo estimado debe ser un número positivo"),
+  estimated_delivery_structures: z.coerce
+    .number({
+      required_error: "Debes ingresar un valor el tiempo estimado",
+      invalid_type_error: "El tiempo estimado debe ser un número",
+    })
+    .nonnegative("El tiempo estimado debe ser un número positivo")
+    .int("El tiempo estimado debe ser un número entero"),
 });
 
 export type PreferencesFormData = z.infer<typeof preferencesSchema>;

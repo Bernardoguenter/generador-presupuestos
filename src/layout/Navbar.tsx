@@ -4,11 +4,11 @@ import {
   CompanyIcon,
   LogoutIcon,
   PreferencesIcon,
-} from "../assets/svg";
-import { UserIcon } from "../assets/svg/UserIcon";
-import { Button } from "../components";
-import { useAuthContext } from "../common/context";
-import { Logo } from "../components/Logo";
+} from "@/assets/svg";
+import { UserIcon } from "@/assets/svg/UserIcon";
+import { Button } from "@/components";
+import { useAuthContext } from "@/common/context";
+import { Logo } from "@/components/Logo";
 
 export const Navbar = () => {
   const { authUser, handleLogout } = useAuthContext();

@@ -1,62 +1,12 @@
-import { changePasswordSchema, type ChangePasswordFormData } from "./schema";
-import {
-  ChangePasswordToastError,
-  ChangePasswordToastSuccess,
-} from "../../../utils/alerts";
-import {
-  Button,
-  Form,
-  PasswordInput,
-  SubmittingOverlay,
-} from "../../../components";
-import {
-  signOutUser,
-  updateUser,
-  updateUserPassword,
-} from "../../../common/lib";
+import { changePasswordSchema } from "./schema";
+import { Button, Form, PasswordInput, SubmittingOverlay } from "@/components";
 import { useMemo } from "react";
-import { useAuthContext } from "../../../common/context";
-import { useIsSubmitting } from "../../../common/hooks/useIsSubmitting";
+import { useAuthContext } from "@/common/context";
+import { useChangePassword } from "@/common/hooks";
 
 export const FormChangePassword = () => {
   const { handleLogout } = useAuthContext();
-  const { isSubmitting, setIsSubmitting } = useIsSubmitting();
-
-  const handleSubmit = async (formData: ChangePasswordFormData) => {
-    const { password, confirmPassword } = formData;
-    if (password !== confirmPassword) {
-      return;
-    }
-
-    try {
-      setIsSubmitting(true);
-      const { data, error } = await updateUserPassword(password);
-
-      if (error) {
-        console.error("Error cambiando la contraseña:", error);
-        ChangePasswordToastError();
-      } else {
-        if (data.user) {
-          const { error: updateUserError } = await updateUser(
-            { isPasswordChanged: true },
-            data.user.id
-          );
-          if (!updateUserError) {
-            const { error } = await signOutUser();
-            if (!error) {
-              ChangePasswordToastSuccess();
-            }
-          } else {
-            ChangePasswordToastError();
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error cambiando la contraseña:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const { handleSubmit, isSubmitting } = useChangePassword();
 
   const defaultValues = useMemo(
     () => ({

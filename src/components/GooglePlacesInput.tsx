@@ -1,6 +1,6 @@
 import { useState, useCallback, type FormEvent, useEffect } from "react";
 import { APIProvider, useMapsLibrary } from "@vis.gl/react-google-maps";
-import { useAutocompleteSuggestions } from "../common/hooks";
+import { useAutocompleteSuggestions } from "@/common/hooks";
 import { TextInputWithCloseIcon } from "./TextInputWithCloseIcon";
 import { useFormContext, useWatch } from "react-hook-form";
 

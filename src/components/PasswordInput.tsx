@@ -15,7 +15,6 @@ export const PasswordInput = ({ name, label }: Props) => {
   } = useFormContext();
 
   const [showText, setShowText] = useState<boolean>(false);
-
   const fieldError = getErrorByPath(errors, name);
 
   return (

@@ -1,14 +1,14 @@
 import { useMemo } from "react";
-import { usePDFContext } from "../../../common/context";
-import { Button, Form } from "../../../components";
+import { usePDFContext } from "@/common/context";
+import { Button, Form } from "@/components";
 import { ResetFormButton } from "../components/ResetFormButton";
 import {
   calculateStructureBudgetSchema,
   type StructureBudgetFormData,
 } from "../schema";
-import { useStructureBudgetSubmit } from "../../../common/hooks";
-import { StructureBudgetFormContent } from "../components/StructureBudgetFormContent";
-import { PDFStructureComponent } from "../components/PDFStructureComponent";
+import { useStructureBudgetSubmit } from "@/common/hooks";
+import { StructureBudgetFormContent } from "../components/structures/StructureBudgetFormContent";
+import { PDFStructureComponent } from "../components/pdf/PDFStructureComponent";
 
 export const StructureBudgetCalculatorForm = () => {
   const { setShowPDF, showPDF, pdfInfo } = usePDFContext();
@@ -38,6 +38,10 @@ export const StructureBudgetCalculatorForm = () => {
       lng: 0,
       lat: 0,
       budget_markup: 0,
+      roof_sheets_option: "Cincalum n°25 acanalada",
+      sides_sheets_option: "Cincalum n°25 acanalada",
+      has_roof_membrane: false,
+      has_sides_membrane: false,
     }),
     []
   );

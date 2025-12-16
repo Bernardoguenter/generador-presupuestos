@@ -77,6 +77,19 @@ const calculateSolidWebStructure = (
     : solid_web_price_list["30"];
 };
 
+export const getSheetsFactor = (
+  sheets_option: string,
+  preferences: Preferences
+) => {
+  if (
+    sheets_option === "Cincalum n°25 acanalada" ||
+    sheets_option === "Cincalum n°25 trapezoidal"
+  ) {
+    return 0;
+  }
+  return preferences.sheets_options[sheets_option];
+};
+
 export const getStructureBudgetTotal = (
   preferences: Preferences,
   width: number,
@@ -92,7 +105,11 @@ export const getStructureBudgetTotal = (
   includes_gate: boolean,
   includes_taxes: boolean,
   freight_price: number,
-  has_gutter: boolean
+  has_gutter: boolean,
+  has_roof_membrane: boolean,
+  has_sides_membrane: boolean,
+  sideSheetFactor: number,
+  roofSheetFactor: number
 ) => {
   const {
     colored_sheet_difference,
@@ -107,6 +124,7 @@ export const getStructureBudgetTotal = (
     u_profile_column_cost,
     solid_web_price_list,
     solid_web_columns_price_list,
+    membrane_cost,
   } = preferences;
 
   const floorArea = width * length;
@@ -121,7 +139,7 @@ export const getStructureBudgetTotal = (
       : calculateSolidWebStructure(width, solid_web_price_list!);
 
   //CALCULAR PRECIO DE ESTRUCTURA
-  const structure_cost = floorArea * price_per_meter;
+  const baseStructureAndRoofCost = floorArea * price_per_meter;
 
   //CALCULAR COLUMNAS
   const numberOfColumns = Math.floor(length / 5) + 1;
@@ -143,18 +161,31 @@ export const getStructureBudgetTotal = (
         (height > 5 ? 1 : -1);
 
   //CALCULAR COSTO CERRAMIENTO
-  const enclousureCost =
-    structure_type === "Tinglado" ? 0 : enclousureArea * enclousure_cost;
+  const newMembrane_cost = has_sides_membrane ? membrane_cost : 0;
+  const newEnclousure_cost =
+    enclousure_cost + sideSheetFactor + newMembrane_cost;
 
-  //CALCULAR COSTO CERRAMIENTO COLOR
+  const enclousureCost =
+    structure_type === "Tinglado" ? 0 : enclousureArea * newEnclousure_cost;
+
+  // Extra por cerramiento a color
   const enclousureColorCost = color_side_sheet
     ? enclousureArea * colored_sheet_difference
     : 0;
 
-  //CAMBIO DE COSTO TECHO POR CHAPA A COLOR
-  const roofShettColor = color_roof_sheet
+  //CALCULAR COSTO TECHO
+  const roofSheetExtraCost =
+    roofSheetFactor > 0 ? floorArea * roofSheetFactor : 0;
+
+  // Extra por membrana
+  const roofMembraneCost = has_roof_membrane ? floorArea * membrane_cost : 0;
+
+  // Extra por color de chapa
+  const roofColorCost = color_roof_sheet
     ? floorArea * colored_sheet_difference
     : 0;
+
+  const roofExtrasCost = roofSheetExtraCost + roofMembraneCost + roofColorCost;
 
   //CALCULAR COSTO DE CANALETAS
   const gutterCost = has_gutter
@@ -168,11 +199,11 @@ export const getStructureBudgetTotal = (
 
   //CALCULAR PRECIO TOTAL
   const totalPrice =
-    structure_cost +
+    baseStructureAndRoofCost +
+    roofExtrasCost +
     columnsCost +
     enclousureCost +
     enclousureColorCost +
-    roofShettColor +
     freight_price +
     gutterCost +
     gateCost;
