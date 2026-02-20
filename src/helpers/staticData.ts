@@ -1,5 +1,5 @@
 export const paymentMethods = {
-  Silo: `Pago 100 % contra entrega, mediante cheques a 0, 30, 60, 90, 120 días; Pago de contado.`,
+  Silo: `Pago 100 % contra entrega, mediante cheques a 0, 30, 60, 90, 120 o 150 días; Pago de contado.`,
   Structure: `Anticipo (50%): se abona con cheques a 0, 30, 60, 90 y 120 días.;
 Saldo (50%): se abona al finalizar la obra, también con cheques a 0, 30, 60, 90 y 120 días.;
 Pago de contado: con un 5% de descuento;`,
