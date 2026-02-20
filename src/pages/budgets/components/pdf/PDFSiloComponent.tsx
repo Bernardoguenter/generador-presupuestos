@@ -16,7 +16,7 @@ import { useNavigate, useParams } from "react-router";
 import { convertPDF } from "@/helpers/generatePDF";
 import { useState } from "react";
 import { PDFViewComponent } from "../../budgetDetail/pdf/PDFViewComponent";
-import type { SiloBudget, SiloPDFInfo } from "@/helpers/types";
+import type { Silo, SiloBudget, SiloPDFInfo } from "@/helpers/types";
 import {
   getDefaultCaption,
   getSilosDescriptions,
@@ -28,6 +28,7 @@ import {
   getIndividualSiloPrices,
   getSilosPricestArsPriceWithTaxesAndMarkup,
 } from "@/helpers/formulas";
+import { getSiloPDFImages } from "@/helpers/generatePDF";
 
 interface Props {
   getBudget?: (id: string, type: "silo" | "structure") => void;
@@ -55,12 +56,12 @@ export const PDFSiloComponent = ({ getBudget, handleView }: Props) => {
     includes_freight,
     pdfInfo.includes_taxes,
     preferences.iva_percentage,
-    "silo"
+    "silo",
   );
 
   const silosPricesFromPreferences = getIndividualSiloPrices(
     dataToSubmit.silos,
-    preferences
+    preferences,
   );
 
   const silosPricesList = getSilosPricestArsPriceWithTaxesAndMarkup(
@@ -69,7 +70,7 @@ export const PDFSiloComponent = ({ getBudget, handleView }: Props) => {
     preferences.default_markup,
     dataToSubmit.budget_markup,
     includes_taxes,
-    preferences.iva_percentage
+    preferences.iva_percentage,
   );
 
   const newFreightPrice = calculateFreightArsPriceWithTaxesAndMarkup(
@@ -78,12 +79,12 @@ export const PDFSiloComponent = ({ getBudget, handleView }: Props) => {
     preferences.default_markup,
     dataToSubmit.budget_markup,
     includes_taxes,
-    preferences.iva_percentage
+    preferences.iva_percentage,
   );
 
   const totalARS = silosPricesList.reduce(
     (sum, acc) => sum + acc,
-    newFreightPrice
+    newFreightPrice,
   );
 
   const defaultValues = {
@@ -98,11 +99,20 @@ export const PDFSiloComponent = ({ getBudget, handleView }: Props) => {
     extra_product: "",
   };
 
-  const handleDownloadPdf = (customer: string, isNew: boolean) => {
+  const waitNextFrame = () =>
+    new Promise((resolve) => requestAnimationFrame(resolve));
+
+  const handleDownloadPdf = async (
+    customer: string,
+    silos: Silo[],
+    isNew: boolean,
+  ) => {
     setViewPdf(true);
-    setTimeout(() => {
-      convertPDF(customer);
-    }, 300);
+    await waitNextFrame();
+    await waitNextFrame();
+    const images = await getSiloPDFImages(silos);
+
+    convertPDF(customer, images);
 
     setTimeout(() => {
       setViewPdf(false);
@@ -129,7 +139,7 @@ export const PDFSiloComponent = ({ getBudget, handleView }: Props) => {
       description: descriptionString,
       estimatedDelivery: formData.estimatedDelivery,
       freight_price:
-        newFreightPrice /
+        formData.freight_price /
         (1 + dataToSubmit.budget_markup / 100) /
         preferences.dollar_quote,
       totals: {
@@ -138,33 +148,38 @@ export const PDFSiloComponent = ({ getBudget, handleView }: Props) => {
             silo,
             preferences.dollar_quote,
             preferences.default_markup,
-            dataToSubmit.budget_markup
+            dataToSubmit.budget_markup,
           );
           return includes_taxes
             ? totalPrice
             : (totalPrice * (100 - preferences.iva_percentage)) / 100;
         }),
-        freight_price: freight_price,
+        freight_price: priceInUSD(
+          formData.freight_price,
+          preferences.dollar_quote,
+          preferences.default_markup,
+          dataToSubmit.budget_markup,
+        ),
         extra_product_price: formData.extra_product_price
           ? priceInUSD(
               formData.extra_product_price,
               preferences.dollar_quote,
               preferences.default_markup,
-              dataToSubmit.budget_markup
+              dataToSubmit.budget_markup,
             )
           : 0,
         total: priceInUSD(
           formData.total,
           preferences.dollar_quote,
           preferences.default_markup,
-          dataToSubmit.budget_markup
+          dataToSubmit.budget_markup,
         ),
       },
       total: priceInUSD(
         formData.total,
         preferences.dollar_quote,
         preferences.default_markup,
-        dataToSubmit.budget_markup
+        dataToSubmit.budget_markup,
       ),
       caption: formData.caption,
       created_by:
@@ -180,12 +195,13 @@ export const PDFSiloComponent = ({ getBudget, handleView }: Props) => {
     if (!error && !id) {
       if (data.id) {
         setBudget(data);
-        handleDownloadPdf(data.customer, true);
+        handleDownloadPdf(data.customer, data.silos, true);
         CreateBudgetToastSuccess();
       }
     } else if (!error && id) {
       setViewPdf(true);
-      handleDownloadPdf(data.customer, false);
+
+      handleDownloadPdf(data.customer, data.silos, false);
       UpdateBudgetToastSuccess();
 
       if (getBudget) {

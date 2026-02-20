@@ -44,7 +44,7 @@ const commonSchema = z
       message:
         "Si el presupuesto incluye flete por dirección, debes ingresar la dirección y su ubicación.",
       path: ["address"],
-    }
+    },
   )
   .refine(
     (data) => {
@@ -58,7 +58,7 @@ const commonSchema = z
       message:
         "Si el presupuesto incluye flete por kilómetros, la distancia debe ser mayor a 0.",
       path: ["distanceCalculation"],
-    }
+    },
   );
 
 export const calculateSiloBudgetSchema = z
@@ -79,7 +79,7 @@ export const calculateSiloBudgetSchema = z
             })
             .min(1, "Debes ingresar la capacidad del silo"),
           cone_base: z.string().optional(),
-        })
+        }),
       )
       .min(1, "Debes agregar al menos un silo")
       .superRefine((silos, ctx) => {
@@ -220,7 +220,7 @@ export const calculateStructureBudgetSchema = z
           .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
             message: "El alto del portón debe tener como máximo 2 decimales",
           }),
-      })
+      }),
     ),
     has_gutter: z.boolean(),
     gutter_metters: z.coerce.number({
@@ -237,7 +237,7 @@ export const calculateStructureBudgetSchema = z
       message:
         "Si el presupuesto incluye portón, la cantidad debe ser mayor a 0.",
       path: ["number_of_gates"],
-    }
+    },
   )
   .refine(
     (data) =>
@@ -249,7 +249,7 @@ export const calculateStructureBudgetSchema = z
       message:
         "Debes ingresar las medidas de todos los portones (alto y ancho) si el presupuesto los incluye.",
       path: ["gates_measurements"],
-    }
+    },
   )
   .refine((data) => !data.has_gutter || data.gutter_metters > 0, {
     message:
@@ -287,6 +287,7 @@ export const ConfirmSiloPDFSchema = z.object({
   extra_product: z.string().optional(),
   extra_product_price: z.coerce.number().optional(),
   estimatedDelivery: z.string(),
+  freight_price: z.coerce.number(),
 });
 
 export type ConfirmPDFFormData = z.infer<typeof ConfirmPDFSchema>;

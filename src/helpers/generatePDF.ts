@@ -1,12 +1,10 @@
 import jsPDF from "jspdf";
+import { retriveFileFromBucket } from "@/common/lib";
+import type { Silo } from "@/helpers/types";
 
-export function convertPDF(client: string) {
+export function convertPDF(client: string, images: PDFImage[] = []) {
   const pdfBody = document.getElementById("pdf");
-
-  if (!pdfBody) {
-    console.error("No se encontró el elemento con id 'pdf'.");
-    return;
-  }
+  if (!pdfBody) return;
 
   const doc = new jsPDF({
     orientation: "portrait",
@@ -16,6 +14,16 @@ export function convertPDF(client: string) {
 
   doc.html(pdfBody, {
     callback: (pdf) => {
+      if (images.length > 0) {
+        images.forEach((img) => {
+          pdf.addPage();
+          if (img.title) {
+            pdf.text(img.title, 10, 20);
+          }
+          pdf.addImage(img.src, "JPEG", 10, 30, 190, 120);
+        });
+      }
+
       pdf.save(`presupuesto ${client}.pdf`);
     },
     x: 10,
@@ -65,6 +73,43 @@ export async function getPDFBase64(): Promise<string | null> {
     });
   });
 }
+
+export type PDFImage = {
+  src: string;
+  title?: string;
+};
+
+export async function getSiloPDFImages(silos: Silo[]): Promise<PDFImage[]> {
+  const images = await Promise.all(
+    silos.map(async (silo) => {
+      const { data } = await retriveFileFromBucket(
+        "silos_img",
+        `${silo.type}/${silo.capacity}.webp`,
+      );
+
+      return {
+        src: data.publicUrl,
+        title: buildSiloTitle(silo),
+      };
+    }),
+  );
+
+  return images;
+}
+
+function buildSiloTitle(silo: Silo) {
+  let title =
+    silo.type === "airbase_silos"
+      ? `Silo Base Aérea ${silo.capacity}`
+      : `Silo Comedero ${silo.capacity}`;
+
+  if (silo.type === "airbase_silos" && silo.cone_base !== "estandar") {
+    title += ` con Base Cono ${silo.cone_base}°`;
+  }
+
+  return title;
+}
+
 export async function generatePDFBlobURL(): Promise<string | null> {
   const pdfBody = document.getElementById("pdf");
 

@@ -12,6 +12,7 @@ export const PDFSiloFormContent = () => {
   const { pdfInfo } = usePDFContext();
   const { control, setValue } = useFormContext();
   const paymentMethods = useWatch({ control, name: "paymentMethods" });
+
   const caption = useWatch({ control, name: "caption" });
   const estimatedDelivery = useWatch({ control, name: "estimatedDelivery" });
 

@@ -12,12 +12,15 @@ export const PDFSiloTable = () => {
     control,
     name: "extra_product_price",
   });
+
   const silosPrices = useWatch({ control, name: "silosPrices" }) as
     | number[]
     | undefined;
+
   const freightPrice = useWatch({ control, name: "freight_price" }) as
     | number
     | undefined;
+
   const total = useWatch({ control, name: "total" }) as number | undefined;
 
   useEffect(() => {
@@ -47,7 +50,7 @@ export const PDFSiloTable = () => {
             "silos" in pdfInfo.dataToSubmit &&
             Array.isArray(
               (pdfInfo.dataToSubmit as Omit<SiloBudget, "created_at" | "id">)
-                .silos
+                .silos,
             ) &&
             Array.isArray(description) && (
               <>
@@ -96,7 +99,13 @@ export const PDFSiloTable = () => {
                   <tr>
                     <td className="p-2">Flete</td>
                     <td className="p-2 text-center">
-                      {Math.floor(freightPrice ?? 0)}
+                      {/* {Math.floor(freightPrice ?? 0)} */}
+                      <NumberInput
+                        name="freight_price"
+                        label=""
+                        labelStyles="text-xs font-normal"
+                        inputStyles="text-center border-2 border-amber-600"
+                      />
                     </td>
                   </tr>
                 )}
