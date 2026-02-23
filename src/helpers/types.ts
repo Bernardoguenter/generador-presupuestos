@@ -8,11 +8,6 @@ export interface User {
   company_id: string;
 }
 
-export type CreateUser = Omit<
-  User,
-  "role" | "created_at" | "isPasswordChanged"
->;
-
 export interface Role {
   id: "superadmin" | "admin_empresa" | "usuario";
   label: string;
@@ -194,17 +189,4 @@ export type FeederSilosPriceMap = Record<string, number>;
 export type PDFImage = {
   src: string;
   title?: string;
-};
-
-export type SendBudgetPayload = {
-  pdf: {
-    filename: string;
-    content: string;
-  }[];
-  custsomerEmail: string;
-  customerName: string;
-  companyName: string | undefined;
-  companyEmail: string | null | undefined;
-  userEmail: string | undefined;
-  userName: string | undefined;
 };

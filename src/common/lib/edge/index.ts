@@ -1,9 +1,25 @@
-import type {
-  CreateUser,
-  Preferences,
-  SendBudgetPayload,
-} from "@/helpers/types";
+import type { Preferences } from "@/helpers/types";
 import { supabase } from "@/utils/supabase";
+
+type CreateUser = {
+  email: string;
+  fullName: string;
+  role: string;
+  company_id: string;
+};
+
+type Payload = {
+  pdf: {
+    filename: string;
+    content: string;
+  }[];
+  custsomerEmail: string;
+  customerName: string;
+  companyName: string | undefined;
+  companyEmail: string | null | undefined;
+  userEmail: string | undefined;
+  userName: string | undefined;
+};
 
 const setCompanyPreferences = async (
   company_id: string,
@@ -16,7 +32,7 @@ const setCompanyPreferences = async (
 };
 
 const setWebPreferences = async (
-  preferences: Omit<Preferences, "company_id" | "has_fiber_base">,
+  preferences: Omit<Preferences, "company_id">,
   company_id: string,
 ) => {
   const { data, error } = await supabase.functions.invoke(
@@ -69,7 +85,7 @@ const sendPassword = async (email: string, password: string) => {
   return { error };
 };
 
-const sendBudget = async (payload: SendBudgetPayload) => {
+const sendBudget = async (payload: Payload) => {
   const { data, error } = await supabase.functions.invoke("send-budget", {
     body: payload,
   });
