@@ -13,7 +13,7 @@ import {
 } from "@/utils/alerts";
 import { createBudget, updateBudget } from "@/common/lib";
 import { useNavigate, useParams } from "react-router";
-import { convertPDF } from "@/helpers/generatePDF";
+import { convertPDF, waitNextFrame } from "@/helpers/generatePDF";
 import { useState } from "react";
 import { PDFViewComponent } from "../../budgetDetail/pdf/PDFViewComponent";
 import type { Silo, SiloBudget, SiloPDFInfo } from "@/helpers/types";
@@ -98,9 +98,6 @@ export const PDFSiloComponent = ({ getBudget, handleView }: Props) => {
     extra_product_price: 0,
     extra_product: "",
   };
-
-  const waitNextFrame = () =>
-    new Promise((resolve) => requestAnimationFrame(resolve));
 
   const handleDownloadPdf = async (
     customer: string,
