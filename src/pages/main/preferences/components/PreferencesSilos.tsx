@@ -6,7 +6,7 @@ export const PreferencesSilos = () => {
   const { airbase_silos, feeder_silos } = preferences;
 
   const sortedFeederSilos = Object.entries(feeder_silos).sort(
-    (a, b) => a[1] - b[1]
+    (a, b) => a[1] - b[1],
   );
 
   return (
@@ -44,6 +44,13 @@ export const PreferencesSilos = () => {
             />
           </>
         ))}
+      </Fieldset>
+      <Fieldset title="Base Fibra">
+        <NumberInput
+          key={"fiber_base_cost"}
+          name={"fiber_base_cost"}
+          label={"Costo Base Fibra"}
+        />
       </Fieldset>
     </>
   );

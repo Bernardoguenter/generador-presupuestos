@@ -1,31 +1,13 @@
-import type { Preferences } from "@/helpers/types";
+import type {
+  CreateUser,
+  Preferences,
+  SendBudgetPayload,
+} from "@/helpers/types";
 import { supabase } from "@/utils/supabase";
-
-type CreateUser = {
-  email: string;
-  fullName: string;
-  role: string;
-  company_id: string;
-};
-
-type Payload = {
-  pdf: {
-    filename: string;
-    content: string;
-  }[];
-  custsomerEmail: string;
-  customerName: string;
-  companyName: string | undefined;
-  companyEmail: string | null | undefined;
-  userEmail: string | undefined;
-  userName: string | undefined;
-};
-
-type PreferencesUpdate = Omit<Preferences, "company_id">;
 
 const setCompanyPreferences = async (
   company_id: string,
-  preferences: Preferences
+  preferences: Preferences,
 ) => {
   const { error } = await supabase.functions.invoke("set-preferences", {
     body: { company_id, preferences },
@@ -34,14 +16,14 @@ const setCompanyPreferences = async (
 };
 
 const setWebPreferences = async (
-  preferences: PreferencesUpdate,
-  company_id: string
+  preferences: Omit<Preferences, "company_id" | "has_fiber_base">,
+  company_id: string,
 ) => {
   const { data, error } = await supabase.functions.invoke(
     "set-web-preferences",
     {
       body: { company_id, preferences },
-    }
+    },
   );
   return { data, error };
 };
@@ -58,7 +40,7 @@ const regeneratePassword = async (email: string) => {
     "regenerate-password",
     {
       body: { email: email },
-    }
+    },
   );
 
   return { data, error };
@@ -87,7 +69,7 @@ const sendPassword = async (email: string, password: string) => {
   return { error };
 };
 
-const sendBudget = async (payload: Payload) => {
+const sendBudget = async (payload: SendBudgetPayload) => {
   const { data, error } = await supabase.functions.invoke("send-budget", {
     body: payload,
   });
