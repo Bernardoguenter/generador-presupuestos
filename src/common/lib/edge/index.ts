@@ -21,11 +21,9 @@ type Payload = {
   userName: string | undefined;
 };
 
-type PreferencesUpdate = Omit<Preferences, "company_id">;
-
 const setCompanyPreferences = async (
   company_id: string,
-  preferences: Preferences
+  preferences: Preferences,
 ) => {
   const { error } = await supabase.functions.invoke("set-preferences", {
     body: { company_id, preferences },
@@ -34,14 +32,14 @@ const setCompanyPreferences = async (
 };
 
 const setWebPreferences = async (
-  preferences: PreferencesUpdate,
-  company_id: string
+  preferences: Omit<Preferences, "company_id">,
+  company_id: string,
 ) => {
   const { data, error } = await supabase.functions.invoke(
     "set-web-preferences",
     {
       body: { company_id, preferences },
-    }
+    },
   );
   return { data, error };
 };
@@ -58,7 +56,7 @@ const regeneratePassword = async (email: string) => {
     "regenerate-password",
     {
       body: { email: email },
-    }
+    },
   );
 
   return { data, error };

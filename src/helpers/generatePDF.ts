@@ -1,6 +1,9 @@
 import jsPDF from "jspdf";
 import { retriveFileFromBucket } from "@/common/lib";
-import type { Silo } from "@/helpers/types";
+import type { PDFImage, Silo } from "@/helpers/types";
+
+export const waitNextFrame = () =>
+  new Promise((resolve) => requestAnimationFrame(resolve));
 
 export function convertPDF(client: string, images: PDFImage[] = []) {
   const pdfBody = document.getElementById("pdf");
@@ -73,11 +76,6 @@ export async function getPDFBase64(): Promise<string | null> {
     });
   });
 }
-
-export type PDFImage = {
-  src: string;
-  title?: string;
-};
 
 export async function getSiloPDFImages(silos: Silo[]): Promise<PDFImage[]> {
   const images = await Promise.all(

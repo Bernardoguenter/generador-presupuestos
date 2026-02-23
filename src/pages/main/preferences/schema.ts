@@ -19,7 +19,7 @@ export const silosPriceSchema = z.record(
     .positive("El precio debe ser un número positivo")
     .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
       message: "El precio debe tener como máximo 2 decimales",
-    })
+    }),
 );
 
 export const SheetsPriceSchema = z.record(
@@ -32,7 +32,7 @@ export const SheetsPriceSchema = z.record(
     .positive("El precio debe ser un número positivo")
     .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
       message: "El precio debe tener como máximo 2 decimales",
-    })
+    }),
 );
 
 export const preferencesSchema = z.object({
@@ -136,7 +136,7 @@ export const preferencesSchema = z.object({
         "el costo de columnas de hierro torsionado debe ser un número",
     })
     .nonnegative(
-      "el costo de columnas de hierro torsionadodebe ser un número positivo"
+      "el costo de columnas de hierro torsionadodebe ser un número positivo",
     )
     .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
       message:
@@ -196,6 +196,15 @@ export const preferencesSchema = z.object({
     })
     .nonnegative("El tiempo estimado debe ser un número positivo")
     .int("El tiempo estimado debe ser un número entero"),
+  fiber_base_cost: z.coerce
+    .number({
+      required_error: "Debes ingresar una cotización del dolar",
+      invalid_type_error: "La cotización debe ser un número",
+    })
+    .nonnegative("La cotización debe ser un número positivo")
+    .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
+      message: "La cotización debe tener como máximo 2 decimales",
+    }),
 });
 
 export type PreferencesFormData = z.infer<typeof preferencesSchema>;

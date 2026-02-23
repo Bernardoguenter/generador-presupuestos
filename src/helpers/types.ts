@@ -50,7 +50,14 @@ export interface Preferences {
   estimated_delivery_silos: number;
   sheets_options: SheetPriceMap;
   membrane_cost: number;
+  fiber_base_cost: number;
+  has_fiber_base?: fiber_base_options[];
 }
+
+type fiber_base_options =
+  | "12tn"
+  | "12tn con Alero al medio"
+  | "18tn con Alero al medio";
 
 export type SheetPriceMap = Record<string, number>;
 
@@ -178,3 +185,8 @@ export type WidthSolidWeb = 8 | 12 | 16 | 20 | 25 | 30;
 export type SolidWebPriceMap = Record<WidthSolidWeb, number>;
 export type AirbaseSilosPriceMap = Record<string, number>;
 export type FeederSilosPriceMap = Record<string, number>;
+
+export type PDFImage = {
+  src: string;
+  title?: string;
+};

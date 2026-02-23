@@ -46,6 +46,8 @@ const initialPreferencies = {
   estimated_delivery_silos: 0,
   sheets_options: {},
   membrane_cost: 0,
+  fiber_base_cost: 0,
+  has_fiber_base: [],
 };
 
 export function PreferencesProvider({ children }: { children: ReactNode }) {
@@ -81,7 +83,7 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
       preferences,
       setPreferences,
     }),
-    [isLoading, preferences]
+    [isLoading, preferences],
   );
 
   return (
