@@ -51,7 +51,7 @@ export interface Preferences {
   sheets_options: SheetPriceMap;
   membrane_cost: number;
   fiber_base_cost: number;
-  has_fiber_base: fiber_base_options[];
+  has_fiber_base?: fiber_base_options[];
 }
 
 type fiber_base_options =
