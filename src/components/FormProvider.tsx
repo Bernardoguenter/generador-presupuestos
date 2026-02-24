@@ -22,7 +22,7 @@ type FormProps<TFormValues extends FieldValues> = {
 
 export const Form = <
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  TFormValues extends Record<string, any> = Record<string, any>
+  TFormValues extends Record<string, any> = Record<string, any>,
 >({
   schema,
   onSubmit,

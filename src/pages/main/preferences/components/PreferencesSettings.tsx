@@ -7,6 +7,7 @@ import { PreferencesGenerales } from "./PreferencesGenerales";
 import { PreferencesEstrucutas } from "./PreferencesEstrucutas";
 import { PreferencesSilos } from "./PreferencesSilos";
 import { useUpdatePreferences } from "./useUpdatePreferences";
+import { UpdateAllUserPreferencesButton } from "./UpdateAllUserPreferencesButton";
 
 interface Props {
   preferencesView: "general" | "estructuras" | "silos";
@@ -33,7 +34,7 @@ export default function PreferencesSettings({ preferencesView }: Props) {
         {preferencesView === "general" && <PreferencesGenerales />}
         {preferencesView === "estructuras" && <PreferencesEstrucutas />}
         {preferencesView === "silos" && <PreferencesSilos />}
-        <div className="w-full flex justify-center">
+        <div className="w-full flex-col gap-2 flex justify-center">
           <Button
             styles="mt-4"
             type="submit"
@@ -41,6 +42,7 @@ export default function PreferencesSettings({ preferencesView }: Props) {
             disabled={isSubmitting}>
             Actualizar Preferencias
           </Button>
+          <UpdateAllUserPreferencesButton />
         </div>
       </Form>
     </SubmittingOverlay>

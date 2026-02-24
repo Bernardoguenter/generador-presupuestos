@@ -1,20 +1,8 @@
-import { useEffect, useState } from "react";
-import type { Company } from "../../../helpers/types";
 import { SelectInput } from "../../../components";
-import { getAllCompanies } from "../../../common/lib";
+import { useGetAllCompanies } from "@/common/hooks/useGetAllCompanies";
 
 export const CompanySelect = () => {
-  const [companies, setCompanies] = useState<Company[] | null>(null);
-
-  useEffect(() => {
-    const getCompanies = async () => {
-      const { data, error } = await getAllCompanies();
-      if (!error) {
-        setCompanies(data);
-      }
-    };
-    getCompanies();
-  }, []);
+  const { companies } = useGetAllCompanies();
 
   return (
     <SelectInput
