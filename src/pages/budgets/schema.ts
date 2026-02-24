@@ -79,6 +79,7 @@ export const calculateSiloBudgetSchema = z
             })
             .min(1, "Debes ingresar la capacidad del silo"),
           cone_base: z.string().optional(),
+          has_fiber_base: z.boolean().optional(),
         }),
       )
       .min(1, "Debes agregar al menos un silo")

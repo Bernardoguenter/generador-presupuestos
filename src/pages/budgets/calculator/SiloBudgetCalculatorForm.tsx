@@ -23,10 +23,15 @@ export const SiloBudgetCalculatorForm = () => {
       lat: 0,
       budget_markup: 0,
       silos: [
-        { type: "airbase_silos", capacity: "6tn", cone_base: "estandar" },
+        {
+          type: "airbase_silos",
+          capacity: "6tn",
+          cone_base: "estandar",
+          has_fiber_base: false,
+        },
       ],
     }),
-    []
+    [],
   );
 
   return (

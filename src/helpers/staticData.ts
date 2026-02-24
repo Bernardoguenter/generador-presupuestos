@@ -1,3 +1,5 @@
+import type { SiloFormValue } from "./types";
+
 export const paymentMethods = {
   Silo: `Pago 100 % contra entrega, mediante cheques a 0, 30, 60, 90, 120 o 150 días; Pago de contado.`,
   Structure: `Anticipo (50%): se abona con cheques a 0, 30, 60, 90 y 120 días.;
@@ -134,4 +136,17 @@ export const coneAdjustments: Record<string, Record<string, string>> = {
     "45": "cono 45° altura 10.40mts",
     "55": "cono 55° altura 10.90mts",
   },
+};
+
+export const VALID_FIBER_BASE_CAPACITIES = [
+  "12tn",
+  "12tn con Alero al medio",
+  "18tn con Alero al medio",
+];
+
+export const EMPTY_SILO: SiloFormValue = {
+  type: "",
+  capacity: "",
+  cone_base: "",
+  has_fiber_base: false,
 };

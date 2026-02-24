@@ -1,4 +1,9 @@
-import { coneAdjustments, materialsMap, silosMap } from "./staticData";
+import {
+  coneAdjustments,
+  materialsMap,
+  silosMap,
+  VALID_FIBER_BASE_CAPACITIES,
+} from "./staticData";
 import type { GatesMeasurements, Silos } from "./types";
 
 export const formatCompanyName = (name: string) => {
@@ -86,14 +91,6 @@ const getAlmaLLena = (width: number, details: string) => {
 };
 
 const getHierroTorsionado = (width: number, details: string) => {
-  /*   if (width <= 8) {
-    return details
-      .replace("hierro torsionado n.º 16", "hierro torsionado n.º 12")
-      .replace(
-        "hierro torsionado n.º 10 y n.º 8",
-        "hierro torsionado n.º 8 y n.º 8"
-      );
-  } */
   if (width > 16 && width <= 25) {
     return details
       .replace("hierro torsionado n.º 16", "hierro torsionado n.º 20")
@@ -266,11 +263,26 @@ export function getMimeTypeFromUrl(url: string): string {
 export function getSilosDescriptions(silos: Silos): string[] {
   return silos.map((silo) => {
     const typeMap = silosMap[silo.type as keyof typeof silosMap];
-    const baseDescription =
+
+    let baseDescription =
       typeMap && silo.capacity in typeMap
         ? typeMap[silo.capacity as keyof typeof typeMap]
         : "Silo no definido";
 
+    // ✅ FEEDER SILOS → base de fibra
+    if (
+      silo.type === "feeder_silos" &&
+      silo.has_fiber_base === true &&
+      VALID_FIBER_BASE_CAPACITIES.includes(silo.capacity)
+    ) {
+      // Reemplaza "base Xmts diámetro" → "base de fibra Xmts diámetro"
+      baseDescription = baseDescription.replace(
+        /base\s([\d.,]+mts)\sdiámetro/,
+        "base de fibra $1 diámetro",
+      );
+    }
+
+    // 🔹 AIRBASE SILOS → lógica existente de cono
     if (
       silo.type !== "airbase_silos" ||
       !silo.cone_base ||
@@ -283,7 +295,6 @@ export function getSilosDescriptions(silos: Silos): string[] {
     if (adjustmentMap && adjustmentMap[silo.cone_base]) {
       const newCone = adjustmentMap[silo.cone_base];
 
-      // reemplazamos dinámicamente la parte del cono en la descripción original
       return baseDescription.replace(/cono\s\d+°\saltura\s[^,]+/, newCone);
     }
 
