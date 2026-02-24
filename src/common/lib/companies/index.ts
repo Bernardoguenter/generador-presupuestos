@@ -17,7 +17,7 @@ const getCompanyById = async (id: string) => {
 };
 
 const createCompany = async (
-  createCompanyBody: Omit<Company, "id" | "logo_url" | "created_at">
+  createCompanyBody: Omit<Company, "id" | "logo_url" | "created_at">,
 ) => {
   const { data, error } = await supabase
     .from("companies")
@@ -30,7 +30,7 @@ const createCompany = async (
 
 const updateCompany = async (
   dataToUpdate: Partial<Omit<Company, "id" | "created_at">>,
-  id: string
+  id: string,
 ) => {
   const { data, error } = await supabase
     .from("companies")

@@ -1,36 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Pagination, SearchInput } from "@/components";
 import type { Company } from "@/helpers/types";
-import { getAllCompanies } from "@/common/lib";
 import { usePaginatedData } from "@/common/hooks";
 import { UseSearchableTable } from "@/common/hooks/useSerchableTable";
 import { CompanyTable } from "./CompanyTable";
+import { useGetAllCompanies } from "@/common/hooks/useGetAllCompanies";
 
 export const CompanyList = () => {
-  const [companies, setCompanies] = useState<Company[] | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  useEffect(() => {
-    const getCompanies = async () => {
-      try {
-        setIsLoading(true);
-        const { data, error } = await getAllCompanies();
-        if (!error) {
-          setCompanies(data);
-        }
-        setIsLoading(false);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    getCompanies();
-  }, []);
+  const { companies, setCompanies, isLoading } = useGetAllCompanies();
 
   const removeCompany = (id: string) => {
     setCompanies(
-      (prev) => prev?.filter((company) => company.id !== id) || null
+      (prev) => prev?.filter((company) => company.id !== id) || null,
     );
   };
 

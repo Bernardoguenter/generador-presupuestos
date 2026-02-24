@@ -27,7 +27,7 @@ export const useGetAuthUser = () => {
         }
       }
     },
-    [navigate]
+    [navigate],
   );
 
   const handleLogout = async () => {
@@ -47,7 +47,7 @@ export const useGetAuthUser = () => {
       setLoading,
       handleLogout,
     }),
-    [authUser, id, loading]
+    [authUser, id, loading],
   );
 
   return {
