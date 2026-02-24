@@ -39,7 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setId(undefined);
           setAuthUser(undefined);
         }
-      }
+      },
     );
 
     return () => {
