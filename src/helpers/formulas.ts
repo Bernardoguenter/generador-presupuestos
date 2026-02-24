@@ -8,7 +8,7 @@ import type {
 
 const calculateGatePrice = (
   gates_measurements: GatesMeasurements[],
-  gate_price: number
+  gate_price: number,
 ) => {
   const square_meters = gates_measurements
     .map((gate) => gate.height * gate.width)
@@ -21,14 +21,14 @@ const calculateGatePrice = (
 
 const calculalteGutterPrice = (
   gutter_metters: number,
-  gutter_price: number
+  gutter_price: number,
 ) => {
   return gutter_metters * gutter_price;
 };
 
 export const calculateDistance = async (
   originAddress: Address,
-  destinationAddress: Address
+  destinationAddress: Address,
 ): Promise<number> => {
   const service = new google.maps.DistanceMatrixService();
 
@@ -55,31 +55,31 @@ export const calculateDistance = async (
 
 export const calculateFreightPrice = (
   distance: number,
-  price_per_km: number
+  price_per_km: number,
 ) => {
   return distance * price_per_km;
 };
 
 const calculateSolidWebStructure = (
   width: number,
-  solid_web_price_list: SolidWebPriceMap
+  solid_web_price_list: SolidWebPriceMap,
 ) => {
   return width <= 8
     ? solid_web_price_list["8"]
     : width <= 12
-    ? solid_web_price_list["12"]
-    : width <= 16
-    ? solid_web_price_list["16"]
-    : width <= 20
-    ? solid_web_price_list["20"]
-    : width <= 25
-    ? solid_web_price_list["25"]
-    : solid_web_price_list["30"];
+      ? solid_web_price_list["12"]
+      : width <= 16
+        ? solid_web_price_list["16"]
+        : width <= 20
+          ? solid_web_price_list["20"]
+          : width <= 25
+            ? solid_web_price_list["25"]
+            : solid_web_price_list["30"];
 };
 
 export const getSheetsFactor = (
   sheets_option: string,
-  preferences: Preferences
+  preferences: Preferences,
 ) => {
   if (
     sheets_option === "Cincalum n°25 acanalada" ||
@@ -109,7 +109,7 @@ export const getStructureBudgetTotal = (
   has_roof_membrane: boolean,
   has_sides_membrane: boolean,
   sideSheetFactor: number,
-  roofSheetFactor: number
+  roofSheetFactor: number,
 ) => {
   const {
     colored_sheet_difference,
@@ -135,8 +135,8 @@ export const getStructureBudgetTotal = (
     material === "Hierro torsionado"
       ? twisted_iron_cost
       : material === "Perfil u Ángulo"
-      ? u_profile_cost
-      : calculateSolidWebStructure(width, solid_web_price_list!);
+        ? u_profile_cost
+        : calculateSolidWebStructure(width, solid_web_price_list!);
 
   //CALCULAR PRECIO DE ESTRUCTURA
   const baseStructureAndRoofCost = floorArea * price_per_meter;
@@ -149,8 +149,8 @@ export const getStructureBudgetTotal = (
     material === "Hierro torsionado"
       ? twisted_iron_column_cost
       : material === "Perfil u Ángulo"
-      ? u_profile_column_cost
-      : calculateSolidWebStructure(width, solid_web_columns_price_list);
+        ? u_profile_column_cost
+        : calculateSolidWebStructure(width, solid_web_columns_price_list);
 
   const columnsCost =
     height === 5
@@ -224,7 +224,7 @@ export const getSiloBudgetTotal = (
   preferences: Preferences,
   includes_taxes: boolean,
   freight_price: number,
-  silos: Silos
+  silos: Silos,
 ) => {
   const { default_markup, iva_percentage } = preferences;
 
@@ -247,7 +247,7 @@ export const getSiloBudgetTotal = (
 
 export const calculateSilosSubtotal = (
   preferences: Preferences,
-  silos: Silos
+  silos: Silos,
 ): number => {
   const { airbase_silos, feeder_silos, cone_base_45, cone_base_55 } =
     preferences;
@@ -282,7 +282,7 @@ export const calculateFreightArsPriceWithTaxesAndMarkup = (
   default_markup: number,
   budget_markup: number,
   includes_taxes: boolean,
-  iva_percentage: number
+  iva_percentage: number,
 ) => {
   const totalPrice =
     freight_price *
@@ -301,7 +301,7 @@ export const getSilosPricestArsPriceWithTaxesAndMarkup = (
   default_markup: number,
   budget_markup: number,
   includes_taxes: boolean,
-  iva_percentage: number
+  iva_percentage: number,
 ) => {
   const result = silosPrices.map((silo) => {
     const totalPrice =
@@ -324,7 +324,7 @@ export const getSilosPricesListDollars = (
   default_markup: number,
   budget_markup: number,
   includes_taxes: boolean,
-  iva_percentage: number
+  iva_percentage: number,
 ) => {
   const result = silosPrices.map((silo) => {
     const totalPrice =
@@ -343,7 +343,7 @@ export const getSilosPricesListDollars = (
 
 export const getIndividualSiloPrices = (
   silos: Silos,
-  preferences: Preferences
+  preferences: Preferences,
 ) => {
   const siloPrices = silos.map((silo) => {
     const prices = (
@@ -358,6 +358,11 @@ export const getIndividualSiloPrices = (
           ? price * (1 + preferences.cone_base_45 / 100)
           : price * (1 + preferences.cone_base_55 / 100);
     }
+
+    if (silo.type === "feeder_silos" && silo.has_fiber_base) {
+      price = price + preferences.fiber_base_cost;
+    }
+
     return price || 0;
   });
 

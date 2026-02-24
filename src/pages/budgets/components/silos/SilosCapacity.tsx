@@ -11,7 +11,7 @@ export const SilosCapacity = ({ type, index }: Props) => {
   const { feeder_silos, airbase_silos } = preferences;
 
   const sortedFeederSilos = Object.entries(feeder_silos).sort(
-    (a, b) => a[1] - b[1]
+    (a, b) => a[1] - b[1],
   );
 
   return (

@@ -128,6 +128,7 @@ export interface Silo {
   type: string;
   capacity: string;
   cone_base?: string;
+  has_fiber_base?: boolean;
 }
 
 export type Silos = Silo[];
@@ -189,4 +190,11 @@ export type FeederSilosPriceMap = Record<string, number>;
 export type PDFImage = {
   src: string;
   title?: string;
+};
+
+export type SiloFormValue = {
+  type?: string;
+  capacity?: string;
+  cone_base?: string;
+  has_fiber_base?: boolean;
 };
