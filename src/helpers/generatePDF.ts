@@ -92,6 +92,18 @@ export async function getSiloPDFImages(silos: Silo[]): Promise<PDFImage[]> {
     }),
   );
 
+  if (silos.some(async (silo) => silo.has_fiber_base === true)) {
+    const { data } = await retriveFileFromBucket(
+      "silos_img",
+      `feeder_silos/silobasefribra.jpeg`,
+    );
+
+    images.push({
+      src: data.publicUrl,
+      title: "Base de Fibra",
+    });
+  }
+
   return images;
 }
 
