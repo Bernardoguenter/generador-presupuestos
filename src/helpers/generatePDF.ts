@@ -120,17 +120,6 @@ function buildSiloTitle(silo: Silo) {
   return title;
 }
 
-async function imageToBase64(url: string): Promise<string> {
-  const res = await fetch(url);
-  const blob = await res.blob();
-
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result as string);
-    reader.readAsDataURL(blob);
-  });
-}
-
 export async function generatePDFBlobURL(): Promise<string | null> {
   const pdfBody = document.getElementById("pdf");
 
