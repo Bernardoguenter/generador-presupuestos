@@ -92,10 +92,10 @@ export async function getSiloPDFImages(silos: Silo[]): Promise<PDFImage[]> {
     }),
   );
 
-  if (silos.some(async (silo) => silo.has_fiber_base === true)) {
+  if (shouldAddFiberBaseImage(silos)) {
     const { data } = await retriveFileFromBucket(
       "silos_img",
-      `feeder_silos/silobasefribra.jpeg`,
+      "feeder_silos/silobasefibra.jpeg",
     );
 
     images.push({
@@ -105,6 +105,12 @@ export async function getSiloPDFImages(silos: Silo[]): Promise<PDFImage[]> {
   }
 
   return images;
+}
+
+function shouldAddFiberBaseImage(silos: Silo[]) {
+  return silos.some(
+    (silo) => silo.type === "feeder_silos" && silo.has_fiber_base === true,
+  );
 }
 
 function buildSiloTitle(silo: Silo) {
