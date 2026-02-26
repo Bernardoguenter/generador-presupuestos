@@ -92,7 +92,25 @@ export async function getSiloPDFImages(silos: Silo[]): Promise<PDFImage[]> {
     }),
   );
 
+  if (shouldAddFiberBaseImage(silos)) {
+    const { data } = await retriveFileFromBucket(
+      "silos_img",
+      "feeder_silos/silobasefibra.jpeg",
+    );
+
+    images.push({
+      src: data.publicUrl,
+      title: "Base de Fibra",
+    });
+  }
+
   return images;
+}
+
+function shouldAddFiberBaseImage(silos: Silo[]) {
+  return silos.some(
+    (silo) => silo.type === "feeder_silos" && silo.has_fiber_base === true,
+  );
 }
 
 function buildSiloTitle(silo: Silo) {
