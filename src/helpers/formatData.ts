@@ -322,7 +322,7 @@ export const getStructureDefaultDescription = (
     return `${base}${enclousure_height[0]}mts de cerramiento de chapa en los laterales.`;
   }
 
-  return `${base}${enclousure_height[0]}mts de cerramiento de chapa lateral izquierdo, ${enclousure_height[1]}mts de cerramiento de chapa lateral derecho, ${enclousure_height[2]}mts de cerramiento de chapa frontal, y ${enclousure_height[3]}mts de cerramiento trasero`;
+  return `${base}${enclousure_height[0]}mts de cerramiento de chapa lateral izquierdo, ${enclousure_height[1]}mts de cerramiento de chapa lateral derecho, ${enclousure_height[2]}mts de cerramiento de chapa frontal, y ${enclousure_height[3]}mts de cerramiento de chapa trasero`;
 };
 
 // Helper: devuelve true si todos los valores del array de alturas son iguales
