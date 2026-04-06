@@ -1,7 +1,7 @@
-import { DeleteIcon } from "../../../../assets/svg";
-import useSweetAlertModal from "../../../../common/hooks";
-import { deleteUser } from "../../../../common/lib";
-import { DeleteUserToastError } from "../../../../utils/alerts";
+import { DeleteIcon } from "@/assets/svg";
+import useSweetAlertModal from "@/common/hooks";
+import { deleteUser } from "@/common/lib";
+import { DeleteUserToastError } from "@/utils/alerts";
 
 interface Props {
   id: string;

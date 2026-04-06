@@ -1,12 +1,12 @@
-import { formatDetails } from "../../helpers/formatData";
+import { formatDetails } from "@/helpers/formatData";
 import {
   calculateDistance,
   calculateFreightPrice,
   getSheetsFactor,
   getStructureBudgetTotal,
-} from "../../helpers/formulas";
-import type { StructurePDFInfo } from "../../helpers/types";
-import type { StructureBudgetFormData } from "../../pages/budgets/schema";
+} from "@/helpers/formulas";
+import type { StructurePDFInfo } from "@/helpers/types";
+import type { StructureBudgetFormData } from "@/pages/budgets/schema";
 import {
   useAuthContext,
   usePreferencesContext,

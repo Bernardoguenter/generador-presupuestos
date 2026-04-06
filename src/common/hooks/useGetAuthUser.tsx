@@ -1,9 +1,9 @@
 import { useCallback, useMemo, useState } from "react";
 import { getUserById } from "../lib";
 import { useNavigate } from "react-router";
-import type { User } from "../../helpers/types";
-import { supabase } from "../../utils/supabase";
-import { LogoutToast } from "../../utils/alerts";
+import type { User } from "@/helpers/types";
+import { supabase } from "@/utils/supabase";
+import { LogoutToast } from "@/utils/alerts";
 
 export const useGetAuthUser = () => {
   const [id, setId] = useState<string | undefined>(undefined);

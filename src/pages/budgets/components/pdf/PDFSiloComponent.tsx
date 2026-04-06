@@ -3,7 +3,7 @@ import { Form } from "@/components";
 import {
   ConfirmSiloPDFSchema,
   type ConfirmSiloPDFFormData,
-} from "../../schema";
+} from "@/pages/budgets/schema";
 import { usePDFContext, usePreferencesContext } from "@/common/context";
 import {
   CreateBudgetToastError,
@@ -15,7 +15,7 @@ import { createBudget, updateBudget } from "@/common/lib";
 import { useNavigate, useParams } from "react-router";
 import { convertPDF, waitNextFrame } from "@/helpers/generatePDF";
 import { useState } from "react";
-import { PDFViewComponent } from "../../budgetDetail/pdf/PDFViewComponent";
+
 import type { Silo, SiloBudget, SiloPDFInfo } from "@/helpers/types";
 import {
   getDefaultCaption,
@@ -29,6 +29,7 @@ import {
   getSilosPricestArsPriceWithTaxesAndMarkup,
 } from "@/helpers/formulas";
 import { getSiloPDFImages } from "@/helpers/generatePDF";
+import { PDFViewComponent } from "../../budgetDetail/pdf/PDFViewComponent";
 
 interface Props {
   getBudget?: (id: string, type: "silo" | "structure") => void;

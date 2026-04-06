@@ -1,10 +1,9 @@
 import { useEffect, useMemo } from "react";
 import { Button, Form } from "@/components";
-
 import {
   calculateSiloBudgetSchema,
   type SiloBudgetFormData,
-} from "../../../schema";
+} from "@/pages/budgets/schema";
 import type { SiloBudget } from "@/helpers/types";
 import { usePDFContext } from "@/common/context";
 import { useSiloBudgetSubmit } from "@/common/hooks";
@@ -54,7 +53,7 @@ export const SiloBudgetEditForm = ({
       distanceInKms:
         budget.includes_freight && budget.distance ? budget.distance : 0,
     }),
-    [budget]
+    [budget],
   );
 
   return (

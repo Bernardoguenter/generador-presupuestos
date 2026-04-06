@@ -1,7 +1,7 @@
 import { useEffect, type ReactNode } from "react";
 import { supabase } from "@/utils/supabase";
 import { AuthContext } from "./AuthContext";
-import { useGetAuthUser } from "../../hooks";
+import { useGetAuthUser } from "@common/hooks";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { values, getAuthUser } = useGetAuthUser();

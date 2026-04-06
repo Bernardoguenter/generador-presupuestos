@@ -2,9 +2,9 @@ import {
   calculateDistance,
   calculateFreightPrice,
   getSiloBudgetTotal,
-} from "../../helpers/formulas";
-import type { SiloBudgetFormData } from "../../pages/budgets/schema";
-import type { SiloPDFInfo } from "../../helpers/types";
+} from "@/helpers/formulas";
+import type { SiloBudgetFormData } from "@/pages/budgets/schema";
+import type { SiloPDFInfo } from "@/helpers/types";
 import {
   useAuthContext,
   usePreferencesContext,
@@ -60,7 +60,7 @@ export const useSiloBudgetSubmit = () => {
       preferences,
       includes_taxes,
       freight_price,
-      silos
+      silos,
     );
 
     const dataToSubmit = {
