@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Preferences } from "@/helpers/types";
 import { PreferencesContext } from "./PreferencesContext";
-import { getUserPreferences } from "../../lib";
+import { getUserPreferences } from "@common/lib";
 import { useAuthContext } from "../AuthContext/AuthContext";
 
 const initialPreferencies = {

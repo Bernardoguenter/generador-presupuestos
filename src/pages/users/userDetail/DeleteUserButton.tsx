@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router";
-import useSweetAlertModal from "../../../common/hooks";
-import { Button } from "../../../components";
-import { deleteUser } from "../../../common/lib";
-import { DeleteUserToastError } from "../../../utils/alerts";
+import useSweetAlertModal from "@/common/hooks";
+import { Button } from "@/components";
+import { deleteUser } from "@/common/lib";
+import { DeleteUserToastError } from "@/utils/alerts";
 
 interface Props {
   isSubmitting: boolean;

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Company } from "@/helpers/types";
 import { CompanyContext } from "./CompanyContext";
-import { getCompanyById } from "../../lib";
+import { getCompanyById } from "@common/lib";
 import { useAuthContext } from "../AuthContext/AuthContext";
 
 export function CompanyProvider({ children }: { children: ReactNode }) {
@@ -35,7 +35,7 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
       company,
       setCompany,
     }),
-    [isLoading, company]
+    [isLoading, company],
   );
 
   return (

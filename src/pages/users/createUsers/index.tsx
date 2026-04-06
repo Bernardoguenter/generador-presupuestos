@@ -1,22 +1,17 @@
 import { useNavigate } from "react-router";
-import {
-  Button,
-  Form,
-  SubmittingOverlay,
-  TextInput,
-} from "../../../components";
+import { Button, Form, SubmittingOverlay, TextInput } from "@/components";
 import {
   CreateUserRoleToastError,
   CreateUserToastError,
   CreateUserToastErrorDuplicated,
   CreateUserToastSuccess,
-} from "../../../utils/alerts";
+} from "@/utils/alerts";
 import { createUserSchema, type CreateUserFormData } from "../schema";
 import { RolesSelect } from "../components/RolesSelect";
 import { CompanySelect } from "../components/CompanySelect";
-import { createUser, getUserByEmail, sendPassword } from "../../../common/lib";
+import { createUser, getUserByEmail, sendPassword } from "@/common/lib";
 import { useMemo } from "react";
-import { useIsSubmitting } from "../../../common/hooks/useIsSubmitting";
+import { useIsSubmitting } from "@/common/hooks/useIsSubmitting";
 
 export default function CreateUsers() {
   const navigate = useNavigate();
@@ -62,7 +57,7 @@ export default function CreateUsers() {
       role: "usuario",
       company_id: "default",
     }),
-    []
+    [],
   );
 
   return (

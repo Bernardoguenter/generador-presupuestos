@@ -1,4 +1,4 @@
-import { SelectInput } from "../../../components";
+import { SelectInput } from "@/components";
 import { useGetAllCompanies } from "@/common/hooks/useGetAllCompanies";
 
 export const CompanySelect = () => {

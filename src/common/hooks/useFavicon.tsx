@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { getMimeTypeFromUrl } from "../../helpers/formatData";
+import { getMimeTypeFromUrl } from "@/helpers/formatData";
 import { useLogo } from "./useLogo";
 
 export function useFavicon() {

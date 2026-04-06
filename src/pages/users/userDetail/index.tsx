@@ -1,22 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import type { User } from "../../../helpers/types";
+import type { User } from "@/helpers/types";
 import { RolesSelect } from "../components/RolesSelect";
 import { CompanySelect } from "../components/CompanySelect";
-import {
-  Button,
-  TextInput,
-  Form,
-  SubmittingOverlay,
-} from "../../../components";
+import { Button, TextInput, Form, SubmittingOverlay } from "@/components";
 import { createUserSchema, type CreateUserFormData } from "../schema";
-import {
-  UpdateUserToastError,
-  UpdateUserToastSuccess,
-} from "../../../utils/alerts";
-import { getUserById, updateUser } from "../../../common/lib";
+import { UpdateUserToastError, UpdateUserToastSuccess } from "@/utils/alerts";
+import { getUserById, updateUser } from "@/common/lib";
 import { DeleteUserButton } from "./DeleteUserButton";
-import { useIsSubmitting } from "../../../common/hooks/useIsSubmitting";
+import { useIsSubmitting } from "@/common/hooks/useIsSubmitting";
 
 export default function UserDetail() {
   const { id } = useParams();
