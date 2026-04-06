@@ -307,12 +307,27 @@ export const getStructureDefaultDescription = (
   width: number,
   length: number,
   height: number,
-  enclousure_height: number,
+  enclousure_height: number[],
 ) => {
-  return structure_type === "Galpón"
-    ? `${structure_type} de ${width}mts x ${length}mts x ${height}mts de altura libre con ${enclousure_height}mts cerramiento de chapa en los laterales.`
-    : `${structure_type} de ${width}mts x ${length}mts x ${height}mts de altura libre`;
+  const isUniform = enclousure_height.every(
+    (val) => val === enclousure_height[0],
+  );
+  if (structure_type !== "Galpón") {
+    return `${structure_type} de ${width}mts x ${length}mts x ${height}mts de altura libre`;
+  }
+
+  const base = `${structure_type} de ${width}mts x ${length}mts x ${height}mts de altura libre con `;
+
+  if (isUniform) {
+    return `${base}${enclousure_height[0]}mts de cerramiento de chapa en los laterales.`;
+  }
+
+  return `${base}${enclousure_height[0]}mts de cerramiento de chapa lateral izquierdo, ${enclousure_height[1]}mts de cerramiento de chapa lateral derecho, ${enclousure_height[2]}mts de cerramiento de chapa frontal, y ${enclousure_height[3]}mts de cerramiento trasero`;
 };
+
+// Helper: devuelve true si todos los valores del array de alturas son iguales
+export const isEnclosureUniform = (enclousure_height: number[]) =>
+  enclousure_height.every((val) => val === enclousure_height[0]);
 
 export const getDefaultCaption = (
   includes_freight: boolean,
