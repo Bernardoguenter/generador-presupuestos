@@ -71,7 +71,7 @@ export interface StructureBudget {
   width: number;
   length: number;
   height: number;
-  enclousure_height: number;
+  enclousure_height: number[];
   includes_freight: boolean;
   freight_price: number;
   address: Address | null;
@@ -95,6 +95,7 @@ export interface StructureBudget {
   has_roof_membrane: boolean;
   sides_sheets_option: string;
   roof_sheets_option: string;
+  uniform_enclousure: boolean;
 }
 
 export interface SiloBudget {
@@ -167,7 +168,7 @@ export interface StructurePDFInfo {
   width: number;
   length: number;
   height: number;
-  enclousure_height: number;
+  enclousure_height: number[];
   includes_gate: boolean;
   includes_taxes: boolean;
   freight_price: number;
@@ -175,7 +176,10 @@ export interface StructurePDFInfo {
   total: number;
   distance?: number | null;
   customer_address?: string | null;
-  dataToSubmit: Omit<StructureBudget, "created_at" | "id">;
+  dataToSubmit: Omit<
+    StructureBudget,
+    "created_at" | "id" | "uniform_enclousure"
+  >;
 }
 
 export interface Totals {

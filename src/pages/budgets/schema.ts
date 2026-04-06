@@ -180,21 +180,11 @@ export const calculateStructureBudgetSchema = z
       .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
         message: "El largo debe tener como máximo 2 decimales",
       }),
-    enclousure_height: z.coerce
-      .number({
-        required_error:
-          "Debes ingresar un alto del cerramiento para el presupuesto ",
-        invalid_type_error: "El alto del cerramiento debe ser un número",
-      })
-      .nonnegative("El alto del cerramiento  debe ser un número positivo")
-      .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
-        message: "El alto del cerramiento  debe tener como máximo 2 decimales",
-      }),
-
     color_roof_sheet: z.boolean(),
     color_side_sheet: z.boolean(),
     includes_taxes: z.boolean(),
     includes_gate: z.boolean(),
+    uniform_enclousure: z.boolean(),
     number_of_gates: z.coerce
       .number({
         invalid_type_error: "La cantidad de portones debe ser un número",
@@ -222,6 +212,17 @@ export const calculateStructureBudgetSchema = z
             message: "El alto del portón debe tener como máximo 2 decimales",
           }),
       }),
+    ),
+    enclousure_height: z.array(
+      z.coerce
+        .number({
+          required_error: "Debes ingresar el alto del portón",
+          invalid_type_error: "El alto del portón debe ser un número",
+        })
+        .nonnegative("El alto del portón debe ser un número positivo")
+        .refine((n) => /^\d+(\.\d{1,2})?$/.test(n.toString()), {
+          message: "El alto del portón debe tener como máximo 2 decimales",
+        }),
     ),
     has_gutter: z.boolean(),
     gutter_metters: z.coerce.number({

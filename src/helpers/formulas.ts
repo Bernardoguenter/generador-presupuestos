@@ -1,3 +1,4 @@
+import { isEnclosureUniform } from "./formatData";
 import type {
   Address,
   GatesMeasurements,
@@ -95,7 +96,7 @@ export const getStructureBudgetTotal = (
   width: number,
   length: number,
   height: number,
-  enclousure_height: number,
+  enclousure_height: number[],
   structure_type: string,
   material: string,
   color_roof_sheet: boolean,
@@ -129,7 +130,16 @@ export const getStructureBudgetTotal = (
 
   const floorArea = width * length;
   const perimeter = 2 * (width + length);
-  const enclousureArea = perimeter * enclousure_height;
+
+  const isUniform = isEnclosureUniform(enclousure_height);
+
+  let enclousureArea: number;
+  if (isUniform) {
+    enclousureArea = perimeter * enclousure_height[0];
+  } else {
+    const [left, right, front, back] = enclousure_height;
+    enclousureArea = length * (left + right) + width * (front + back);
+  }
 
   const price_per_meter =
     material === "Hierro torsionado"

@@ -27,7 +27,7 @@ export const SearchInput = ({ searchInput, setSearchInput }: Props) => {
           onChange={(e) => setSearchInput(e.target.value)}
         />
         <span
-          className="absolute right-2 top-2"
+          className="absolute right-2 top-2 cursor-pointer"
           onClick={handleCloseInput}>
           <CloseIcon />
         </span>

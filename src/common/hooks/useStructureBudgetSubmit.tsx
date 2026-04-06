@@ -25,7 +25,7 @@ export const useStructureBudgetSubmit = () => {
   >;
 
   const handleStructureBudgetSubmit = async (
-    formData: StructureBudgetFormData
+    formData: StructureBudgetFormData,
   ) => {
     const {
       color_roof_sheet,
@@ -78,7 +78,7 @@ export const useStructureBudgetSubmit = () => {
 
     const newGutter_metters = has_gutter ? gutter_metters : 0;
     const newEnclousure_height =
-      structure_type === "Galpón" ? enclousure_height : 0;
+      structure_type === "Galpón" ? enclousure_height : [0];
     const newGates_measurements =
       structure_type === "Galpón" ? gates_measurements : [];
     const newNumber_of_gates =
@@ -94,7 +94,7 @@ export const useStructureBudgetSubmit = () => {
       width,
       length,
       height,
-      newEnclousure_height,
+      enclousure_height,
       structure_type,
       material,
       color_roof_sheet,
@@ -108,7 +108,7 @@ export const useStructureBudgetSubmit = () => {
       has_roof_membrane,
       has_sides_membrane,
       sideSheetFactor,
-      roofSheetFactor
+      roofSheetFactor,
     );
 
     const newDetails = formatDetails(
@@ -124,7 +124,7 @@ export const useStructureBudgetSubmit = () => {
       sides_sheets_option,
       roof_sheets_option,
       has_roof_membrane,
-      has_sides_membrane
+      has_sides_membrane,
     );
 
     if (authUser) {

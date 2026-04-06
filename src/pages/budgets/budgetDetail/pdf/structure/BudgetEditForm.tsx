@@ -76,8 +76,13 @@ export const BudgetEditForm = ({
       has_roof_membrane: budget.has_roof_membrane,
       sides_sheets_option: budget.sides_sheets_option,
       roof_sheets_option: budget.roof_sheets_option,
+      uniform_enclousure: Array.isArray(budget.enclousure_height)
+        ? budget.enclousure_height.every(
+            (val) => val === budget.enclousure_height[0],
+          )
+        : false,
     }),
-    [budget]
+    [budget],
   );
 
   return (
