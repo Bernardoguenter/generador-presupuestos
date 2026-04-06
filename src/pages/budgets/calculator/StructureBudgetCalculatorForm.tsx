@@ -21,7 +21,7 @@ export const StructureBudgetCalculatorForm = () => {
       width: 15,
       length: 25,
       height: 5,
-      enclousure_height: 4.5,
+      enclousure_height: [4.5, 4.5, 4.5, 4.5],
       includes_freight: false,
       distanceCalculation: "distance",
       distanceInKms: 0,
@@ -42,8 +42,9 @@ export const StructureBudgetCalculatorForm = () => {
       sides_sheets_option: "Cincalum n°25 acanalada",
       has_roof_membrane: false,
       has_sides_membrane: false,
+      uniform_enclousure: true,
     }),
-    []
+    [],
   );
 
   return (

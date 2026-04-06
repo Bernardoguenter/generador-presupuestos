@@ -55,20 +55,20 @@ export const PDFStructureComponent = ({ getBudget, handleView }: Props) => {
     width,
     length,
     height,
-    enclousure_height
+    enclousure_height,
   );
 
   const defaultCaption = getDefaultCaption(
     includes_freight,
     pdfInfo.includes_taxes,
     preferences.iva_percentage,
-    "structure"
+    "structure",
   );
 
   const totalARS = getTotalArs(
     total,
     preferences.dollar_quote,
-    dataToSubmit.budget_markup
+    dataToSubmit.budget_markup,
   );
 
   const defaultValues = {
