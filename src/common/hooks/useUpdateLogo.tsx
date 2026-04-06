@@ -12,7 +12,7 @@ import {
   UpdateCompanyToastError,
   UpdateCompanyLogoToastError,
 } from "@/utils/alerts";
-import type { CompanyLogoFormData } from "../../pages/companies/schema";
+import type { CompanyLogoFormData } from "@/pages/companies/schema";
 
 interface Props {
   company: Company;
@@ -34,14 +34,14 @@ export const useUpdateLogo = ({ company }: Props) => {
                 file,
                 "companies-logos",
                 company.id,
-                `/${companyName}.${fileType}`
+                `/${companyName}.${fileType}`,
               );
 
             if (!bucketError) {
               UpdateCompanyLogoToastSuccess(company.company_name);
               const { error: updateLogoUrlError } = await updateCompany(
                 { logo_url: bucketData?.fullPath },
-                company.id
+                company.id,
               );
               if (!updateLogoUrlError) {
                 UpdateCompanyToastSuccess(company.company_name);
@@ -58,13 +58,13 @@ export const useUpdateLogo = ({ company }: Props) => {
               file,
               "companies-logos",
               company.id,
-              `/${companyName}.${fileType}`
+              `/${companyName}.${fileType}`,
             );
           if (!bucketError) {
             UpdateCompanyLogoToastSuccess(company.company_name);
             const { error: updateLogoUrlError } = await updateCompany(
               { logo_url: bucketData?.fullPath },
-              company.id
+              company.id,
             );
             if (!updateLogoUrlError) {
               UpdateCompanyToastSuccess(company.company_name);

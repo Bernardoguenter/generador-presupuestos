@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import type { Role } from "../../../helpers/types";
-import { SelectInput } from "../../../components";
-import { getUserRoles } from "../../../common/lib";
+import type { Role } from "@/helpers/types";
+import { SelectInput } from "@/components";
+import { getUserRoles } from "@/common/lib";
 
 export const RolesSelect = () => {
   const [roles, setRoles] = useState<Role[] | null>(null);

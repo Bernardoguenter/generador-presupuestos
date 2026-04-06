@@ -1,15 +1,15 @@
 import { useEffect, useMemo } from "react";
 import { Button, Form } from "@/components";
-import { PDFStructureComponent } from "../../../components/pdf/PDFStructureComponent";
-import { ResetFormButton } from "../../../components/ResetFormButton";
+import { ResetFormButton } from "@/pages/budgets/components/ResetFormButton";
 import {
   calculateStructureBudgetSchema,
   type StructureBudgetFormData,
-} from "../../../schema";
+} from "@/pages/budgets/schema";
 import type { StructureBudget } from "@/helpers/types";
 import { usePDFContext } from "@/common/context";
 import { useStructureBudgetSubmit } from "@/common/hooks";
-import { StructureBudgetFormContent } from "../../../components/structures/StructureBudgetFormContent";
+import { StructureBudgetFormContent } from "@/pages/budgets/components/structures/StructureBudgetFormContent";
+import { PDFStructureComponent } from "@/pages/budgets/components/pdf/PDFStructureComponent";
 
 interface Props {
   budget: StructureBudget;

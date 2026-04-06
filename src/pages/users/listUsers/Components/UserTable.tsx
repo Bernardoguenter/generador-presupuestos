@@ -1,6 +1,6 @@
-import { EditIcon } from "../../../../assets/svg";
-import { CustomLink } from "../../../../components";
-import type { User } from "../../../../helpers/types";
+import { EditIcon } from "@/assets/svg";
+import { CustomLink } from "@/components";
+import type { User } from "@/helpers/types";
 import { DeleteUserButton } from "./DeleteUserButton";
 
 interface Props {
