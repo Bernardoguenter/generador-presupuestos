@@ -13,17 +13,14 @@ export const EnclousureHeightInput = () => {
 
   useEffect(() => {
     if (uniform_enclousure) {
-      setValue("enclousure_height[0]", enclousure_height[0]);
-      setValue("enclousure_height[1]", enclousure_height[0]);
-      setValue("enclousure_height[2]", enclousure_height[0]);
-      setValue("enclousure_height[3]", enclousure_height[0]);
-    } else {
-      setValue("enclousure_height[0]", enclousure_height[0]);
-      setValue("enclousure_height[1]", enclousure_height[1]);
-      setValue("enclousure_height[2]", enclousure_height[2]);
-      setValue("enclousure_height[3]", enclousure_height[3]);
+      const h0 = enclousure_height?.[0];
+      if (h0 === undefined) return;
+
+      if (enclousure_height[1] !== h0) setValue("enclousure_height[1]", h0);
+      if (enclousure_height[2] !== h0) setValue("enclousure_height[2]", h0);
+      if (enclousure_height[3] !== h0) setValue("enclousure_height[3]", h0);
     }
-  }, [uniform_enclousure, setValue]);
+  }, [uniform_enclousure, enclousure_height?.[0], setValue]);
 
   return (
     <>
