@@ -1,5 +1,5 @@
 import { createContext, use } from "react";
-import type { User } from "@/helpers/types";
+import type { User } from "@/types";
 
 export interface AuthContextInterface {
   authUser: User | undefined;

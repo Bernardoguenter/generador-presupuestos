@@ -1,62 +1,14 @@
-import { useEffect, useState } from "react";
 import { Pagination, SearchInput } from "@/components";
-import { useAuthContext } from "@/common/context";
-import type { StructureBudget } from "@/helpers/types";
-import { getAllBudgets } from "@/common/lib";
-import { usePaginatedData } from "@/common/hooks";
-import { UseSearchableTable } from "@/common/hooks/useSerchableTable";
+import { type StructureBudget } from "@/types";
 import { BudgetsTable } from "./BudgetsTable";
+import { useBudgetsHistory } from "./hooks/useBudgetsHistory";
 
 export const BudgetsHistoryList = () => {
-  const [budgets, setBudgets] = useState<StructureBudget[] | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { authUser } = useAuthContext();
-
-  useEffect(() => {
-    const getBudgets = async () => {
-      try {
-        setIsLoading(true);
-        if (authUser?.id) {
-          const { data, error } = await getAllBudgets(authUser.id);
-          if (!error && data) {
-            setBudgets(data);
-          }
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    getBudgets();
-  }, [authUser?.id]);
-
-  const removeBudget = (id: string) => {
-    setBudgets((prev) => prev?.filter((budget) => budget.id !== id) || null);
-  };
-
   const {
+    budgets,
+    isLoading,
     searchInput,
     setSearchInput,
-    filteredData: filteredBudgets,
-  } = UseSearchableTable<StructureBudget>({
-    data: budgets || [],
-    filterFn: (budget, search) =>
-      [
-        budget.address?.address,
-        budget.customer,
-        budget.structure_type,
-        budget.width?.toString(),
-        budget.height?.toString(),
-        budget.length?.toString(),
-      ]
-        .filter(Boolean)
-        .some((field) => field!.toLowerCase().includes(search.toLowerCase())),
-  });
-
-  const {
-    paginatedData,
     currentPage,
     handleNextPage,
     handlePrevPage,
@@ -65,15 +17,10 @@ export const BudgetsHistoryList = () => {
     totalPages,
     pages,
     setCurrentPage,
-  } = usePaginatedData(filteredBudgets);
+    removeBudget,
+  } = useBudgetsHistory<StructureBudget>("structure");
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchInput, setCurrentPage]);
-
-  const paginatedBudgets = paginatedData;
-
-  if (isLoading) return <p>Cargando listado de Presupuestos</p>;
+  if (isLoading) return <p className="p-4">Cargando listado de Presupuestos</p>;
 
   return (
     <>
@@ -84,7 +31,7 @@ export const BudgetsHistoryList = () => {
       {budgets && (
         <BudgetsTable
           budgets={budgets}
-          paginatedBudgets={paginatedBudgets}
+          paginatedBudgets={budgets}
           removeBudget={removeBudget}
           type="structure"
         />

@@ -1,8 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
-import { getUserById } from "../lib";
+import { getUserById, signOutUser } from "@/common/lib";
 import { useNavigate } from "react-router";
-import type { User } from "@/helpers/types";
-import { supabase } from "@/utils/supabase";
+import type { User } from "@/types";
 import { LogoutToast } from "@/utils/alerts";
 
 export const useGetAuthUser = () => {
@@ -23,19 +22,19 @@ export const useGetAuthUser = () => {
         setAuthUser(data);
 
         if (!data?.isPasswordChanged) {
-          navigate("account/change-password");
+          navigate("/account/change-password");
         }
       }
     },
     [navigate],
   );
 
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
+  const handleLogout = useCallback(async () => {
+    const { error } = await signOutUser();
     if (!error) {
       LogoutToast();
     }
-  };
+  }, []);
 
   const values = useMemo(
     () => ({
@@ -47,7 +46,7 @@ export const useGetAuthUser = () => {
       setLoading,
       handleLogout,
     }),
-    [authUser, id, loading],
+    [authUser, id, loading, handleLogout],
   );
 
   return {

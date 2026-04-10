@@ -17,6 +17,7 @@ export const CustomLink = ({
   return (
     <Link
       to={href}
+      viewTransition
       className={`${
         color === "info"
           ? "bg-[#FF8303] "

@@ -8,14 +8,14 @@ import {
 import { UserIcon } from "@/assets/svg/UserIcon";
 import { Button } from "@/components";
 import { useAuthContext } from "@/common/context";
-import { Logo } from "@/components/Logo";
+import { Logo } from "@/components";
 
 export const Navbar = () => {
   const { authUser, handleLogout } = useAuthContext();
 
   return (
     <header className="w-full h-16 border-b flex items-center justify-between p-4">
-      <Link to={"/"}>
+      <Link to={"/"} viewTransition>
         <Logo
           containerStyles="h-14 flex items-center"
           logoStyles="object-cover h-10"
@@ -27,6 +27,7 @@ export const Navbar = () => {
           <>
             <NavLink
               to={"/users"}
+              viewTransition
               className={({ isActive }) =>
                 `flex gap-0.5 items-center ${
                   isActive ? "text-gray-400 underline" : ""
@@ -37,6 +38,7 @@ export const Navbar = () => {
             </NavLink>
             <NavLink
               to={"/companies"}
+              viewTransition
               className={({ isActive }) =>
                 `flex gap-0.5 items-center ${
                   isActive ? "text-gray-400 underline" : ""
@@ -49,6 +51,7 @@ export const Navbar = () => {
         )}
         <NavLink
           to={"/budgets"}
+          viewTransition
           className={({ isActive }) =>
             `flex gap-0.5 items-center ${
               isActive ? "text-gray-400 underline" : ""
@@ -60,6 +63,7 @@ export const Navbar = () => {
         {authUser?.role !== "usuario" && (
           <NavLink
             to={"/preferences"}
+            viewTransition
             className={({ isActive }) =>
               `flex gap-0.5 items-center ${
                 isActive ? "text-gray-400 underline" : ""

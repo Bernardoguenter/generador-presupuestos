@@ -2,7 +2,7 @@ import { CloseIcon } from "@/assets/svg";
 
 interface Props {
   searchInput: string;
-  setSearchInput: React.Dispatch<React.SetStateAction<string>>;
+  setSearchInput: (value: string) => void;
 }
 
 export const SearchInput = ({ searchInput, setSearchInput }: Props) => {

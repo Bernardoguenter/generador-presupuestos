@@ -1,0 +1,211 @@
+export interface User {
+  id: string;
+  email: string;
+  role: "superadmin" | "admin_empresa" | "usuario";
+  created_at: Date;
+  isPasswordChanged: boolean;
+  fullName: string;
+  company_id: string;
+}
+
+export interface Role {
+  id: "superadmin" | "admin_empresa" | "usuario";
+  label: string;
+  description: string;
+}
+
+export interface Company {
+  id: string;
+  company_name: string;
+  logo_url: string | null;
+  phone: string;
+  address: Address;
+  hasPdfAddress: boolean;
+  pdfAddress?: string;
+  email: string | null;
+  created_at: Date;
+}
+
+export type FiberBaseOption =
+  | "12tn"
+  | "12tn con Alero al medio"
+  | "18tn con Alero al medio";
+
+export interface Preferences {
+  company_id: string;
+  dollar_quote: number;
+  default_markup: number;
+  km_price: number;
+  colored_sheet_difference: number;
+  u_profile_cost: number;
+  twisted_iron_cost: number;
+  enclousure_cost: number;
+  gutter_price: number;
+  gate_price: number;
+  iva_percentage: number;
+  twisted_iron_column_cost: number;
+  u_profile_column_cost: number;
+  solid_web_price_list: SolidWebPriceMap;
+  solid_web_columns_price_list: SolidWebPriceMap;
+  feeder_silos: FeederSilosPriceMap;
+  airbase_silos: AirbaseSilosPriceMap;
+  cone_base_45: number;
+  cone_base_55: number;
+  estimated_delivery_structures: number;
+  estimated_delivery_silos: number;
+  sheets_options: SheetPriceMap;
+  membrane_cost: number;
+  fiber_base_cost: number;
+  has_fiber_base?: FiberBaseOption[];
+}
+
+export type SheetPriceMap = Record<string, number>;
+
+export interface BaseBudget {
+  id: string;
+  created_by: string | CreatedByObject;
+  created_at: string;
+  customer: string;
+  includes_freight: boolean;
+  freight_price: number;
+  address: Address | null;
+  distance: number | null;
+  includes_taxes: boolean;
+  total: number;
+  description: string;
+  paymentMethods: string;
+  caption: string;
+  budget_markup: number;
+  estimatedDelivery: string;
+}
+
+export interface StructureBudget extends BaseBudget {
+  material: string;
+  structure_type: string;
+  width: number;
+  length: number;
+  height: number;
+  enclousure_height: number[];
+  color_roof_sheet: boolean;
+  color_side_sheet: boolean;
+  details: string;
+  includes_gate: boolean;
+  number_of_gates: number;
+  gates_measurements: GatesMeasurements[] | null;
+  has_gutter: boolean;
+  gutter_metters: number;
+  has_sides_membrane: boolean;
+  has_roof_membrane: boolean;
+  sides_sheets_option: string;
+  roof_sheets_option: string;
+  uniform_enclousure: boolean;
+}
+
+export interface SiloBudget extends BaseBudget {
+  totals: SilosTotals;
+  silos: Silos;
+}
+
+export interface SilosTotals {
+  silos: number[];
+  freight_price: number;
+  extra_product_price?: number;
+  total: number;
+}
+
+export interface Silo {
+  type: string;
+  capacity: string;
+  cone_base?: string;
+  has_fiber_base?: boolean;
+}
+
+export type Silos = Silo[];
+
+export type GatesMeasurements = {
+  width: number;
+  height: number;
+};
+
+type CreatedByObject = {
+  id: string;
+  fullName: string;
+};
+
+export type Address = {
+  address: string;
+  lat: number;
+  lng: number;
+};
+
+export interface SiloPDFInfo {
+  dataToSubmit: Omit<SiloBudget, "created_at" | "id">;
+}
+
+export interface StructurePDFInfo {
+  dataToSubmit: Omit<
+    StructureBudget,
+    "created_at" | "id" | "uniform_enclousure"
+  >;
+}
+
+export interface Totals {
+  finalPriceInDollars: number;
+}
+
+export type WidthSolidWeb = 8 | 12 | 16 | 20 | 25 | 30;
+export type SolidWebPriceMap = Record<WidthSolidWeb, number>;
+export type AirbaseSilosPriceMap = Record<string, number>;
+export type FeederSilosPriceMap = Record<string, number>;
+
+export type PDFImage = {
+  src: string;
+  title?: string;
+};
+
+export type SiloFormValue = Partial<Silo>;
+
+export type CreateUser = {
+  email: string;
+  fullName: string;
+  role: string;
+  company_id: string;
+};
+
+export type EmailPayload = {
+  pdf: {
+    filename: string;
+    content: string;
+  }[];
+  custsomerEmail: string;
+  customerName: string;
+  companyName: string | undefined;
+  companyEmail: string | null | undefined;
+  userEmail: string | undefined;
+  userName: string | undefined;
+};
+
+export interface StructureBudgetParams
+  extends Pick<
+    StructureBudget,
+    | "width"
+    | "length"
+    | "height"
+    | "enclousure_height"
+    | "structure_type"
+    | "material"
+    | "color_roof_sheet"
+    | "color_side_sheet"
+    | "gutter_metters"
+    | "includes_gate"
+    | "includes_taxes"
+    | "freight_price"
+    | "has_gutter"
+    | "has_roof_membrane"
+    | "has_sides_membrane"
+  > {
+  preferences: Preferences;
+  gates_measurements: GatesMeasurements[];
+  sideSheetFactor: number;
+  roofSheetFactor: number;
+}

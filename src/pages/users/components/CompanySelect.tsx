@@ -1,5 +1,5 @@
 import { SelectInput } from "@/components";
-import { useGetAllCompanies } from "@/common/hooks/useGetAllCompanies";
+import { useGetAllCompanies } from "@/pages/companies/hooks";
 
 export const CompanySelect = () => {
   const { companies } = useGetAllCompanies();

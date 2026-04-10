@@ -1,4 +1,4 @@
-import { getPDFBase64 } from "@/helpers/generatePDF";
+import { getPDFBase64 } from "@/helpers";
 import { Button } from "@/components";
 import { useAuthContext, useCompanyContext } from "@/common/context";
 import { sendBudget } from "@/common/lib";

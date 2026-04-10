@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { getMimeTypeFromUrl } from "@/helpers/formatData";
-import { useLogo } from "./useLogo";
+import { getMimeTypeFromUrl } from "@/helpers";
+import { useLogo } from "@/pages/companies/hooks";
 
 export function useFavicon() {
   const { logoUrl } = useLogo();

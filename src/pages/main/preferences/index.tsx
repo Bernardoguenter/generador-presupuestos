@@ -1,4 +1,4 @@
-import type { Preferences } from "@/helpers/types";
+import type { Preferences } from "@/types";
 import { useCompanyContext } from "@/common/context";
 import PreferencesSettings from "./components/PreferencesSettings";
 import { PreferencesViewButtons } from "./components/PreferencesViewButtons";

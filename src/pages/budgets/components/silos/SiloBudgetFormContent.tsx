@@ -1,5 +1,5 @@
 import { CheckboxInput, Fieldset, NumberInput, TextInput } from "@/components";
-import { FieldsetRow } from "@/components/Fieldset";
+import { FieldsetRow } from "@/components";
 import { FreightInput } from "../FreightInput";
 import { SilosSelectGroup } from "./SilosSelectGroup";
 

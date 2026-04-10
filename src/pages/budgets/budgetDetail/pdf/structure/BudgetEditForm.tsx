@@ -1,13 +1,13 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { Button, Form } from "@/components";
 import { ResetFormButton } from "@/pages/budgets/components/ResetFormButton";
 import {
   calculateStructureBudgetSchema,
   type StructureBudgetFormData,
 } from "@/pages/budgets/schema";
-import type { StructureBudget } from "@/helpers/types";
+import type { StructureBudget } from "@/types";
 import { usePDFContext } from "@/common/context";
-import { useStructureBudgetSubmit } from "@/common/hooks";
+import { useStructureBudgetSubmit } from "@/pages/budgets/hooks";
 import { StructureBudgetFormContent } from "@/pages/budgets/components/structures/StructureBudgetFormContent";
 import { PDFStructureComponent } from "@/pages/budgets/components/pdf/PDFStructureComponent";
 
@@ -25,65 +25,16 @@ export const BudgetEditForm = ({
   viewDetail,
 }: Props) => {
   const { setPdfInfo, setShowPDF } = usePDFContext();
-  const { handleStructureBudgetSubmit } = useStructureBudgetSubmit();
+  const { handleStructureBudgetSubmit, defaultValues } =
+    useStructureBudgetSubmit(budget);
 
   useEffect(() => {
     setPdfInfo({
-      customer: budget.customer,
-      details: budget.details,
-      structure_type: budget.structure_type,
-      width: budget.width,
-      length: budget.length,
-      height: budget.height,
-      enclousure_height: budget.enclousure_height,
-      includes_gate: budget.includes_gate,
-      includes_taxes: budget.includes_taxes,
-      freight_price: budget.freight_price,
-      includes_freight: budget.includes_freight,
-      total: budget.total * (1 + budget.budget_markup / 100),
       dataToSubmit: budget,
     });
   }, [budget, setPdfInfo]);
 
-  const defaultValues = useMemo(
-    () => ({
-      material: budget.material,
-      structure_type: budget.structure_type,
-      width: budget.width,
-      length: budget.length,
-      height: budget.height,
-      enclousure_height: budget.enclousure_height,
-      includes_freight: budget.includes_freight,
-      color_roof_sheet: budget.color_roof_sheet,
-      color_side_sheet: budget.color_side_sheet,
-      includes_taxes: budget.includes_taxes,
-      customer: budget.customer,
-      has_gutter: budget.has_gutter,
-      gutter_metters: budget.gutter_metters,
-      gates_measurements: budget.gates_measurements ?? [],
-      includes_gate: budget.includes_gate,
-      number_of_gates: budget.number_of_gates,
-      address: budget.address?.address,
-      lng: budget.address?.lng,
-      lat: budget.address?.lat,
-      budget_markup: budget.budget_markup,
-      distanceCalculation:
-        budget.distance && budget.distance > 0 ? "distance" : "address",
-      distanceInKms:
-        budget.includes_freight && budget.distance ? budget.distance : 0,
-      estimatedDelivery: budget.estimatedDelivery,
-      has_sides_membrane: budget.has_sides_membrane,
-      has_roof_membrane: budget.has_roof_membrane,
-      sides_sheets_option: budget.sides_sheets_option,
-      roof_sheets_option: budget.roof_sheets_option,
-      uniform_enclousure: Array.isArray(budget.enclousure_height)
-        ? budget.enclousure_height.every(
-            (val) => val === budget.enclousure_height[0],
-          )
-        : false,
-    }),
-    [budget],
-  );
+
 
   return (
     <div className="flex lg:flex-row flex-col w-full gap-8 ">

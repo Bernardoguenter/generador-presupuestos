@@ -1,20 +1,17 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router";
-import type { User } from "@/helpers/types";
-import { RolesSelect } from "../components/RolesSelect";
-import { CompanySelect } from "../components/CompanySelect";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router";
+import type { User } from "@/types";
 import { Button, TextInput, Form, SubmittingOverlay } from "@/components";
-import { createUserSchema, type CreateUserFormData } from "../schema";
-import { UpdateUserToastError, UpdateUserToastSuccess } from "@/utils/alerts";
-import { getUserById, updateUser } from "@/common/lib";
+import { createUserSchema } from "../schema";
+import { getUserById } from "@/common/lib";
 import { DeleteUserButton } from "./DeleteUserButton";
-import { useIsSubmitting } from "@/common/hooks/useIsSubmitting";
+import { useUpdateUserForm } from "../hooks";
+import { CompanySelect, RolesSelect } from "../components";
 
 export default function UserDetail() {
   const { id } = useParams();
   const [user, setUser] = useState<User | null>(null);
-  const { isSubmitting, setIsSubmitting } = useIsSubmitting();
-  const navigate = useNavigate();
+  const { isSubmitting, handleSubmit, defaultValues } = useUpdateUserForm(user);
 
   useEffect(() => {
     if (id) {
@@ -32,39 +29,6 @@ export default function UserDetail() {
       getUser(id);
     }
   }, [id]);
-
-  const handleSubmit = async (formData: CreateUserFormData) => {
-    try {
-      setIsSubmitting(true);
-      if (id) {
-        const { data, error } = await updateUser(formData, id);
-
-        if (!error) {
-          UpdateUserToastSuccess(data?.fullName);
-          setTimeout(() => {
-            navigate("/users");
-          }, 1000);
-        } else {
-          UpdateUserToastError(error.message);
-          console.error(error);
-        }
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const defaultValues = useMemo<CreateUserFormData | undefined>(() => {
-    if (!user) return undefined;
-    return {
-      role: user.role,
-      email: user.email,
-      company_id: user.company_id,
-      fullName: user.fullName,
-    };
-  }, [user]);
 
   if (!user) return <h2>No se encontró información para este usuario</h2>;
 

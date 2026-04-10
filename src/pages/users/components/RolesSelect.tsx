@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Role } from "@/helpers/types";
+import type { Role } from "@/types";
 import { SelectInput } from "@/components";
 import { getUserRoles } from "@/common/lib";
 

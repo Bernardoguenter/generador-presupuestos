@@ -1,24 +1,7 @@
-import { paymentMethods } from "@/helpers/staticData";
 import { Form } from "@/components";
-import { ConfirmPDFSchema, type ConfirmPDFFormData } from "../../schema";
-import { usePDFContext, usePreferencesContext } from "@/common/context";
-import {
-  CreateBudgetToastError,
-  CreateBudgetToastSuccess,
-  UpdateBudgetToastError,
-  UpdateBudgetToastSuccess,
-} from "@/utils/alerts";
-import { createBudget, updateBudget } from "@/common/lib";
-import { useNavigate, useParams } from "react-router";
-import { convertPDF } from "@/helpers/generatePDF";
-import { useState } from "react";
+import { ConfirmPDFSchema } from "../../schema";
+import { useConfirmStructureSubmit } from "../../hooks";
 import { PDFViewComponent } from "../../budgetDetail/pdf/PDFViewComponent";
-import type { StructureBudget, StructurePDFInfo } from "@/helpers/types";
-import {
-  getDefaultCaption,
-  getStructureDefaultDescription,
-  getTotalArs,
-} from "@/helpers/formatData";
 import { PDFStructureFormContent } from "./PDFStructureFormContent";
 
 interface Props {
@@ -27,120 +10,12 @@ interface Props {
 }
 
 export const PDFStructureComponent = ({ getBudget, handleView }: Props) => {
-  const { id } = useParams();
-  const { pdfInfo, setPdfInfo, setShowPDF } = usePDFContext();
-  const { preferences } = usePreferencesContext();
-  const [viewPdf, setViewPdf] = useState<boolean>(false);
-  const [budget, setBudget] = useState<StructureBudget | null>(null);
-  const navigate = useNavigate();
+  const { defaultValues, handleSubmit, viewPdf, budget } =
+    useConfirmStructureSubmit({ getBudget, handleView });
 
-  if (!pdfInfo) {
-    return;
+  if (!defaultValues) {
+    return null;
   }
-
-  const {
-    structure_type,
-    length,
-    width,
-    height,
-    enclousure_height,
-    total,
-    details,
-    dataToSubmit,
-    includes_freight,
-  } = pdfInfo as StructurePDFInfo;
-
-  const defaultDescription = getStructureDefaultDescription(
-    structure_type,
-    width,
-    length,
-    height,
-    enclousure_height,
-  );
-
-  const defaultCaption = getDefaultCaption(
-    includes_freight,
-    pdfInfo.includes_taxes,
-    preferences.iva_percentage,
-    "structure",
-  );
-
-  const totalARS = getTotalArs(
-    total,
-    preferences.dollar_quote,
-    dataToSubmit.budget_markup,
-  );
-
-  const defaultValues = {
-    description: defaultDescription,
-    details: details,
-    paymentMethods: paymentMethods["Structure"],
-    total: totalARS,
-    caption: defaultCaption,
-    estimatedDelivery: `${preferences.estimated_delivery_structures} días`,
-  };
-
-  const handleDownloadPdf = (customer: string, isNew: boolean) => {
-    setViewPdf(true);
-    setTimeout(() => {
-      convertPDF(customer);
-    }, 300);
-
-    setTimeout(() => {
-      setViewPdf(false);
-      setPdfInfo(null);
-      setShowPDF(false);
-      if (isNew) {
-        navigate("/budgets/calculator");
-      }
-    }, 1000);
-  };
-
-  const handleSubmit = async (formData: ConfirmPDFFormData) => {
-    const budgetSubmitData = {
-      ...dataToSubmit,
-      paymentMethods: formData.paymentMethods,
-      details: formData.details,
-      description: formData.description,
-      estimatedDelivery: formData.estimatedDelivery,
-      total:
-        formData.total /
-        (1 + dataToSubmit.budget_markup / 100) /
-        preferences.dollar_quote,
-      caption: formData.caption,
-      created_by:
-        typeof dataToSubmit.created_by === "object"
-          ? dataToSubmit.created_by.id
-          : dataToSubmit.created_by,
-    };
-
-    const { data, error } = id
-      ? await updateBudget(budgetSubmitData, id)
-      : await createBudget(budgetSubmitData);
-
-    if (!error && !id) {
-      if (data.id) {
-        setBudget(data);
-        handleDownloadPdf(data.customer, true);
-        CreateBudgetToastSuccess();
-      }
-    } else if (!error && id) {
-      setViewPdf(true);
-      handleDownloadPdf(data.customer, false);
-      UpdateBudgetToastSuccess();
-
-      if (getBudget) {
-        getBudget(id, "structure");
-      }
-      if (handleView) {
-        handleView();
-      }
-    } else if (error && !id) {
-      CreateBudgetToastError();
-    } else if (error && id) {
-      UpdateBudgetToastError();
-    }
-  };
 
   return (
     <Form

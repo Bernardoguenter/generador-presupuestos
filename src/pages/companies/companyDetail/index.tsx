@@ -1,7 +1,7 @@
 import { useParams } from "react-router";
 import { CompanyDetailHeader } from "./CompanyDetailHeader";
 import CompanyDetailForm from "./CompanyDetailForm";
-import { useGetCompany } from "@/common/hooks/useGetCompany";
+import { useGetCompany } from "../hooks";
 
 export default function CompanyDetail() {
   const { id } = useParams();
