@@ -1,6 +1,5 @@
-import { useNavigate } from "react-router";
-import type { Company } from "@/helpers/types";
-import { createCompanySchema, type CreateCompanyFormData } from "../schema";
+import { type Company } from "@/types";
+import { createCompanySchema } from "../schema";
 import {
   Button,
   TextInput,
@@ -9,14 +8,8 @@ import {
   HiddenInput,
   SubmittingOverlay,
 } from "@/components";
-import {
-  UpdateCompanyToastError,
-  UpdateCompanyToastSuccess,
-} from "@/utils/alerts";
-import { updateCompany } from "@/common/lib";
-import { useMemo } from "react";
+import { useUpdateCompanyForm } from "../hooks/useUpdateCompanyForm";
 import { DeleteCompanyButton } from "./DeleteCompanyButton";
-import { useIsSubmitting } from "@/common/hooks/useIsSubmitting";
 import { PDFAddressCheckbox } from "../PDFAddressCheckbox";
 
 interface Props {
@@ -24,64 +17,8 @@ interface Props {
 }
 
 export default function CompanyDetailForm({ company }: Props) {
-  const navigate = useNavigate();
-  const { isSubmitting, setIsSubmitting } = useIsSubmitting();
-
-  const handleSubmit = async (formData: CreateCompanyFormData) => {
-    const {
-      address,
-      email,
-      company_name,
-      phone,
-      lat,
-      lng,
-      hasPdfAddress,
-      pdfAddress,
-    } = formData;
-    try {
-      setIsSubmitting(true);
-      const dataToUpdate = {
-        company_name,
-        email,
-        phone,
-        address: {
-          address,
-          lat,
-          lng,
-        },
-        hasPdfAddress,
-        pdfAddress,
-      };
-      const { data, error } = await updateCompany(dataToUpdate, company.id);
-
-      if (!error) {
-        UpdateCompanyToastSuccess(data?.company_name);
-        setTimeout(() => {
-          navigate("/companies");
-        }, 1000);
-      } else {
-        UpdateCompanyToastError(error.message);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const defaultValues = useMemo<CreateCompanyFormData | undefined>(() => {
-    if (!company) return undefined;
-    return {
-      company_name: company.company_name,
-      email: company.email ?? "",
-      phone: company.phone,
-      address: company.address.address,
-      lat: company.address.lat,
-      lng: company.address.lng,
-      hasPdfAddress: company.hasPdfAddress,
-      pdfAddress: company.pdfAddress ?? "",
-    };
-  }, [company]);
+  const { handleSubmit, isSubmitting, setIsSubmitting, defaultValues } =
+    useUpdateCompanyForm(company);
 
   return (
     <SubmittingOverlay isSubmitting={isSubmitting}>

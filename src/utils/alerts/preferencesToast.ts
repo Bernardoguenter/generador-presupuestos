@@ -1,111 +1,27 @@
-import Swal from "sweetalert2";
+import { Toast } from "./toastFactory";
 
 const UpdatePreferencesToastSuccess = () => {
-  const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.onmouseenter = Swal.stopTimer;
-      toast.onmouseleave = Swal.resumeTimer;
-    },
-  });
-  Toast.fire({
-    icon: "success",
-    title: `Las preferencias se han actualizado exitosamente`,
-  });
+  Toast.fire({ icon: "success", title: "Las preferencias se han actualizado exitosamente" });
 };
 
 const UpdatePreferencesToastWebSuccess = () => {
-  const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.onmouseenter = Swal.stopTimer;
-      toast.onmouseleave = Swal.resumeTimer;
-    },
-  });
-  Toast.fire({
-    icon: "success",
-    title: `Las preferencias WEB se han actualizado exitosamente`,
-  });
+  Toast.fire({ icon: "success", title: "Las preferencias WEB se han actualizado exitosamente" });
 };
 
 const UpdatePreferencesToastWebError = () => {
-  const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.onmouseenter = Swal.stopTimer;
-      toast.onmouseleave = Swal.resumeTimer;
-    },
-  });
-  Toast.fire({
-    icon: "error",
-    title: `Error al actualizar las preferencias WEB`,
-  });
+  Toast.fire({ icon: "error", title: "Error al actualizar las preferencias WEB" });
 };
 
 const UpdatePreferencesToastError = () => {
-  const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.onmouseenter = Swal.stopTimer;
-      toast.onmouseleave = Swal.resumeTimer;
-    },
-  });
-  Toast.fire({
-    icon: "error",
-    title: `Error al actualizar las preferencias`,
-  });
+  Toast.fire({ icon: "error", title: "Error al actualizar las preferencias" });
 };
 
 const UpdatePricesToastSuccess = () => {
-  const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.onmouseenter = Swal.stopTimer;
-      toast.onmouseleave = Swal.resumeTimer;
-    },
-  });
-  Toast.fire({
-    icon: "success",
-    title: `Los precios se han actualizado exitosamente`,
-  });
+  Toast.fire({ icon: "success", title: "Los precios se han actualizado exitosamente" });
 };
 
 const UpdatePricesToastError = () => {
-  const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.onmouseenter = Swal.stopTimer;
-      toast.onmouseleave = Swal.resumeTimer;
-    },
-  });
-  Toast.fire({
-    icon: "error",
-    title: `Error al actualizar las los precios`,
-  });
+  Toast.fire({ icon: "error", title: "Error al actualizar los precios" });
 };
 
 export {

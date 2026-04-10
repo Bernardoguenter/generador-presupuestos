@@ -1,4 +1,4 @@
-import { StringToList } from "@/components/StringToList";
+import { StringToList } from "@/components";
 
 interface Props {
   caption: string;

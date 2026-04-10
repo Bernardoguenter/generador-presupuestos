@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
-import type { Preferences } from "@/helpers/types";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import type { Preferences } from "@/types";
 import { PreferencesContext } from "./PreferencesContext";
 import { getUserPreferences } from "@common/lib";
 import { useAuthContext } from "../AuthContext/AuthContext";
@@ -56,7 +56,7 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
     useState<Preferences>(initialPreferencies);
   const { authUser } = useAuthContext();
 
-  const getPreferences = async (id: string) => {
+  const getPreferences = useCallback(async (id: string) => {
     try {
       const { data, error } = await getUserPreferences(id);
 
@@ -68,13 +68,13 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    if (authUser) {
-      getPreferences(authUser?.company_id);
+    if (authUser?.company_id && (preferences.company_id === "" || isLoading)) {
+      getPreferences(authUser.company_id);
     }
-  }, [isLoading, authUser]);
+  }, [authUser?.company_id, isLoading, getPreferences, preferences.company_id]);
 
   const values = useMemo(
     () => ({
@@ -92,3 +92,4 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
     </PreferencesContext.Provider>
   );
 }
+

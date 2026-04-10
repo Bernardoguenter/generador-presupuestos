@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react-swc";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
@@ -18,8 +18,16 @@ export default defineConfig({
       "@helpers": path.resolve(__dirname, "src/helpers"),
       "@routes": path.resolve(__dirname, "src/routes"),
       "@utils": path.resolve(__dirname, "src/utils"),
-      "@asets": path.resolve(__dirname, "src/asets"),
+      "@assets": path.resolve(__dirname, "src/assets"),
       "@layout": path.resolve(__dirname, "src/layout"),
+      "@config": path.resolve(__dirname, "src/config"),
     },
   },
+  test: {
+    environment: "happy-dom",
+    globals: true,
+    setupFiles: "./src/test/setup.ts",
+    include: ["src/**/*.{test,spec}.{ts,tsx}"],
+  },
 });
+

@@ -1,6 +1,6 @@
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { PDFContext } from "./PDFContext";
-import type { SiloPDFInfo, StructurePDFInfo } from "@/helpers/types";
+import type { SiloPDFInfo, StructurePDFInfo } from "@/types";
 
 export function PDFProvider({ children }: { children: ReactNode }) {
   const [showPDF, setShowPDF] = useState(false);
@@ -8,7 +8,11 @@ export function PDFProvider({ children }: { children: ReactNode }) {
     null
   );
 
-  const values = { showPDF, setShowPDF, pdfInfo, setPdfInfo };
+  const values = useMemo(
+    () => ({ showPDF, setShowPDF, pdfInfo, setPdfInfo }),
+    [showPDF, pdfInfo]
+  );
 
   return <PDFContext.Provider value={values}>{children}</PDFContext.Provider>;
 }
+

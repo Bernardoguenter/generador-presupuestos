@@ -1,14 +1,36 @@
-import type { Company } from "@/helpers/types";
+import type { Company } from "@/types";
 import { supabase } from "@/utils/supabase";
 
-const getAllCompanies = async () => {
-  const { data, error } = await supabase.from("companies").select("*");
-  return { data, error };
+const COMPANIES_TABLE = "companies" as const;
+
+const getAllCompanies = async (
+  page?: number,
+  pageSize?: number,
+  search?: string,
+) => {
+  let query = supabase
+    .from(COMPANIES_TABLE)
+    .select("*", { count: "exact" })
+    .order("company_name", { ascending: true });
+
+  if (search) {
+    query = query.ilike("company_name", `%${search}%`);
+  }
+
+  if (page && pageSize && page > 0 && pageSize > 0) {
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+    query = query.range(from, to);
+  }
+
+  const { data, error, count } = await query;
+
+  return { data, count, error };
 };
 
 const getCompanyById = async (id: string) => {
   const { data, error } = await supabase
-    .from("companies")
+    .from(COMPANIES_TABLE)
     .select("*")
     .eq("id", id)
     .single();
@@ -20,7 +42,7 @@ const createCompany = async (
   createCompanyBody: Omit<Company, "id" | "logo_url" | "created_at">,
 ) => {
   const { data, error } = await supabase
-    .from("companies")
+    .from(COMPANIES_TABLE)
     .insert([createCompanyBody])
     .select()
     .single();
@@ -33,7 +55,7 @@ const updateCompany = async (
   id: string,
 ) => {
   const { data, error } = await supabase
-    .from("companies")
+    .from(COMPANIES_TABLE)
     .update(dataToUpdate)
     .eq("id", id)
     .select()
@@ -43,7 +65,10 @@ const updateCompany = async (
 };
 
 const deleteCompany = async (id: string) => {
-  const { error } = await supabase.from("companies").delete().eq("id", id);
+  const { error } = await supabase
+    .from(COMPANIES_TABLE)
+    .delete()
+    .eq("id", id);
 
   return { error };
 };
@@ -55,3 +80,4 @@ export {
   deleteCompany,
   getCompanyById,
 };
+

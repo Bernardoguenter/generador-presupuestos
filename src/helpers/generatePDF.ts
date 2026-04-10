@@ -1,6 +1,6 @@
 import jsPDF from "jspdf";
-import { retriveFileFromBucket } from "@/common/lib";
-import type { PDFImage, Silo } from "@/helpers/types";
+import { retrieveFileFromBucket } from "@/common/lib";
+import type { PDFImage, Silo } from "@/types";
 
 export const waitNextFrame = () =>
   new Promise((resolve) => requestAnimationFrame(resolve));
@@ -80,7 +80,7 @@ export async function getPDFBase64(): Promise<string | null> {
 export async function getSiloPDFImages(silos: Silo[]): Promise<PDFImage[]> {
   const images = await Promise.all(
     silos.map(async (silo) => {
-      const { data } = await retriveFileFromBucket(
+      const { data } = await retrieveFileFromBucket(
         "silos_img",
         `${silo.type}/${silo.capacity}.webp`,
       );
@@ -93,7 +93,7 @@ export async function getSiloPDFImages(silos: Silo[]): Promise<PDFImage[]> {
   );
 
   if (shouldAddFiberBaseImage(silos)) {
-    const { data } = await retriveFileFromBucket(
+    const { data } = await retrieveFileFromBucket(
       "silos_img",
       "feeder_silos/silobasefibra.jpeg",
     );

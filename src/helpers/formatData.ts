@@ -4,8 +4,14 @@ import {
   silosMap,
   VALID_FIBER_BASE_CAPACITIES,
 } from "./staticData";
-import type { GatesMeasurements, Silos } from "./types";
+import type { GatesMeasurements, Silos } from "@/types";
 
+/**
+ * Formats a company name into a URL-friendly slug.
+ *
+ * @param {string} name - The original company name.
+ * @returns {string} The formatted name, lowercased and spaces replaced with hyphens.
+ */
 export const formatCompanyName = (name: string) => {
   return name.includes(" ")
     ? name
@@ -17,10 +23,22 @@ export const formatCompanyName = (name: string) => {
     : name;
 };
 
+/**
+ * Extracts the file type (extension) from a File object.
+ *
+ * @param {File} file - The file whose type is to be extracted.
+ * @returns {string | undefined} The file extension without the leading dot.
+ */
 export const formatFileType = (file: File) => {
   return file.type.split("/").pop();
 };
 
+/**
+ * Formats a date string into DD/MM/YYYY format.
+ *
+ * @param {string} date - The date string parsable by Date constructor.
+ * @returns {string} Formatted date.
+ */
 export const formatDate = (date: string) => {
   const newDate = new Date(date);
 
@@ -31,6 +49,12 @@ export const formatDate = (date: string) => {
   return `${day}/${month}/${year}`;
 };
 
+/**
+ * Formats a number according to Spanish locale with up to two decimal places.
+ *
+ * @param {number} num - The number to format.
+ * @returns {string} Formatted number string.
+ */
 export const formatNumber = (num: number) => {
   const valorFormateado = new Intl.NumberFormat("es-ES", {
     maximumFractionDigits: 2,
@@ -38,6 +62,13 @@ export const formatNumber = (num: number) => {
   return valorFormateado;
 };
 
+/**
+ * Adjusts Alma llena details based on width.
+ *
+ * @param {number} width - Width of the structure.
+ * @param {string} details - Original detail string.
+ * @returns {string} Modified details.
+ */
 const getAlmaLLena = (width: number, details: string) => {
   if (width > 8 && width <= 12) {
     return details
@@ -90,6 +121,13 @@ const getAlmaLLena = (width: number, details: string) => {
   return details;
 };
 
+/**
+ * Adjusts Hierro torsionado details based on width.
+ *
+ * @param {number} width - Width of the structure.
+ * @param {string} details - Original detail string.
+ * @returns {string} Modified details.
+ */
 const getHierroTorsionado = (width: number, details: string) => {
   if (width > 16 && width <= 25) {
     return details
@@ -110,6 +148,13 @@ const getHierroTorsionado = (width: number, details: string) => {
   return details;
 };
 
+/**
+ * Adjusts Perfil U Ángulo details based on width.
+ *
+ * @param {number} width - Width of the structure.
+ * @param {string} details - Original detail string.
+ * @returns {string} Modified details.
+ */
 const getPerfilUAngulo = (width: number, details: string) => {
   if (width <= 8) {
     return details
@@ -144,6 +189,24 @@ const getPerfilUAngulo = (width: number, details: string) => {
   return details;
 };
 
+/**
+ * Generates a detailed description string for a structure based on its parameters.
+ *
+ * @param {string} structure_type - Type of the structure (e.g., 'Galpón').
+ * @param {string} material - Material used.
+ * @param {boolean} color_roof_sheet - Whether roof sheet is colored.
+ * @param {boolean} color_side_sheet - Whether side sheet is colored.
+ * @param {boolean} includes_gate - Whether a gate is included.
+ * @param {GatesMeasurements[]} gates_measurements - Measurements of gates.
+ * @param {boolean} has_gutter - Whether gutters are present.
+ * @param {number} gutter_metters - Length of gutters.
+ * @param {number} width - Width of the structure.
+ * @param {string} sides_sheets_option - Side sheet option.
+ * @param {string} roof_sheets_option - Roof sheet option.
+ * @param {boolean} has_roof_membrane - Roof membrane flag.
+ * @param {boolean} has_sides_membrane - Side membrane flag.
+ * @returns {string} Formatted detail description.
+ */
 export const formatDetails = (
   structure_type: string,
   material: string,
@@ -239,6 +302,12 @@ export const formatDetails = (
   return details;
 };
 
+/**
+ * Returns the MIME type for a given file URL based on its extension.
+ *
+ * @param {string} url - The URL or filename.
+ * @returns {string} MIME type string.
+ */
 export function getMimeTypeFromUrl(url: string): string {
   const extension = url.split(".").pop()?.toLowerCase();
 
@@ -260,6 +329,12 @@ export function getMimeTypeFromUrl(url: string): string {
   }
 }
 
+/**
+ * Generates an array of description strings for each silo.
+ *
+ * @param {Silos} silos - Array of silo objects.
+ * @returns {string[]} Array of silo descriptions.
+ */
 export function getSilosDescriptions(silos: Silos): string[] {
   return silos.map((silo) => {
     const typeMap = silosMap[silo.type as keyof typeof silosMap];
@@ -302,6 +377,16 @@ export function getSilosDescriptions(silos: Silos): string[] {
   });
 }
 
+/**
+ * Returns a default textual description for a structure based on its dimensions.
+ *
+ * @param {string} structure_type - Type of the structure.
+ * @param {number} width - Width in meters.
+ * @param {number} length - Length in meters.
+ * @param {number} height - Height in meters.
+ * @param {number[]} enclousure_height - Array of enclosure heights.
+ * @returns {string} Description string.
+ */
 export const getStructureDefaultDescription = (
   structure_type: string,
   width: number,
@@ -326,9 +411,24 @@ export const getStructureDefaultDescription = (
 };
 
 // Helper: devuelve true si todos los valores del array de alturas son iguales
+/**
+ * Checks if all enclosure heights are equal.
+ *
+ * @param {number[]} enclousure_height - Array of heights.
+ * @returns {boolean} True if uniform, false otherwise.
+ */
 export const isEnclosureUniform = (enclousure_height: number[]) =>
   enclousure_height.every((val) => val === enclousure_height[0]);
 
+/**
+ * Generates a default caption based on inclusion flags.
+ *
+ * @param {boolean} includes_freight - Freight inclusion flag.
+ * @param {boolean} includes_taxes - Tax inclusion flag.
+ * @param {number} iva_percentage - IVA percentage.
+ * @param {"silo" | "structure"} type - Budget type.
+ * @returns {string} Caption string.
+ */
 export const getDefaultCaption = (
   includes_freight: boolean,
   includes_taxes: boolean,
@@ -349,6 +449,14 @@ export const getDefaultCaption = (
     `;
 };
 
+/**
+ * Calculates total price in ARS including markup.
+ *
+ * @param {number} total - Base total in USD.
+ * @param {number} dollar_quote - Current USD to ARS rate.
+ * @param {number} budget_markup - Budget markup percentage.
+ * @returns {number} Total price in ARS.
+ */
 export const getTotalArs = (
   total: number,
   dollar_quote: number,
@@ -357,6 +465,15 @@ export const getTotalArs = (
   return total * dollar_quote * (1 + budget_markup / 100);
 };
 
+/**
+ * Converts a value from ARS to USD applying markups.
+ *
+ * @param {number} value - Value in ARS.
+ * @param {number} dollar_quote - USD to ARS rate.
+ * @param {number} default_markup - Default markup percentage.
+ * @param {number} budget_markup - Budget markup percentage.
+ * @returns {number} Value in USD.
+ */
 export const priceInUSD = (
   value: number,
   dollar_quote: number,
@@ -371,6 +488,15 @@ export const priceInUSD = (
   );
 };
 
+/**
+ * Converts a value from USD to ARS applying markups.
+ *
+ * @param {number} value - Value in USD.
+ * @param {number} dollar_quote - USD to ARS rate.
+ * @param {number} default_markup - Default markup percentage.
+ * @param {number} budget_markup - Budget markup percentage.
+ * @returns {number} Value in ARS.
+ */
 export const priceInARS = (
   value: number,
   dollar_quote: number,

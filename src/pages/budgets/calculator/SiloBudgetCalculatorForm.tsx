@@ -1,38 +1,14 @@
-import { useMemo } from "react";
 import { Button, Form } from "@/components";
 import { ResetFormButton } from "../components/ResetFormButton";
 import { SiloBudgetFormContent } from "../components/silos/SiloBudgetFormContent";
 import { calculateSiloBudgetSchema, type SiloBudgetFormData } from "../schema";
-import { useSiloBudgetSubmit } from "@/common/hooks";
+import { useSiloBudgetSubmit } from "../hooks";
 import { usePDFContext } from "@/common/context";
-import { PDFSiloComponent } from "../components/pdf/PDFSiloComponent";
+import { PDFSiloComponent } from "../components";
 
 export const SiloBudgetCalculatorForm = () => {
   const { setShowPDF, showPDF, pdfInfo } = usePDFContext();
-  const { handleSiloBudgetSubmit } = useSiloBudgetSubmit();
-
-  const defaultValues = useMemo(
-    () => ({
-      includes_freight: false,
-      distanceCalculation: "distance",
-      distanceInKms: 0,
-      includes_taxes: true,
-      customer: "",
-      address: "",
-      lng: 0,
-      lat: 0,
-      budget_markup: 0,
-      silos: [
-        {
-          type: "airbase_silos",
-          capacity: "6tn",
-          cone_base: "estandar",
-          has_fiber_base: false,
-        },
-      ],
-    }),
-    [],
-  );
+  const { handleSiloBudgetSubmit, defaultValues } = useSiloBudgetSubmit();
 
   return (
     <div className="flex lg:flex-row flex-col w-full gap-8 ">

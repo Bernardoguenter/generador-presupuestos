@@ -1,6 +1,6 @@
 export default function PageLoader() {
   return (
-    <div className="absolute top-0 left-0 w-full h-full opacity-75 flex justify-center items-center">
+    <div className="w-full flex-grow flex justify-center items-center min-h-[60vh]">
       <span className="loader"></span>
     </div>
   );

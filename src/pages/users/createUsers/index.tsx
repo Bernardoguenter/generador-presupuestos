@@ -1,64 +1,11 @@
-import { useNavigate } from "react-router";
 import { Button, Form, SubmittingOverlay, TextInput } from "@/components";
-import {
-  CreateUserRoleToastError,
-  CreateUserToastError,
-  CreateUserToastErrorDuplicated,
-  CreateUserToastSuccess,
-} from "@/utils/alerts";
-import { createUserSchema, type CreateUserFormData } from "../schema";
+import { createUserSchema } from "../schema";
 import { RolesSelect } from "../components/RolesSelect";
 import { CompanySelect } from "../components/CompanySelect";
-import { createUser, getUserByEmail, sendPassword } from "@/common/lib";
-import { useMemo } from "react";
-import { useIsSubmitting } from "@/common/hooks/useIsSubmitting";
+import { useCreateUserForm } from "../hooks";
 
 export default function CreateUsers() {
-  const navigate = useNavigate();
-  const { isSubmitting, setIsSubmitting } = useIsSubmitting();
-
-  const handleSubmit = async (formData: CreateUserFormData) => {
-    try {
-      setIsSubmitting(true);
-      if (formData.company_id === "default") {
-        CreateUserRoleToastError();
-        return;
-      }
-      const { data: isDuplicated } = await getUserByEmail(formData.email);
-
-      if (isDuplicated) {
-        CreateUserToastErrorDuplicated(formData.email);
-      } else {
-        const { data, error } = await createUser(formData);
-        if (error) {
-          console.error("Error desde la edge function:", error);
-          CreateUserToastError(error);
-        } else {
-          CreateUserToastSuccess(formData.email);
-          if (data.password) {
-            const { error } = await sendPassword(formData.email, data.password);
-            if (!error) {
-              navigate("/users");
-            }
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error al crear el usuario:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const defaultValues = useMemo(
-    () => ({
-      email: "",
-      fullName: "",
-      role: "usuario",
-      company_id: "default",
-    }),
-    [],
-  );
+  const { handleSubmit, isSubmitting, defaultValues } = useCreateUserForm();
 
   return (
     <SubmittingOverlay isSubmitting={isSubmitting}>
@@ -77,7 +24,6 @@ export default function CreateUsers() {
           name="email"
           type="email"
         />
-
         <RolesSelect />
         <CompanySelect />
         <div className="w-full flex flex-col items-center justify-center">

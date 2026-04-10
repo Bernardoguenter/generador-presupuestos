@@ -2,10 +2,10 @@ import { Routes, Route, Navigate } from "react-router";
 import { lazy } from "react";
 
 // Layouts
-import AppLayout from "../layout/AppLayout";
-import DefaultLayout from "../layout/DefaultLayout";
+import { AppLayout, DefaultLayout } from "../layout";
 import { useAuthContext } from "../common/context";
 import { useFavicon } from "../common/hooks";
+import { PageLoader } from "../components";
 
 // Páginas públicas (account)
 const Login = lazy(() => import("../pages/account/Login"));
@@ -28,32 +28,54 @@ const CreateCompany = lazy(() => import("../pages/companies/createCompany"));
 const ListCompany = lazy(() => import("../pages/companies/listCompany"));
 const CompanyDetail = lazy(() => import("../pages/companies/companyDetail"));
 
+const BudgetsHistoryList = lazy(() => import("../pages/budgets/history/BudgetsHistoryList").then(m => ({ default: m.BudgetsHistoryList })));
+const SiloBudgetsHistoryList = lazy(() => import("../pages/budgets/history/SiloBudgetsHistoryList").then(m => ({ default: m.SiloBudgetsHistoryList })));
+
 export default function AppRoutes() {
-  const { authUser } = useAuthContext();
+  const { authUser, loading } = useAuthContext();
   useFavicon();
+
+  // Prevent routing decisions while authentication is still initializing
+  // so deep links aren't lost to redirects.
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex justify-center items-center">
+        <PageLoader />
+      </div>
+    );
+  }
 
   return (
     <Routes>
       {/* Rutas públicas */}
       <Route
         path="/account"
-        element={
-          !authUser ? (
-            <DefaultLayout />
-          ) : (
-            <Navigate
-              to="/"
-              replace
-            />
-          )
-        }>
+        element={<DefaultLayout />}>
         <Route
           path="login"
-          element={<Login />}
+          element={
+            !authUser ? (
+              <Login />
+            ) : (
+              <Navigate
+                to="/"
+                replace
+              />
+            )
+          }
         />
         <Route
           path="reset-password"
-          element={<ResetPasswrord />}
+          element={
+            !authUser ? (
+              <ResetPasswrord />
+            ) : (
+              <Navigate
+                to="/"
+                replace
+              />
+            )
+          }
         />
       </Route>
       {authUser && (
@@ -83,16 +105,19 @@ export default function AppRoutes() {
               path="calculator"
               element={<Calculator />}
             />
+            
+            <Route element={<BudgetHistory />}>
+              <Route path="structures" element={<BudgetsHistoryList />} />
+              <Route path="silos" element={<SiloBudgetsHistoryList />} />
+              <Route index element={<Navigate to="structures" replace />} />
+            </Route>
+
             <Route
-              index
-              element={<BudgetHistory />}
-            />
-            <Route
-              path="structure/:id"
+              path="structures/:id"
               element={<BudgetDetail />}
             />
             <Route
-              path="silo/:id"
+              path="silos/:id"
               element={<BudgetDetail />}
             />
           </Route>
@@ -115,12 +140,10 @@ export default function AppRoutes() {
             </Route>
           )}
           {authUser.role !== "usuario" && (
-            <Route path="/*">
-              <Route
-                path="preferences"
-                element={<Preferences />}
-              />
-            </Route>
+            <Route
+              path="preferences"
+              element={<Preferences />}
+            />
           )}
 
           {authUser.role === "superadmin" && (

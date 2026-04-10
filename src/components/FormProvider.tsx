@@ -37,15 +37,13 @@ export const Form = <
     reValidateMode: "onChange",
   });
 
+  const { reset } = methods;
+
   useEffect(() => {
     if (defaultValues) {
-      methods.reset(defaultValues);
+      reset(defaultValues);
     }
-  }, [defaultValues, methods]);
-
-  /*   useEffect(() => {
-    console.log("Errores del formulario", methods.formState.errors);
-  }, [methods.formState.errors]); */
+  }, [defaultValues, reset]);
 
   return (
     <FormProvider {...methods}>

@@ -1,5 +1,5 @@
 import { createContext, use } from "react";
-import type { SiloPDFInfo, StructurePDFInfo } from "@/helpers/types";
+import type { SiloPDFInfo, StructurePDFInfo } from "@/types";
 
 export interface PDFContextInterface {
   showPDF: boolean;
@@ -17,7 +17,8 @@ export const PDFContext = createContext<PDFContextInterface | undefined>(
 export function usePDFContext() {
   const context = use(PDFContext);
   if (!context) {
-    throw new Error("usePDFContext must be used within an AuthProvider");
+    throw new Error("usePDFContext must be used within a PDFProvider");
   }
   return context;
 }
+

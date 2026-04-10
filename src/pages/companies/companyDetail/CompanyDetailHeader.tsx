@@ -1,9 +1,7 @@
-import { useMemo } from "react";
 import { Button, FileInput, Form, SubmittingOverlay } from "@/components";
-import type { Company } from "@/helpers/types";
+import { type Company } from "@/types";
 import { companyLogoSchema } from "../schema";
-import { useUpdateLogo } from "@/common/hooks/useUpdateLogo";
-import { useFetchLogo } from "@/common/hooks/useFetchLogo";
+import { useUpdateLogo, useFetchLogo } from "../hooks";
 
 interface Props {
   company: Company;
@@ -11,9 +9,7 @@ interface Props {
 
 export const CompanyDetailHeader = ({ company }: Props) => {
   const logoUrl = useFetchLogo({ company });
-  const { handleSubmit, isSubmitting } = useUpdateLogo({ company });
-
-  const defaultValues = useMemo(() => ({ file: undefined }), []);
+  const { handleSubmit, isSubmitting, defaultValues } = useUpdateLogo({ company });
 
   return (
     <SubmittingOverlay isSubmitting={isSubmitting}>

@@ -1,6 +1,6 @@
 import { usePreferencesContext } from "@/common/context";
-import { formatNumber } from "@/helpers/formatData";
-import type { StructureBudget } from "@/helpers/types";
+import { formatNumber } from "@/helpers";
+import type { StructureBudget } from "@/types";
 
 interface Props {
   budget: StructureBudget;

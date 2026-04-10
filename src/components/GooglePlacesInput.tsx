@@ -3,6 +3,7 @@ import { APIProvider, useMapsLibrary } from "@vis.gl/react-google-maps";
 import { useAutocompleteSuggestions } from "@/common/hooks";
 import { TextInputWithCloseIcon } from "./TextInputWithCloseIcon";
 import { useFormContext, useWatch } from "react-hook-form";
+import { env } from "@/config/env";
 
 interface Props {
   name: string;
@@ -12,7 +13,7 @@ interface Props {
 export const GooglePlacesInput = ({ name, label }: Props) => {
   return (
     <APIProvider
-      apiKey={import.meta.env.VITE_GOOGLE_API_KEY}
+      apiKey={env.VITE_GOOGLE_API_KEY}
       solutionChannel="GMP_devsite_samples_v3_rgmautocomplete"
       language="es">
       <PlaceAutocomplete

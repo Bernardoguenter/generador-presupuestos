@@ -2,7 +2,7 @@ import { usePDFContext } from "@/common/context";
 import { NumberInput, TextAreaInput } from "@/components";
 import { useFormContext, useWatch } from "react-hook-form";
 import { useEffect } from "react";
-import type { SiloBudget } from "@/helpers/types";
+import type { SiloBudget } from "@/types";
 
 export const PDFSiloTable = () => {
   const { pdfInfo } = usePDFContext();
@@ -95,7 +95,7 @@ export const PDFSiloTable = () => {
                     />
                   </td>
                 </tr>
-                {pdfInfo.includes_freight && (
+                {pdfInfo?.dataToSubmit?.includes_freight && (
                   <tr>
                     <td className="p-2">Flete</td>
                     <td className="p-2 text-center">
@@ -111,7 +111,7 @@ export const PDFSiloTable = () => {
                 )}
                 <tr>
                   <td className="p-2">Total</td>
-                  <td className="p-2 text-center">{total ?? pdfInfo.total}</td>
+                  <td className="p-2 text-center">{total ?? (pdfInfo?.dataToSubmit as any)?.total}</td>
                 </tr>
               </>
             )}

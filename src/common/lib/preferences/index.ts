@@ -1,11 +1,13 @@
-import type { Preferences } from "@/helpers/types";
+import type { Preferences } from "@/types";
 import { supabase } from "@/utils/supabase";
+
+const PREFERENCES_TABLE = "company_settings" as const;
 
 type PreferencesUpdate = Partial<Omit<Preferences, "company_id">>;
 
 const getUserPreferences = async (id: string) => {
   const { data, error } = await supabase
-    .from("company_settings")
+    .from(PREFERENCES_TABLE)
     .select("*")
     .eq("company_id", id)
     .single();
@@ -18,7 +20,7 @@ const updateUserPreferences = async (
   id: string
 ) => {
   const { data, error } = await supabase
-    .from("company_settings")
+    .from(PREFERENCES_TABLE)
     .update(dataToUpdate)
     .eq("company_id", id)
     .select();
@@ -27,3 +29,4 @@ const updateUserPreferences = async (
 };
 
 export { getUserPreferences, updateUserPreferences };
+

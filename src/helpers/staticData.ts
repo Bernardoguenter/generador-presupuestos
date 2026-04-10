@@ -1,4 +1,4 @@
-import type { SiloFormValue } from "./types";
+import type { SiloFormValue } from "@/types";
 
 export const paymentMethods = {
   Silo: `Pago 100 % contra entrega, mediante cheques a 0, 30, 60, 90, 120 o 150 días; Pago de contado.`,

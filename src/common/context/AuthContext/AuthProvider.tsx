@@ -8,21 +8,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { setLoading, setId, setAuthUser } = values;
 
   useEffect(() => {
+    let currentUserId: string | undefined = undefined;
+
     const getSessionUser = async () => {
       setLoading(true);
       const { data, error } = await supabase.auth.getUser();
-      if (error) {
+
+      if (error || !data?.user) {
+        setId(undefined);
+        setAuthUser(undefined);
         setLoading(false);
         return;
       }
 
-      if (data?.user) {
-        const userId = data.user.id;
+      const userId = data.user.id;
+      if (userId !== currentUserId) {
+        currentUserId = userId;
         setId(userId);
         await getAuthUser(userId);
-      } else {
-        setId(undefined);
-        setAuthUser(undefined);
       }
       setLoading(false);
     };
@@ -30,12 +33,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     getSessionUser();
 
     const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (event, session) => {
         if (session?.user?.id) {
           const userId = session.user.id;
-          setId(userId);
-          getAuthUser(userId);
-        } else {
+          if (userId !== currentUserId) {
+            currentUserId = userId;
+            setId(userId);
+            getAuthUser(userId);
+          }
+        } else if (event === "SIGNED_OUT") {
+          currentUserId = undefined;
           setId(undefined);
           setAuthUser(undefined);
         }
@@ -45,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       listener.subscription.unsubscribe();
     };
-  }, [getAuthUser]);
+  }, [getAuthUser, setId, setAuthUser, setLoading]);
 
   return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>;
 }

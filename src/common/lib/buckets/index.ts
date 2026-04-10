@@ -1,5 +1,11 @@
 import { supabase } from "@/utils/supabase";
 
+// Storage bucket names as constants to avoid magic strings
+export const BUCKETS = {
+  COMPANY_LOGOS: "company_logos",
+  SILOS_IMG: "silos_img",
+} as const;
+
 const uploadFileToBucket = async (
   file: File,
   bucket: string,
@@ -44,7 +50,7 @@ const replaceFileInBucket = async (
   return { data, error };
 };
 
-const retriveFileFromBucket = async (bucket: string, fileName: string) => {
+const retrieveFileFromBucket = async (bucket: string, fileName: string) => {
   const fileToRetrieve = fileName.startsWith(`${bucket}/`)
     ? fileName.slice(bucket.length + 1)
     : fileName;
@@ -57,5 +63,5 @@ export {
   uploadFileToBucket,
   deleteFileInBucket,
   replaceFileInBucket,
-  retriveFileFromBucket,
+  retrieveFileFromBucket,
 };

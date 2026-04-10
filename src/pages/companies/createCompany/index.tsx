@@ -8,26 +8,11 @@ import {
   SubmittingOverlay,
 } from "@/components";
 import { createCompanySchema } from "../schema";
-import { useMemo } from "react";
 import { PDFAddressCheckbox } from "../PDFAddressCheckbox";
-import { useCreateCompany } from "./useCreateCompany";
+import { useCreateCompany } from "../hooks/useCreateCompany";
 
 export default function CreateCompany() {
-  const { handleSubmit, isSubmitting } = useCreateCompany();
-
-  const defaultValues = useMemo(
-    () => ({
-      company_name: "",
-      email: "",
-      phone: "",
-      address: "",
-      lat: 0,
-      lng: 0,
-      hasPdfAddress: false,
-      pdfAddress: "",
-    }),
-    []
-  );
+  const { handleSubmit, isSubmitting, defaultValues } = useCreateCompany();
 
   return (
     <SubmittingOverlay isSubmitting={isSubmitting}>
