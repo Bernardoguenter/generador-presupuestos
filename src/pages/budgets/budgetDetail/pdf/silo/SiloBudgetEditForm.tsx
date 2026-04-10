@@ -1,12 +1,12 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { Button, Form } from "@/components";
 import {
   calculateSiloBudgetSchema,
   type SiloBudgetFormData,
 } from "@/pages/budgets/schema";
-import type { SiloBudget } from "@/helpers/types";
+import type { SiloBudget } from "@/types";
 import { usePDFContext } from "@/common/context";
-import { useSiloBudgetSubmit } from "@/common/hooks";
+import { useSiloBudgetSubmit } from "@/pages/budgets/hooks";
 import { SiloBudgetFormContent } from "@/pages/budgets/components/silos/SiloBudgetFormContent";
 import { ResetFormButton } from "@/pages/budgets/components/ResetFormButton";
 import { PDFSiloComponent } from "@/pages/budgets/components/pdf/PDFSiloComponent";
@@ -25,36 +25,15 @@ export const SiloBudgetEditForm = ({
   viewDetail,
 }: Props) => {
   const { setPdfInfo, setShowPDF } = usePDFContext();
-  const { handleSiloBudgetSubmit } = useSiloBudgetSubmit();
+  const { handleSiloBudgetSubmit, defaultValues } = useSiloBudgetSubmit(budget);
 
   useEffect(() => {
     setPdfInfo({
-      customer: budget.customer,
-      includes_taxes: budget.includes_taxes,
-      freight_price: budget.freight_price,
-      includes_freight: budget.includes_freight,
-      total: budget.total * (1 + budget.budget_markup / 100),
       dataToSubmit: budget,
     });
   }, [budget, setPdfInfo]);
 
-  const defaultValues = useMemo(
-    () => ({
-      silos: budget.silos,
-      includes_taxes: budget.includes_taxes,
-      includes_freight: budget.includes_freight,
-      customer: budget.customer,
-      address: budget.address?.address,
-      lng: budget.address?.lng,
-      lat: budget.address?.lat,
-      budget_markup: budget.budget_markup,
-      distanceCalculation:
-        budget.distance && budget.distance > 0 ? "distance" : "address",
-      distanceInKms:
-        budget.includes_freight && budget.distance ? budget.distance : 0,
-    }),
-    [budget],
-  );
+
 
   return (
     <div className="flex lg:flex-row flex-col w-full gap-8 ">

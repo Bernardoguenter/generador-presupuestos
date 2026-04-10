@@ -1,4 +1,4 @@
-import { useLogo } from "@/common/hooks";
+import { useLogo } from "@/pages/companies/hooks";
 
 interface LogoProps {
   containerStyles: string;

@@ -2,7 +2,7 @@ import { usePDFContext } from "@/common/context";
 import { Button } from "@/components";
 
 interface Props {
-  setBudgetType: React.Dispatch<React.SetStateAction<"structure" | "silo">>;
+  setBudgetType: (type: "structure" | "silo") => void;
   budgetType: "structure" | "silo";
 }
 

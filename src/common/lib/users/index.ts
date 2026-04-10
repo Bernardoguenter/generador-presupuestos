@@ -1,6 +1,9 @@
 import { supabase } from "@/utils/supabase";
 
-type UpdateUserFormData = {
+const USERS_TABLE = "users" as const;
+const ROLES_TABLE = "roles" as const;
+
+export type UpdateUserFormData = {
   company_id?: string;
   email?: string;
   fullName?: string;
@@ -8,18 +11,36 @@ type UpdateUserFormData = {
   isPasswordChanged?: boolean;
 };
 
-const getAllUsers = async (userId: string) => {
-  const { data, error } = await supabase
-    .from("users")
-    .select("*")
-    .neq("id", userId);
+const getAllUsers = async (
+  userId: string,
+  page?: number,
+  pageSize?: number,
+  search?: string,
+) => {
+  let query = supabase
+    .from(USERS_TABLE)
+    .select("*", { count: "exact" })
+    .neq("id", userId)
+    .order("fullName", { ascending: true });
 
-  return { data, error };
+  if (search) {
+    query = query.or(`fullName.ilike.%${search}%,email.ilike.%${search}%`);
+  }
+
+  if (page && pageSize && page > 0 && pageSize > 0) {
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+    query = query.range(from, to);
+  }
+
+  const { data, error, count } = await query;
+
+  return { data, error, count };
 };
 
 const getUserById = async (id: string) => {
   const { data, error } = await supabase
-    .from("users")
+    .from(USERS_TABLE)
     .select()
     .eq("id", id)
     .single();
@@ -29,7 +50,7 @@ const getUserById = async (id: string) => {
 
 const getUserByEmail = async (email: string) => {
   const { data, error } = await supabase
-    .from("users")
+    .from(USERS_TABLE)
     .select("email")
     .eq("email", email)
     .single();
@@ -39,7 +60,7 @@ const getUserByEmail = async (email: string) => {
 
 const updateUser = async (dataToUpdate: UpdateUserFormData, id: string) => {
   const { data, error } = await supabase
-    .from("users")
+    .from(USERS_TABLE)
     .update(dataToUpdate)
     .eq("id", id)
     .select()
@@ -49,17 +70,15 @@ const updateUser = async (dataToUpdate: UpdateUserFormData, id: string) => {
 };
 
 const updateUserPassword = async (password: string) => {
-  const { data, error } = await supabase.auth.updateUser({
-    password: password,
-  });
+  const { data, error } = await supabase.auth.updateUser({ password });
 
   return { data, error };
 };
 
 const loginUser = async (email: string, password: string) => {
   const { data, error } = await supabase.auth.signInWithPassword({
-    email: email,
-    password: password,
+    email,
+    password,
   });
 
   return { data, error };
@@ -72,7 +91,7 @@ const signOutUser = async () => {
 };
 
 const getUserRoles = async () => {
-  const { data, error } = await supabase.from("roles").select("*");
+  const { data, error } = await supabase.from(ROLES_TABLE).select("*");
 
   return { data, error };
 };
@@ -87,3 +106,4 @@ export {
   loginUser,
   getUserRoles,
 };
+

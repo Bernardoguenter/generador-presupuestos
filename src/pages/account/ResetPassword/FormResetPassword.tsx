@@ -1,4 +1,4 @@
-import { resetPasswordSchema } from "./shema";
+import { resetPasswordSchema } from "./schema";
 import {
   Button,
   CustomLink,
@@ -6,17 +6,10 @@ import {
   SubmittingOverlay,
   TextInput,
 } from "@/components";
-import { useMemo } from "react";
-import { useResetPassword } from "@/common/hooks";
+import { useResetPassword } from "../hooks";
 
 export const FormResetPassword = () => {
-  const { isSubmitting, handleSubmit } = useResetPassword();
-  const defaultValues = useMemo(
-    () => ({
-      email: "",
-    }),
-    []
-  );
+  const { isSubmitting, handleSubmit, defaultValues } = useResetPassword();
 
   return (
     <SubmittingOverlay isSubmitting={isSubmitting}>

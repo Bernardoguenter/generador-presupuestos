@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { NumberInput, CheckboxInput } from "@/components";
-import { Fieldset } from "@/components/Fieldset";
+import { Fieldset } from "@/components";
 
 export const GutterInput = () => {
   const { control, setValue } = useFormContext();

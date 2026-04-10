@@ -1,20 +1,11 @@
 import { changePasswordSchema } from "./schema";
 import { Button, Form, PasswordInput, SubmittingOverlay } from "@/components";
-import { useMemo } from "react";
 import { useAuthContext } from "@/common/context";
-import { useChangePassword } from "@/common/hooks";
+import { useChangePassword } from "../hooks";
 
 export const FormChangePassword = () => {
   const { handleLogout } = useAuthContext();
-  const { handleSubmit, isSubmitting } = useChangePassword();
-
-  const defaultValues = useMemo(
-    () => ({
-      password: "",
-      confirmPassword: "",
-    }),
-    []
-  );
+  const { handleSubmit, isSubmitting, defaultValues } = useChangePassword();
 
   return (
     <SubmittingOverlay isSubmitting={isSubmitting}>

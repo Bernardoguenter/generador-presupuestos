@@ -45,7 +45,7 @@ export const PDFStructureFormContent = () => {
 
   return (
     <div className="mt-16 bg-white  p-4 lg:p-8 w-full text-black">
-      <BudgetHeader customer={pdfInfo?.customer ?? ""} />
+      <BudgetHeader customer={pdfInfo?.dataToSubmit?.customer ?? ""} />
       <PDFStructureTable />
       <PDFDetails />
       <PDFPaymentMethods />

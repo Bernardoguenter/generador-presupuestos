@@ -1,6 +1,6 @@
 import { EditIcon } from "@/assets/svg";
 import { CustomLink } from "@/components";
-import type { Company } from "@/helpers/types";
+import { type Company } from "@/types";
 import { DeleteCompanyButton } from "./DeleteCompanyButton";
 
 interface Props {
@@ -21,6 +21,8 @@ export const CompanyTable = ({
           <th className="px-2 py-2 text-left text-sm font-medium w-3/5">
             Nombre Empresa
           </th>
+          <th className="px-2 py-2 w-1/5"></th>
+          <th className="px-2 py-2 w-1/5"></th>
         </tr>
       </thead>
       <tbody className="divide-y divide-gray-50">

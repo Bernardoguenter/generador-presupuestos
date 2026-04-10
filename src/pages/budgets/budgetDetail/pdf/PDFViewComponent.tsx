@@ -1,4 +1,4 @@
-import type { SiloBudget, StructureBudget } from "@/helpers/types";
+import type { SiloBudget, StructureBudget } from "@/types";
 import { BudgetHeader } from "./BudgetHeader";
 import { BudgetFooter } from "./BudgetFooter";
 import { BudgetBody } from "./BudgetBody";

@@ -4,8 +4,8 @@ import { Button, CheckboxInput } from "@/components";
 import { SilosSelecType } from "./SilosSelecType";
 import { SilosCapacity } from "./SilosCapacity";
 import { SilosConeBase } from "./SilosConeBase";
-import type { SiloFormValue } from "@/helpers/types";
-import { EMPTY_SILO, VALID_FIBER_BASE_CAPACITIES } from "@/helpers/staticData";
+import type { SiloFormValue } from "@/types";
+import { EMPTY_SILO, VALID_FIBER_BASE_CAPACITIES } from "@/helpers";
 
 export const SilosSelectGroup = () => {
   const { control, setValue } = useFormContext();

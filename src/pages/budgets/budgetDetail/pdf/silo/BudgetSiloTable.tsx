@@ -1,6 +1,6 @@
 import { usePreferencesContext } from "@/common/context";
-import { formatNumber } from "@/helpers/formatData";
-import type { SiloBudget } from "@/helpers/types";
+import { formatNumber } from "@/helpers";
+import type { SiloBudget } from "@/types";
 
 interface Props {
   budget: SiloBudget;

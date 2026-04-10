@@ -1,0 +1,14 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:5173",
+      "localStorage": [
+        {
+          "name": "sb-noiydfvnlzwoekvvyabq-auth-token",
+          "value": "{\"access_token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vaXlkZnZubHp3b2VrdnZ5YWJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0NDYxMjMsImV4cCI6MjA2MjAyMjEyM30.TCJu6aHMODc9ELlInMi4jcZJoiEEv--oN-CapAc6BFw\",\"token_type\":\"bearer\",\"expires_in\":3600,\"refresh_token\":\"mocked-refresh-token\",\"user\":{\"id\":\"550e8400-e29b-41d4-a716-446655440000\",\"aud\":\"authenticated\",\"role\":\"authenticated\",\"email\":\"test@example.com\",\"user_metadata\":{\"fullName\":\"Test User\",\"role\":\"superadmin\"}},\"expires_at\":1775837116}"
+        }
+      ]
+    }
+  ]
+}

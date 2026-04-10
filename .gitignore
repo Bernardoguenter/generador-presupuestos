@@ -24,3 +24,14 @@ dist-ssr
 *.sw?
 
 .env
+
+.agents
+.claude
+.continue
+.qodo
+.windsurf
+
+skills-lock.json
+test-results
+playwright-report
+coverage

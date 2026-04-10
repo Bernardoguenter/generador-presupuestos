@@ -1,19 +1,20 @@
 import { useFormContext } from "react-hook-form";
 import { useAuthContext } from "@/common/context";
 import { Button } from "@/components";
-import { useUpdateAllPreferences } from "@/common/hooks/useUpdateAllCompaniesPreferences";
-import type { Preferences } from "@/helpers/types";
+import { useUpdateAllCompaniesPreferences } from "../hooks";
+import type { Preferences } from "@/types";
 import useSweetAlertModal from "@/common/hooks";
+import { env } from "@/config/env";
 
 export const UpdateAllUserPreferencesButton = () => {
   const { authUser } = useAuthContext();
   const { getValues } = useFormContext();
-  const { updateAll, isSubmitting } = useUpdateAllPreferences();
+  const { updateAll, isSubmitting } = useUpdateAllCompaniesPreferences();
   const { showAlert } = useSweetAlertModal();
 
   if (
     !authUser ||
-    authUser.email !== import.meta.env.VITE_USER_PREFERENCES_MAIN
+    authUser.email !== env.VITE_USER_PREFERENCES_MAIN
   ) {
     return null;
   }

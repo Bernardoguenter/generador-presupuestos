@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
-import type { Company } from "@/helpers/types";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import type { Company } from "@/types";
 import { CompanyContext } from "./CompanyContext";
 import { getCompanyById } from "@common/lib";
 import { useAuthContext } from "../AuthContext/AuthContext";
@@ -9,7 +9,7 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
   const [company, setCompany] = useState<Company | null>(null);
   const { authUser } = useAuthContext();
 
-  const getCompany = async (id: string) => {
+  const getCompany = useCallback(async (id: string) => {
     try {
       const { data, error } = await getCompanyById(id);
       if (!error) {
@@ -20,13 +20,13 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    if (authUser) {
+    if (authUser?.company_id) {
       getCompany(authUser.company_id);
     }
-  }, [isLoading, authUser]);
+  }, [authUser?.company_id, getCompany]);
 
   const values = useMemo(
     () => ({
@@ -42,3 +42,4 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
     <CompanyContext.Provider value={values}>{children}</CompanyContext.Provider>
   );
 }
+

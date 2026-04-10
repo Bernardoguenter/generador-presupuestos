@@ -1,7 +1,7 @@
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { NumberInput } from "@/components";
 import { useEffect, useRef } from "react";
-import type { GatesMeasurements } from "@/helpers/types";
+import type { GatesMeasurements } from "@/types";
 
 export const GatesInput = () => {
   const { control, setValue } = useFormContext();

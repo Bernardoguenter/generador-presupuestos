@@ -1,93 +1,23 @@
-import Swal from "sweetalert2";
+import { Toast } from "./toastFactory";
 
 const CreateBudgetToastSuccess = () => {
-  const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.onmouseenter = Swal.stopTimer;
-      toast.onmouseleave = Swal.resumeTimer;
-    },
-  });
-  Toast.fire({
-    icon: "success",
-    title: `El presupuesto se ha creado correctamente`,
-  });
+  Toast.fire({ icon: "success", title: "El presupuesto se ha creado correctamente" });
 };
 
 const CreateBudgetToastError = () => {
-  const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.onmouseenter = Swal.stopTimer;
-      toast.onmouseleave = Swal.resumeTimer;
-    },
-  });
-  Toast.fire({
-    icon: "error",
-    title: `Ha ocurrido un error al crear el presupuesto`,
-  });
+  Toast.fire({ icon: "error", title: "Ha ocurrido un error al crear el presupuesto" });
 };
 
 const UpdateBudgetToastSuccess = () => {
-  const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.onmouseenter = Swal.stopTimer;
-      toast.onmouseleave = Swal.resumeTimer;
-    },
-  });
-  Toast.fire({
-    icon: "success",
-    title: `El presupuesto se ha actualizado correctamente`,
-  });
+  Toast.fire({ icon: "success", title: "El presupuesto se ha actualizado correctamente" });
 };
 
 const UpdateBudgetToastError = () => {
-  const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.onmouseenter = Swal.stopTimer;
-      toast.onmouseleave = Swal.resumeTimer;
-    },
-  });
-  Toast.fire({
-    icon: "error",
-    title: `Ha ocurrido un error al actualizar el presupuesto`,
-  });
+  Toast.fire({ icon: "error", title: "Ha ocurrido un error al actualizar el presupuesto" });
 };
 
 const DeleteBudgetToastError = () => {
-  const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.onmouseenter = Swal.stopTimer;
-      toast.onmouseleave = Swal.resumeTimer;
-    },
-  });
-  Toast.fire({
-    icon: "error",
-    title: `Ha ocurrido un error al eliminar el presupuesto`,
-  });
+  Toast.fire({ icon: "error", title: "Ha ocurrido un error al eliminar el presupuesto" });
 };
 
 export {

@@ -7,19 +7,10 @@ import {
   PasswordInput,
   SubmittingOverlay,
 } from "@/components";
-import { useMemo } from "react";
-import { useLogin } from "@/common/hooks";
+import { useLogin } from "../hooks";
 
 export const FormLogin = () => {
-  const { handleSubmit, isSubmitting } = useLogin();
-
-  const defaultValues = useMemo(
-    () => ({
-      email: "",
-      password: "",
-    }),
-    []
-  );
+  const { handleSubmit, isSubmitting, defaultValues } = useLogin();
 
   return (
     <SubmittingOverlay isSubmitting={isSubmitting}>
