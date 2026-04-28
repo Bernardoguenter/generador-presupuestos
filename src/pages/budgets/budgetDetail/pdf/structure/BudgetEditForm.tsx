@@ -32,9 +32,8 @@ export const BudgetEditForm = ({
     setPdfInfo({
       dataToSubmit: budget,
     });
+    console.log(budget);
   }, [budget, setPdfInfo]);
-
-
 
   return (
     <div className="flex lg:flex-row flex-col w-full gap-8 ">

@@ -86,6 +86,8 @@ export const useStructureBudgetSubmit = (initialBudget?: StructureBudget) => {
       structure_type === "Galpón" ? number_of_gates : 0;
     const newColor_side_sheet =
       structure_type === "Galpón" ? color_side_sheet : false;
+    const newIncludes_gate =
+      structure_type === "Galpón" ? includes_gate : false;
 
     const sideSheetFactor = getSheetsFactor(sides_sheets_option, preferences);
     const roofSheetFactor = getSheetsFactor(roof_sheets_option, preferences);
@@ -102,7 +104,7 @@ export const useStructureBudgetSubmit = (initialBudget?: StructureBudget) => {
       color_side_sheet: newColor_side_sheet,
       gutter_metters: newGutter_metters,
       gates_measurements: newGates_measurements,
-      includes_gate,
+      includes_gate: newIncludes_gate,
       includes_taxes,
       freight_price,
       has_gutter,
@@ -117,10 +119,10 @@ export const useStructureBudgetSubmit = (initialBudget?: StructureBudget) => {
       material,
       color_roof_sheet,
       color_side_sheet,
-      includes_gate,
-      gates_measurements,
+      newIncludes_gate,
+      newGates_measurements,
       has_gutter,
-      gutter_metters,
+      newGutter_metters,
       width,
       sides_sheets_option,
       roof_sheets_option,
@@ -137,7 +139,7 @@ export const useStructureBudgetSubmit = (initialBudget?: StructureBudget) => {
         length,
         height,
         includes_freight,
-        includes_gate,
+        includes_gate: newIncludes_gate,
         includes_taxes,
         created_by: authUser?.id,
         details: newDetails,
@@ -165,6 +167,8 @@ export const useStructureBudgetSubmit = (initialBudget?: StructureBudget) => {
         roof_sheets_option,
         estimatedDelivery: "",
       };
+
+      console.log(dataToSubmit);
 
       setPdfInfo({
         dataToSubmit,
