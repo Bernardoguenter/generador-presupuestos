@@ -56,12 +56,12 @@ export const useConfirmStructureSubmit = ({
     const { dataToSubmit } = pdfInfo as StructurePDFInfo;
 
     const {
-      paymentMethods,
-      details,
-      description,
-      estimatedDelivery,
-      total,
-      caption,
+      paymentMethods: _paymentMethods,
+      details: _details,
+      description: _description,
+      estimatedDelivery: _estimatedDelivery,
+      total: _total,
+      caption: _caption,
       created_by,
       ...restDataToSubmit
     } = dataToSubmit;

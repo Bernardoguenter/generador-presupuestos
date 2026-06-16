@@ -1,15 +1,12 @@
 import { useIsSubmitting } from "@/common/hooks";
 import { useMemo } from "react";
-import { updateUserPreferences, setWebPreferences } from "@/common/lib";
+import { updateUserPreferences } from "@/common/lib";
 import {
   UpdatePreferencesToastSuccess,
   UpdatePreferencesToastError,
-  UpdatePreferencesToastWebSuccess,
-  UpdatePreferencesToastWebError,
 } from "@/utils/alerts";
 import type { PreferencesFormData } from "../schema";
 import { usePreferencesContext } from "@/common/context";
-import { env } from "@/config/env";
 
 export const useUpdatePreferences = () => {
   const { preferences, setPreferences, setIsLoading } = usePreferencesContext();
@@ -27,15 +24,6 @@ export const useUpdatePreferences = () => {
         UpdatePreferencesToastSuccess();
       } else {
         UpdatePreferencesToastError();
-      }
-
-      if (env.VITE_PREFERENCES_ID === company_id) {
-        const { error } = await setWebPreferences(formData, company_id);
-        if (!error) {
-          UpdatePreferencesToastWebSuccess();
-        } else {
-          UpdatePreferencesToastWebError();
-        }
       }
     } catch (error) {
       console.error(error);
