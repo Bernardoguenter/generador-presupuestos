@@ -11,19 +11,6 @@ const setCompanyPreferences = async (
   return { error };
 };
 
-const setWebPreferences = async (
-  preferences: Omit<Preferences, "company_id">,
-  company_id: string,
-) => {
-  const { data, error } = await supabase.functions.invoke(
-    "set-web-preferences",
-    {
-      body: { company_id, preferences },
-    },
-  );
-  return { data, error };
-};
-
 const deleteUser = async (id: string) => {
   const { error } = await supabase.functions.invoke("delete-user", {
     body: { id },
@@ -81,5 +68,4 @@ export {
   createUser,
   sendPassword,
   sendBudget,
-  setWebPreferences,
 };

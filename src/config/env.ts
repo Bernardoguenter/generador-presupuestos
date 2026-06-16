@@ -4,7 +4,6 @@ const envSchema = z.object({
   VITE_SUPABASE_URL: z.string().url("VITE_SUPABASE_URL must be a valid URL"),
   VITE_SUPABASE_ANON_KEY: z.string().min(1, "VITE_SUPABASE_ANON_KEY is required"),
   VITE_GOOGLE_API_KEY: z.string().min(1, "VITE_GOOGLE_API_KEY is required"),
-  VITE_PREFERENCES_ID: z.string().min(1, "VITE_PREFERENCES_ID is required"),
   VITE_USER_PREFERENCES_MAIN: z
     .string()
     .email("VITE_USER_PREFERENCES_MAIN must be a valid email"),

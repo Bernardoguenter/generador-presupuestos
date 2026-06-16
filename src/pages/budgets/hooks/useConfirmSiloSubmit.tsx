@@ -62,13 +62,13 @@ export const useConfirmSiloSubmit = ({
     const { dataToSubmit } = pdfInfo as SiloPDFInfo;
     const {
       includes_taxes,
-      paymentMethods,
-      description,
-      estimatedDelivery,
-      freight_price,
-      totals,
-      total,
-      caption,
+      paymentMethods: _paymentMethods,
+      description: _description,
+      estimatedDelivery: _estimatedDelivery,
+      freight_price: _freight_price,
+      totals: _totals,
+      total: _total,
+      caption: _caption,
       created_by,
       ...restDataToSubmit
     } = dataToSubmit;

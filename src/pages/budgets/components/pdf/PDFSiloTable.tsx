@@ -111,7 +111,14 @@ export const PDFSiloTable = () => {
                 )}
                 <tr>
                   <td className="p-2">Total</td>
-                  <td className="p-2 text-center">{total ?? (pdfInfo?.dataToSubmit as any)?.total}</td>
+                  <td className="p-2 text-center">
+                    {total ??
+                      (
+                        pdfInfo?.dataToSubmit as
+                          | Omit<SiloBudget, "created_at" | "id">
+                          | undefined
+                      )?.total}
+                  </td>
                 </tr>
               </>
             )}
