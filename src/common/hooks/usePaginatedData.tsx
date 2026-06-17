@@ -1,6 +1,16 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router";
 
+const getPositiveNumberParam = (
+  searchParams: URLSearchParams,
+  key: string,
+  fallback: number,
+) => {
+  const value = Number(searchParams.get(key));
+
+  return Number.isFinite(value) && value > 0 ? value : fallback;
+};
+
 export const usePaginatedData = <T,>(
   data: T[] | null,
   initialPageSize = 10,
@@ -8,8 +18,12 @@ export const usePaginatedData = <T,>(
 ) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const urlPage = Number(searchParams.get("page")) || 1;
-  const pageSize = Number(searchParams.get("size")) || initialPageSize;
+  const urlPage = getPositiveNumberParam(searchParams, "page", 1);
+  const pageSize = getPositiveNumberParam(
+    searchParams,
+    "size",
+    initialPageSize,
+  );
 
   const totalCount = serverTotalCount !== undefined ? serverTotalCount : (data?.length || 0);
   const totalPages = Math.ceil(totalCount / pageSize) || 1;
@@ -20,16 +34,21 @@ export const usePaginatedData = <T,>(
 
   const setCurrentPage = (page: number) => {
     setSearchParams((prev) => {
-      prev.set("page", String(page));
-      return prev;
+      const next = new URLSearchParams(prev);
+      const nextPage = Number.isFinite(page) && page > 0 ? page : 1;
+      next.set("page", String(nextPage));
+      return next;
     }, { replace: true, viewTransition: true });
   };
 
   const setPageSize = (size: number) => {
     setSearchParams((prev) => {
-      prev.set("size", String(size));
-      prev.set("page", "1");
-      return prev;
+      const next = new URLSearchParams(prev);
+      const nextSize =
+        Number.isFinite(size) && size > 0 ? size : initialPageSize;
+      next.set("size", String(nextSize));
+      next.set("page", "1");
+      return next;
     }, { replace: true, viewTransition: true });
   };
 

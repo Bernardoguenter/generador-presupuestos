@@ -13,13 +13,15 @@ export function useSearchableTable<T>({ data, filterFn }: Props<T>) {
 
   const setSearchInput = (value: string) => {
     setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+
       if (value) {
-        prev.set("search", value);
+        next.set("search", value);
       } else {
-        prev.delete("search");
+        next.delete("search");
       }
-      prev.set("page", "1");
-      return prev;
+      next.set("page", "1");
+      return next;
     }, { replace: true, viewTransition: true });
   };
 

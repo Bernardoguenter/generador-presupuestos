@@ -9,7 +9,10 @@ export default function BudgetHistory() {
   const budgetType = location.pathname.includes("/budgets/silos") ? "silo" : "structure";
 
   const setBudgetType = (type: "structure" | "silo") => {
-    navigate(`/budgets/${type === "silo" ? "silos" : "structures"}`, { replace: true, viewTransition: true });
+    navigate(
+      `/budgets/${type === "silo" ? "silos" : "structures"}`,
+      { replace: true, viewTransition: true },
+    );
   };
 
   return (

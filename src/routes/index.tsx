@@ -1,5 +1,5 @@
-import { Routes, Route, Navigate } from "react-router";
-import { lazy } from "react";
+import { Routes, Route, Navigate, Outlet, useLocation } from "react-router";
+import { lazy, type ReactNode } from "react";
 
 // Layouts
 import { AppLayout, DefaultLayout } from "../layout";
@@ -28,22 +28,99 @@ const CreateCompany = lazy(() => import("../pages/companies/createCompany"));
 const ListCompany = lazy(() => import("../pages/companies/listCompany"));
 const CompanyDetail = lazy(() => import("../pages/companies/companyDetail"));
 
-const BudgetsHistoryList = lazy(() => import("../pages/budgets/history/BudgetsHistoryList").then(m => ({ default: m.BudgetsHistoryList })));
-const SiloBudgetsHistoryList = lazy(() => import("../pages/budgets/history/SiloBudgetsHistoryList").then(m => ({ default: m.SiloBudgetsHistoryList })));
+const BudgetsHistoryList = lazy(() =>
+  import("../pages/budgets/history/BudgetsHistoryList").then((m) => ({
+    default: m.BudgetsHistoryList,
+  })),
+);
+const SiloBudgetsHistoryList = lazy(() =>
+  import("../pages/budgets/history/SiloBudgetsHistoryList").then((m) => ({
+    default: m.SiloBudgetsHistoryList,
+  })),
+);
 
-export default function AppRoutes() {
+const FullPageLoader = () => (
+  <div className="min-h-screen bg-gray-900 flex justify-center items-center">
+    <PageLoader />
+  </div>
+);
+
+const RequireAuth = ({
+  allowPasswordChange = false,
+}: {
+  allowPasswordChange?: boolean;
+}) => {
   const { authUser, loading } = useAuthContext();
-  useFavicon();
+  const location = useLocation();
 
-  // Prevent routing decisions while authentication is still initializing
-  // so deep links aren't lost to redirects.
-  if (loading) {
+  if (loading) return <FullPageLoader />;
+
+  if (!authUser) {
     return (
-      <div className="min-h-screen bg-gray-900 flex justify-center items-center">
-        <PageLoader />
-      </div>
+      <Navigate
+        to="/account/login"
+        replace
+        state={{ from: `${location.pathname}${location.search}` }}
+      />
     );
   }
+
+  if (
+    !allowPasswordChange &&
+    authUser.isPasswordChanged === false &&
+    location.pathname !== "/account/change-password"
+  ) {
+    return (
+      <Navigate
+        to="/account/change-password"
+        replace
+      />
+    );
+  }
+
+  return <Outlet />;
+};
+
+const PublicOnlyRoute = ({ children }: { children: ReactNode }) => {
+  const { authUser, loading } = useAuthContext();
+  const location = useLocation();
+  const state = location.state as { from?: string } | null;
+  const redirectTo =
+    state?.from && !state.from.startsWith("/account/") ? state.from : "/";
+
+  if (loading) return <FullPageLoader />;
+
+  return authUser ? (
+    <Navigate
+      to={redirectTo}
+      replace
+    />
+  ) : (
+    children
+  );
+};
+
+const RequireRole = ({
+  allowed,
+  children,
+}: {
+  allowed: (role: string) => boolean;
+  children: ReactNode;
+}) => {
+  const { authUser } = useAuthContext();
+
+  return authUser && allowed(authUser.role) ? (
+    children
+  ) : (
+    <Navigate
+      to="/"
+      replace
+    />
+  );
+};
+
+export default function AppRoutes() {
+  useFavicon();
 
   return (
     <Routes>
@@ -54,43 +131,34 @@ export default function AppRoutes() {
         <Route
           path="login"
           element={
-            !authUser ? (
+            <PublicOnlyRoute>
               <Login />
-            ) : (
-              <Navigate
-                to="/"
-                replace
-              />
-            )
+            </PublicOnlyRoute>
           }
         />
         <Route
           path="reset-password"
           element={
-            !authUser ? (
+            <PublicOnlyRoute>
               <ResetPasswrord />
-            ) : (
-              <Navigate
-                to="/"
-                replace
-              />
-            )
+            </PublicOnlyRoute>
           }
         />
       </Route>
-      {authUser && (
-        <Route
-          path="account/"
-          element={<DefaultLayout />}>
+
+      <Route
+        path="account/"
+        element={<DefaultLayout />}>
+        <Route element={<RequireAuth allowPasswordChange />}>
           <Route
             path="change-password"
             element={<ChangePassword />}
           />
         </Route>
-      )}
+      </Route>
 
       {/* Rutas privadas */}
-      {authUser && (
+      <Route element={<RequireAuth />}>
         <Route
           path="/"
           element={<AppLayout />}>
@@ -105,11 +173,25 @@ export default function AppRoutes() {
               path="calculator"
               element={<Calculator />}
             />
-            
+
             <Route element={<BudgetHistory />}>
-              <Route path="structures" element={<BudgetsHistoryList />} />
-              <Route path="silos" element={<SiloBudgetsHistoryList />} />
-              <Route index element={<Navigate to="structures" replace />} />
+              <Route
+                path="structures"
+                element={<BudgetsHistoryList />}
+              />
+              <Route
+                path="silos"
+                element={<SiloBudgetsHistoryList />}
+              />
+              <Route
+                index
+                element={
+                  <Navigate
+                    to="structures"
+                    replace
+                  />
+                }
+              />
             </Route>
 
             <Route
@@ -123,45 +205,68 @@ export default function AppRoutes() {
           </Route>
 
           {/* Usuarios */}
-          {authUser.role === "superadmin" && (
-            <Route path="users/*">
-              <Route
-                path="create-user"
-                element={<CreateUser />}
-              />
-              <Route
-                index
-                element={<ListUsers />}
-              />
-              <Route
-                path=":id"
-                element={<UserDetail />}
-              />
-            </Route>
-          )}
-          {authUser.role !== "usuario" && (
+          <Route path="users/*">
             <Route
-              path="preferences"
-              element={<Preferences />}
+              path="create-user"
+              element={
+                <RequireRole allowed={(role) => role === "superadmin"}>
+                  <CreateUser />
+                </RequireRole>
+              }
             />
-          )}
+            <Route
+              index
+              element={
+                <RequireRole allowed={(role) => role === "superadmin"}>
+                  <ListUsers />
+                </RequireRole>
+              }
+            />
+            <Route
+              path=":id"
+              element={
+                <RequireRole allowed={(role) => role === "superadmin"}>
+                  <UserDetail />
+                </RequireRole>
+              }
+            />
+          </Route>
 
-          {authUser.role === "superadmin" && (
-            <Route path="companies/*">
-              <Route
-                path="create-company"
-                element={<CreateCompany />}
-              />
-              <Route
-                index
-                element={<ListCompany />}
-              />
-              <Route
-                path=":id"
-                element={<CompanyDetail />}
-              />
-            </Route>
-          )}
+          <Route
+            path="preferences"
+            element={
+              <RequireRole allowed={(role) => role !== "usuario"}>
+                <Preferences />
+              </RequireRole>
+            }
+          />
+
+          <Route path="companies/*">
+            <Route
+              path="create-company"
+              element={
+                <RequireRole allowed={(role) => role === "superadmin"}>
+                  <CreateCompany />
+                </RequireRole>
+              }
+            />
+            <Route
+              index
+              element={
+                <RequireRole allowed={(role) => role === "superadmin"}>
+                  <ListCompany />
+                </RequireRole>
+              }
+            />
+            <Route
+              path=":id"
+              element={
+                <RequireRole allowed={(role) => role === "superadmin"}>
+                  <CompanyDetail />
+                </RequireRole>
+              }
+            />
+          </Route>
 
           {/* Redirección en caso de ruta no encontrada */}
           <Route
@@ -174,20 +279,17 @@ export default function AppRoutes() {
             }
           />
         </Route>
-      )}
+      </Route>
 
-      {/* Si no está autenticado y quiere ir a cualquier otra ruta, redirige a login */}
-      {!authUser && (
-        <Route
-          path="*"
-          element={
-            <Navigate
-              to="/account/login"
-              replace
-            />
-          }
-        />
-      )}
+      <Route
+        path="*"
+        element={
+          <Navigate
+            to="/"
+            replace
+          />
+        }
+      />
     </Routes>
   );
 }

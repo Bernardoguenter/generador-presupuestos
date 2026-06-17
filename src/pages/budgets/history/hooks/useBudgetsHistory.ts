@@ -47,6 +47,10 @@ export const useBudgetsHistory = <T extends StructureBudget | SiloBudget>(type: 
         if (!error && data) {
           setBudgets(data as T[]);
           setServerTotalCount(count || 0);
+        } else if (error) {
+          console.error("Error al buscar presupuestos:", error.message);
+          setBudgets([]);
+          setServerTotalCount(0);
         }
       }
     } catch (error) {
