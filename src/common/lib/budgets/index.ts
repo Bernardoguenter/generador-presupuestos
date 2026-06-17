@@ -10,6 +10,52 @@ type BudgetType = keyof typeof BUDGET_TABLES;
 
 const getBudgetTable = (type: BudgetType) => BUDGET_TABLES[type];
 
+const normalizeSearchTerm = (search?: string) => {
+  const normalized = search
+    ?.trim()
+    .replace(/[(),]/g, " ")
+    .replace(/\s+/g, " ");
+
+  return normalized || undefined;
+};
+
+const getSearchFilter = (search: string, includeAddress = true) => {
+  const filters = [`customer.ilike.%${search}%`];
+
+  if (includeAddress) {
+    filters.push(`address->>address.ilike.%${search}%`);
+  }
+
+  return filters.join(",");
+};
+
+const buildBudgetsQuery = (
+  id: string,
+  type: BudgetType,
+  page?: number,
+  pageSize?: number,
+  search?: string,
+  includeAddressSearch = true,
+) => {
+  let query = supabase
+    .from(getBudgetTable(type))
+    .select("*", { count: "exact" })
+    .eq("created_by", id)
+    .order("created_at", { ascending: false });
+
+  if (search) {
+    query = query.or(getSearchFilter(search, includeAddressSearch));
+  }
+
+  if (page && pageSize && page > 0 && pageSize > 0) {
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+    query = query.range(from, to);
+  }
+
+  return query;
+};
+
 const createBudget = async (
   dataToSubmit: Omit<StructureBudget | SiloBudget, "created_at" | "id">,
   type: BudgetType = "structure",
@@ -45,28 +91,32 @@ const getAllBudgets = async (
   pageSize?: number,
   search?: string,
 ) => {
-  let query = supabase
-    .from(getBudgetTable(type))
-    .select("*", { count: "exact" })
-    .eq("created_by", id)
-    .order("created_at", { ascending: false });
-
-  if (search) {
-    const searchFilter =
-      type === "structure"
-        ? `customer.ilike.%${search}%,structure_type.ilike.%${search}%,address->>address.ilike.%${search}%`
-        : `customer.ilike.%${search}%,address->>address.ilike.%${search}%`;
-
-    query = query.or(searchFilter);
-  }
-
-  if (page && pageSize && page > 0 && pageSize > 0) {
-    const from = (page - 1) * pageSize;
-    const to = from + pageSize - 1;
-    query = query.range(from, to);
-  }
+  const normalizedSearch = normalizeSearchTerm(search);
+  const query = buildBudgetsQuery(
+    id,
+    type,
+    page,
+    pageSize,
+    normalizedSearch,
+  );
 
   const { data, error, count } = await query;
+
+  if (error && normalizedSearch) {
+    console.warn(
+      "No se pudo buscar presupuestos por dirección; se reintenta por campos de texto.",
+      error.message,
+    );
+
+    return await buildBudgetsQuery(
+      id,
+      type,
+      page,
+      pageSize,
+      normalizedSearch,
+      false,
+    );
+  }
 
   return { data, count, error };
 };
