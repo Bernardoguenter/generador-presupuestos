@@ -20,14 +20,15 @@ export const BudgetsHistoryList = () => {
     removeBudget,
   } = useBudgetsHistory<StructureBudget>("structure");
 
-  if (isLoading) return <p className="p-4">Cargando listado de Presupuestos</p>;
-
   return (
     <>
       <SearchInput
         searchInput={searchInput}
         setSearchInput={setSearchInput}
       />
+      {isLoading && (
+        <p className="px-1 text-sm text-gray-300">Actualizando presupuestos...</p>
+      )}
       {budgets && (
         <BudgetsTable
           budgets={budgets}
