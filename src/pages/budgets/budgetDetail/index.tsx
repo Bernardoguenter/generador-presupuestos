@@ -5,6 +5,10 @@ import { DownloadBudgetButton } from "./DownloadBudgetButton";
 import { BudgetEditForm } from "./pdf/structure/BudgetEditForm";
 import { SiloBudgetEditForm } from "./pdf/silo/SiloBudgetEditForm";
 import { useBudgetDetail } from "./hooks/useBudgetDetail";
+import { useStructureRenders } from "./hooks/useStructureRenders";
+import { StructureRendersSection } from "./StructureRendersSection";
+import { useCompanyContext } from "@/common/context";
+import { companyHasRenders } from "@/helpers";
 
 export default function BudgetDetail() {
   const {
@@ -17,13 +21,21 @@ export default function BudgetDetail() {
     fetchBudget,
     pathName,
   } = useBudgetDetail();
+  const { company } = useCompanyContext();
+
+  const isStructure = pathName.includes("/structures/");
+  const isSilo = pathName.includes("/silos/");
+  const showRenders =
+    isStructure && !!budget && companyHasRenders(company?.company_name);
+  const { renders, isLoading: rendersLoading } = useStructureRenders(
+    showRenders ? (budget as StructureBudget) : null,
+  );
 
   if (isLoading) return <p className="p-4">Cargando presupuesto...</p>;
   if (error) return <p className="p-4 text-danger">{error}</p>;
   if (!budget) return <p className="p-4">No se ha obtenido un Presupuesto</p>;
 
-  const isStructure = pathName.includes("/structures/");
-  const isSilo = pathName.includes("/silos/");
+  const rendersImages = renders ? [...renders.fotos, ...renders.croquis] : [];
 
   return (
     <section>
@@ -64,9 +76,20 @@ export default function BudgetDetail() {
         )}
       </div>
 
+      {!viewDetail && showRenders && (
+        <StructureRendersSection
+          renders={renders}
+          isLoading={rendersLoading}
+        />
+      )}
+
       {!viewDetail && (
         <div className="mt-4 flex flex-col gap-2 lg:w-2/5">
-          <DownloadBudgetButton customer={budget.customer} />
+          <DownloadBudgetButton
+            customer={budget.customer}
+            images={rendersImages}
+            disabled={showRenders && rendersLoading}
+          />
           <CustomLink
             href="/budgets/calculator"
             color="danger"

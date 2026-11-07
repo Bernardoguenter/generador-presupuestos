@@ -1,0 +1,790 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
+.frm{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;font-size:12.5px;color:var(--muted)}
+.frm label{display:grid;gap:3px}
+.frm input,.frm select{box-sizing:border-box;font:500 13px var(--body);padding:6px 7px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--fg);width:100%}
+.frm .go{grid-column:1/-1;background:var(--accent);color:var(--accent-fg);padding:10px}
+.row2{display:flex;gap:6px}.row2 button{flex:1;border:1px solid var(--line)}
+#croq{position:fixed;inset:0;z-index:30;background:#e7eaed;overflow:auto}
+.cbar{position:sticky;top:0;display:flex;gap:8px;align-items:center;padding:10px 16px;background:#fff;border-bottom:1px solid #ccd;font-family:var(--body)}
+.cbar .sp{flex:1}.cbar button{border:1px solid #ccd}
+#hojas{display:grid;gap:16px;padding:16px;max-width:1200px;margin:0 auto}
+.hoja{background:#fff;aspect-ratio:1188/840;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+@media print{ @page{size:A4 landscape;margin:0}
+  body{overflow:visible;background:#fff} #cielo,#scene,.hud,.bar,.cbar{display:none!important}
+  #croq{position:static;overflow:visible;background:#fff} #hojas{padding:0;gap:0;max-width:none}
+  .hoja{width:297mm;height:210mm;aspect-ratio:auto;box-shadow:none;page-break-after:always} }
+</style></head><body>
+<title>Generador Remeco</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+
+
+<style>
+/* Visor a pantalla completa: escena 3D detrás, ficha técnica y controles flotando como un rótulo de plano */
+:root{
+  --bg:#dfe5e8; --panel:rgba(250,251,250,.92); --fg:#1d2427; --muted:#5a666c; --line:#c4ccd0;
+  --accent:#c2551b; --accent-fg:#fff; --chip:#eef1f2;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Barlow",Arial,Helvetica,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#14191c; --panel:rgba(24,30,33,.9); --fg:#e7ecee; --muted:#9aa7ad; --line:#334047;
+  --accent:#e8763a; --accent-fg:#14191c; --chip:#222b2f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14191c; --panel:rgba(24,30,33,.9); --fg:#e7ecee; --muted:#9aa7ad; --line:#334047;
+  --accent:#e8763a; --accent-fg:#14191c; --chip:#222b2f; color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);overflow:hidden}
+#cielo,#scene{position:fixed;inset:0;display:block;width:100%;height:100%}
+#scene{touch-action:none}
+.hud{position:fixed;left:max(16px,env(safe-area-inset-left,0px));top:calc(16px + env(safe-area-inset-top,0px));
+  width:min(330px,calc(100% - 32px));background:var(--panel);border:1px solid var(--line);border-radius:6px;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:14px 16px;display:grid;gap:12px;max-height:calc(100% - 140px);overflow:auto}
+.brand{font:500 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+h1{font:700 30px/1 var(--display);margin:4px 0 0;letter-spacing:.01em;text-wrap:balance}
+.sub{color:var(--muted);font-size:13px;margin-top:4px}
+dl{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;margin:0;font-size:13px}
+dt{color:var(--muted)} dd{margin:0;font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums}
+.bar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));
+  display:flex;flex-wrap:wrap;gap:8px;justify-content:center;width:min(760px,calc(100% - 32px))}
+.grp{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:3px;gap:2px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+button{font:600 13px/1 var(--body);color:var(--fg);background:transparent;border:0;border-radius:4px;padding:9px 11px;cursor:pointer;white-space:nowrap}
+button:hover{background:var(--chip)}
+button[aria-pressed="true"]{background:var(--accent);color:var(--accent-fg)}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.hint{font-size:12px;color:var(--muted)}
+.toggle-info{display:none}
+@media (max-width:620px){
+  .hud{padding:10px 12px;gap:8px} h1{font-size:24px}
+  .hud.min dl,.hud.min .hint{display:none}
+  .toggle-info{display:inline-block;padding:6px 8px;font-size:12px;border:1px solid var(--line)}
+  button{padding:8px 9px;font-size:12px}
+}
+</style>
+
+<canvas id="cielo" aria-hidden="true"></canvas>
+<canvas id="scene" aria-label="Modelo 3D del galpón"></canvas>
+
+<section class="hud" id="hud">
+  <div>
+    <div class="brand">Metalúrgica Remeco · Generador</div>
+    <h1 id="tit">Galpón</h1>
+    <div class="sub" id="sub"></div>
+  </div>
+  <form id="f" class="frm">
+    <label>Ancho (m)<input name="ancho" type="number" step="0.01" min="3"></label>
+    <label>Largo (m)<input name="largo" type="number" step="0.01" min="3"></label>
+    <label>Alto (m)<input name="alto" type="number" step="0.01" min="2"></label>
+    <label>Aguas<select name="aguas"><option value="2">Dos aguas</option><option value="1">Un agua</option></select></label>
+    <label>Pendiente (%)<input name="pend" type="number" step="1" min="3" max="40"></label>
+    <label>Estructura<select name="sistema"><option value="torsionado">Hierro torsionado</option><option value="perfil">Perfil U y ángulo</option><option value="alma">Alma llena</option></select></label>
+    <label>Pórticos cada (m, máx.)<input name="sep" type="number" step="0.1" min="2"></label>
+    <label>Portón (ancho x alto, 0 = sin)<input name="porton" type="text"></label>
+    <label>Chapa desde (m del piso)<input name="cerr" type="number" step="0.1" min="0"></label>
+    <label>Color de chapa<select name="color"><option value="cincalum">Cincalum</option><option value="gris">Gris</option><option value="azul">Azul</option><option value="verde">Verde</option><option value="rojo">Rojo</option><option value="blanco">Blanco</option><option value="negro">Negro</option></select></label>
+    <button type="submit" class="go">Dibujar</button>
+  </form>
+  <div class="row2"><button type="button" id="bFotos">Descargar fotos</button><button type="button" id="bCroquis">Ver croquis</button></div>
+  <button class="toggle-info" id="toggleInfo" type="button" aria-expanded="true">Ocultar ficha</button>
+</section>
+<div id="croq" hidden>
+  <div class="cbar"><b>Croquis</b><span class="sp"></span><button type="button" id="bPrint">Imprimir / guardar PDF</button><button type="button" id="bVolver">Volver al 3D</button></div>
+  <div id="hojas"></div>
+</div>
+
+<nav class="bar" aria-label="Controles del modelo">
+  <div class="grp" role="group" aria-label="Chapas">
+    <button type="button" id="m-full" aria-pressed="true">Completo</button>
+    <button type="button" id="m-xray" aria-pressed="false">Transparente</button>
+    <button type="button" id="m-frame" aria-pressed="false">Estructura</button>
+  </div>
+  <div class="grp" role="group" aria-label="Vista">
+    <button type="button" data-view="iso">3/4</button>
+    <button type="button" data-view="frente">Frente</button>
+    <button type="button" data-view="lateral">Lateral</button>
+    <button type="button" data-view="arriba">Arriba</button>
+    <button type="button" data-view="esquina">Detalle</button>
+  </div>
+  <div class="grp"><button type="button" id="porton" aria-pressed="false">Abrir portón</button></div>
+</nav>
+
+<script>
+// ======= Parámetros: vienen del link (?ancho=12&largo=8...) o del formulario =======
+(function(){
+  const D={ancho:12,largo:8,alto:4.5,aguas:2,pend:10,sistema:'torsionado',sep:5,porton:'4x4',cerr:0,color:'cincalum'};
+  const q=new URLSearchParams(location.search); const P={};
+  for(const k in D){ const v=q.get(k); P[k]= v===null||v==='' ? D[k] : (typeof D[k]==='number'? parseFloat(String(v).replace(',','.')) : v); }
+  if(!(P.ancho>0))P.ancho=D.ancho; if(!(P.largo>0))P.largo=D.largo; if(!(P.alto>0))P.alto=D.alto; if(!(P.pend>0))P.pend=D.pend; if(!(P.sep>0))P.sep=D.sep;
+  const pt=String(P.porton).toLowerCase().replace(',','.').split(/[x×*]/).map(parseFloat);
+  const pw=pt[0]>0?Math.min(pt[0],P.ancho-1):0, ph=pw?Math.min(pt[1]>0?pt[1]:Math.min(4,P.alto-0.3),P.alto-0.2):0;
+  const UNO=+P.aguas===1, p=P.pend/100, CAIDA=UNO?P.ancho*p:P.ancho/2*p;
+  const n=Math.max(2,Math.ceil(P.largo/P.sep)+1), por=[]; for(let i=0;i<n;i++) por.push(+(P.largo*i/(n-1)).toFixed(3));
+  const sec={torsionado:{d:.3,b:.22,col:[22,30],cab:[22,30],txt:'Hierro torsionado Ø16 + Ø10/Ø8',perfil:false},
+             perfil:{d:.35,b:.18,col:[18,35],cab:[20,45],txt:'Perfil U 1/8" + ángulo 1 1/4"x1/8"',perfil:true},
+             alma:{d:.30,b:.15,col:[15,30],cab:[15,30],txt:'Alma llena (perfil W)',perfil:true}}[P.sistema]||null;
+  const S=sec||{d:.3,b:.22,col:[22,30],cab:[22,30],txt:'Hierro torsionado',perfil:false};
+  const filas=(h0,h1)=>{const r=[];for(let y=h0+.35;y<=h1-.1+1e-6;y+=1.0)r.push(+y.toFixed(2));return r;};
+  const colores={cincalum:0xffffff,gris:0x9aa1a7,azul:0x3c6aa6,verde:0x4f8a5c,rojo:0xb0403a,blanco:0xf5f7f8,negro:0x3a3d40};
+  window.REMECO_P=P;
+  window.REMECO_G={L:P.ancho,LG:P.largo,H:P.alto,CAIDA,UNO,PERFIL:S.perfil,d:S.d,b:S.b,porticos:por,porton:{w:pw,h:ph},paso:.25,portonLat:null,
+    ZB:P.cerr,YLAT:filas(P.cerr,P.alto),YCARA:filas(P.cerr,P.alto+CAIDA),ENTRE:true,CANALETA:null,COLOR:colores[P.color]||0xffffff};
+  window.REMECO_C={ancho:P.ancho,largo:P.largo,alto:P.alto,aguas:+P.aguas,pendiente:p,porticos:n,porton:pw?[pw,ph]:null,colSec:S.col,cabSec:S.cab,
+    correasCara:filas(P.cerr,P.alto).map(y=>y*100),correasLat:filas(P.cerr,P.alto).map(y=>y*100),sistema:S.txt,tipo:P.sistema,
+    chapaTxt:(P.color==='cincalum'?'cincalum':'chapa color '+P.color)+' n°25',cerrTxt:P.cerr>=P.alto?'sin chapa lateral':P.cerr>0?('desde '+String(P.cerr).replace('.',',')+' m'):'hasta el piso'};
+})();
+</script>
+<script>var module={exports:{}};
+// Hojas de plano estilo Remeco (rótulo con logo, medidas en cm) — SVG
+const f = n => (Math.round(n * 100) / 100).toString().replace('.', ',');
+const FONT = 'Inter,DejaVu Sans,sans-serif';
+
+function base(VW, VH) { // VW x VH = área de dibujo en px del SVG
+  return {
+    s: [],
+    line(x1, y1, x2, y2, w = 1.2, dash = '', col = '#111') { this.s.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${w}" ${dash ? `stroke-dasharray="${dash}"` : ''}/>`); },
+    poly(pts, w = 1.2, fill = 'none', dash = '') { this.s.push(`<polygon points="${pts.map(p => p.join(',')).join(' ')}" fill="${fill}" stroke="#111" stroke-width="${w}" ${dash ? `stroke-dasharray="${dash}"` : ''}/>`); },
+    rect(x, y, w, h, sw = 1.2, fill = 'none', dash = '') { this.s.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="#111" stroke-width="${sw}" ${dash ? `stroke-dasharray="${dash}"` : ''}/>`); },
+    text(x, y, t, size = 15, anchor = 'middle', rot = 0, weight = 400) { this.s.push(`<text x="${x}" y="${y}" font-family="${FONT}" font-size="${size}" font-weight="${weight}" text-anchor="${anchor}" ${rot ? `transform="rotate(${rot} ${x} ${y})"` : ''} fill="#111">${t}</text>`); },
+    // cota horizontal: entre x1 y x2 a la altura y (px), líneas de extensión desde yRef
+    ch(x1, x2, y, yRef, txt) {
+      this.line(x1, yRef, x1, y + (y > yRef ? 6 : -6), .6); this.line(x2, yRef, x2, y + (y > yRef ? 6 : -6), .6);
+      this.s.push(`<line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="#111" stroke-width=".8" marker-start="url(#ar)" marker-end="url(#ar)"/>`);
+      this.text((x1 + x2) / 2, y - 5, txt, 15);
+    },
+    cv(y1, y2, x, xRef, txt) {
+      this.line(xRef, y1, x + (x > xRef ? 6 : -6), y1, .6); this.line(xRef, y2, x + (x > xRef ? 6 : -6), y2, .6);
+      this.s.push(`<line x1="${x}" y1="${y1}" x2="${x}" y2="${y2}" stroke="#111" stroke-width=".8" marker-start="url(#ar)" marker-end="url(#ar)"/>`);
+      this.text(x - 6, (y1 + y2) / 2, txt, 15, 'middle', -90);
+    },
+    out() { return this.s.join(''); }
+  };
+}
+
+function hoja(g, titulo, nota, escala, n, N, dibujo, logo, fecha) {
+  const W = 1188, H = 840; // A4/A3 apaisado en px (proporción 1,414)
+  const desc = `${g.aguas === 1 ? 'Un agua' : 'Dos aguas'} - ${g.sistema} - ${g.porticos} pórticos a ${f(g.largo / (g.porticos - 1))} m - correas 100x50x2 galv. - ${g.chapaTxt} ${g.cerrTxt || "hasta el piso"}${g.porton && g.porton[0] ? ` - portón ${f(g.porton[0])}x${f(g.porton[1])} doble hoja (opcional)` : ''}`;
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+  <defs><marker id="ar" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,2.5 L10,5 L0,7.5 z" fill="#111"/></marker></defs>
+  <rect x="14" y="14" width="${W - 28}" height="${H - 28}" fill="#fff" stroke="#111" stroke-width="1.4"/>
+  ${nota ? `<text x="${W / 2}" y="70" font-family="${FONT}" font-size="20" text-anchor="middle">${nota}</text>` : ''}
+  <g>${dibujo}</g>
+  <line x1="14" y1="${H - 112}" x2="${W - 14}" y2="${H - 112}" stroke="#111" stroke-width="1.4"/>
+  ${[370, 820, 1035].map(x => `<line x1="${x}" y1="${H - 112}" x2="${x}" y2="${H - 14}" stroke="#111" stroke-width="1"/>`).join('')}
+  <image href="${logo}" x="26" y="${H - 104}" width="200" height="82" preserveAspectRatio="xMidYMid meet"/>
+  <text x="236" y="${H - 80}" font-family="${FONT}" font-size="10.5">Colonia Menonita</text>
+  <text x="236" y="${H - 64}" font-family="${FONT}" font-size="10.5">La Pampa</text>
+  <text x="232" y="${H - 36}" font-family="${FONT}" font-size="8.4">metalurgicaremeco1@gmail.com</text>
+  <text x="384" y="${H - 82}" font-family="${FONT}" font-size="13" font-weight="700">Galpón ${f(g.ancho)} × ${f(g.largo)} × ${f(g.alto)} m</text>
+  <text x="384" y="${H - 56}" font-family="${FONT}" font-size="14">${titulo}</text>
+  <text x="384" y="${H - 34}" font-family="${FONT}" font-size="9">${desc.split(' - ').slice(0,3).join(' - ')}</text><text x="384" y="${H - 20}" font-family="${FONT}" font-size="9">${desc.split(' - ').slice(3).join(' - ')}</text>
+  <text x="834" y="${H - 82}" font-family="${FONT}" font-size="12">${escala}</text>
+  <text x="834" y="${H - 56}" font-family="${FONT}" font-size="12">Medidas en cm</text>
+  <text x="834" y="${H - 30}" font-family="${FONT}" font-size="12">Fecha: ${fecha}</text>
+  <text x="1050" y="${H - 78}" font-family="${FONT}" font-size="12">Hoja</text>
+  <text x="1050" y="${H - 44}" font-family="${FONT}" font-size="16" font-weight="700">${n} de ${N}</text>
+  </svg>`;
+}
+
+// geometría en cm → px (escala k px/cm, origen en el piso izquierdo)
+function geo(g) {
+  const W = g.ancho * 100, L = g.largo * 100, H = g.alto * 100, R = g.aguas === 1 ? H + W * g.pendiente : H + (W / 2) * g.pendiente;
+  return { W, L, H, R, dc: g.colSec[1], bc: g.colSec[0], dv: g.cabSec[1] };
+}
+
+function portico(g) {
+  const { W, H, R, dc, dv } = geo(g); const k = 0.62, ox = 594 - W * k / 2, oy = 610;
+  const X = x => ox + x * k, Y = y => oy - y * k, d = base();
+  const top = x => g.aguas === 1 ? H + g.pendiente * x : H + g.pendiente * Math.min(x, W - x);
+  // columnas
+  for (const x0 of [0, W - dc]) d.rect(X(x0), Y(top(x0 === 0 ? 0 : W)), dc * k, (top(x0 === 0 ? 0 : W)) * k, 1.3);
+  // cabreada: cordón superior y cordón inferior paralelos
+  for (const s of [1, -1]) {
+    const xa = s > 0 ? 0 : W, xm = W / 2;
+    d.line(X(xa), Y(top(xa)), X(xm), Y(R), 1.4);
+    d.line(X(s > 0 ? dc : W - dc), Y(top(s > 0 ? dc : W - dc) - dv), X(xm), Y(R - dv), 1.4);
+    // correas cada ~1 m
+    const n = Math.ceil((W / 2) / 100);
+    for (let i = 0; i <= n; i++) { const x = s > 0 ? (W / 2) * i / n : W - (W / 2) * i / n; d.rect(X(x) - 3, Y(top(x)) - 7, 6, 6, .6); }
+    // reticulado en N cada 45 cm (perfil U); en torsionado no se muestra el paso
+    if (g.tipo !== 'torsionado') {
+    const x0 = s > 0 ? dc : W - dc; const m = Math.round(Math.abs(xm - x0) / 45);
+    for (let i = 0; i <= m; i++) { const x = x0 + (xm - x0) * i / m; d.line(X(x), Y(top(x)), X(x), Y(top(x) - dv), .5);
+      if (i < m) { const x2 = x0 + (xm - x0) * (i + 1) / m; d.line(X(x), Y(top(x) - dv), X(x2), Y(top(x2)), .5); } }
+    }
+  }
+  d.line(X(W / 2), Y(R), X(W / 2), Y(R - dv), .8);
+  d.line(X(-60), Y(0), X(W + 60), Y(0), 1);
+  // cotas
+  d.ch(X(0), X(W), Y(0) + 40, Y(0), f(W));
+  d.cv(Y(0), Y(H), X(0) - 40, X(0), f(H));
+  d.cv(Y(0), Y(R), X(W) + 46, X(W), f(R));
+  d.cv(Y(H), Y(R), X(W) + 16, X(W / 2), f(R - H));
+  d.text(X(W / 4) - 10, Y(top(W / 4)) - 26, `${f(Math.hypot(W / 2, R - H))}`, 16, 'middle', -Math.atan(g.pendiente) * 180 / Math.PI);
+  d.ch(X(0), X(dc), Y(0) + 16, Y(0), f(dc));
+  d.text(X(W * 0.72), Y(top(W * 0.72) - dv) + 30, (g.tipo === 'torsionado' ? `Cabreada ${f(g.cabSec[0])}×${f(dv)} · hierro torsionado Ø16, reticulado Ø10/Ø8` : `Cabreada ${f(dv)} cm · U 200×70×1/8" + ángulo 1 1/4"×1/8"`), 13);
+  d.text(X(dc) + 14, Y(H * 0.45), (g.tipo === 'torsionado' ? `Columna ${f(g.colSec[0])}×${f(dc)} · hierro torsionado` : `Columna ${f(g.colSec[0])}×${f(dc)} · U 180×70×1/8"`), 13, 'start');
+  return d.out();
+}
+
+function frente(g) {
+  const { W, H, R, bc } = geo(g); const k = 0.62, ox = 594 - W * k / 2, oy = 610;
+  const X = x => ox + x * k, Y = y => oy - y * k, d = base();
+  const top = x => g.aguas === 1 ? H + g.pendiente * x : H + g.pendiente * Math.min(x, W - x);
+  d.poly([[X(0), Y(0)], [X(W), Y(0)], [X(W), Y(top(W))], [X(W / 2), Y(top(W / 2))], [X(0), Y(H)]], 1.4);
+  // chapa 10 cm sobre el faldón
+  d.poly([[X(0), Y(H + 10)], [X(W / 2), Y(top(W / 2) + 10)], [X(W), Y(top(W) + 10)]], .6, 'none', '4 3');
+  const cols = [0, W - bc]; let pw = 0, ph = 0, px0 = 0;
+  if (g.porton) { pw = g.porton[0] * 100; ph = g.porton[1] * 100; px0 = W / 2 - pw / 2; cols.push(px0 - bc, px0 + pw); }
+  cols.sort((a, b) => a - b);
+  for (const x of cols) d.rect(X(x), Y(top(x + bc / 2)), bc * k, top(x + bc / 2) * k, 1);
+  // correas de frente entre columnas
+  for (const y of g.correasCara) for (let i = 0; i < cols.length - 1; i++) {
+    const a = cols[i] + bc, b = cols[i + 1]; if (b - a < 5) continue;
+    if (g.porton && a >= px0 - 1 && b <= px0 + pw + 1 && y < ph + 30) continue;
+    if (y > Math.min(top(a), top(b)) - 15) continue;
+    d.line(X(a), Y(y), X(b), Y(y), .7);
+  }
+  if (g.porton) {
+    d.rect(X(px0), Y(ph), pw * k, ph * k, 1, 'none', '6 4'); d.line(X(W / 2), Y(ph), X(W / 2), Y(0), .8, '6 4');
+    d.rect(X(px0 - bc), Y(ph + 20), (pw + 2 * bc) * k, 14 * k, .9); // cajón 2 U
+    d.text(X(W / 2 - pw / 4), Y(ph / 2) - 10, 'Portón corredizo', 15); d.text(X(W / 2 - pw / 4), Y(ph / 2) + 10, 'doble hoja', 14); d.text(X(W / 2 - pw / 4), Y(ph / 2) + 28, `${f(pw / 100)} × ${f(ph / 100)} m (opcional)`, 14);
+    d.cv(Y(0), Y(ph), X(px0 + pw) - 22, X(px0 + pw), f(ph));
+  }
+  d.line(X(-60), Y(0), X(W + 60), Y(0), 1);
+  // cotas de tramos
+  const xs = [0, ...cols.slice(1, -1).flatMap((x, i) => i % 2 === 0 ? [x] : [x + bc]), W];
+  if (g.porton) { const t = [0, px0 - bc, px0 + pw + bc, W]; for (let i = 0; i < t.length - 1; i++) d.ch(X(t[i]), X(t[i + 1]), Y(0) + 24, Y(0), f(t[i + 1] - t[i])); }
+  d.ch(X(0), X(W), Y(0) + 54, Y(0), f(W));
+  d.cv(Y(0), Y(H), X(0) - 40, X(0), f(H));
+  d.cv(Y(0), Y(R), X(W) + 46, X(W), f(R));
+  return d.out();
+}
+
+function lateral(g) {
+  const { L, H, R, W } = geo(g); const k = Math.min(0.62, 900 / L), ox = 594 - L * k / 2, oy = 610;
+  const X = x => ox + x * k, Y = y => oy - y * k, d = base();
+  d.rect(X(0), Y(H), L * k, H * k, 1.4);
+  d.line(X(0), Y(R), X(L), Y(R), .7, '6 4');
+  const sep = L / (g.porticos - 1);
+  for (let i = 0; i < g.porticos; i++) { const z = Math.min(Math.max(i * sep - g.colSec[0] / 2, 0), L - g.colSec[0]); d.rect(X(z), Y(H), g.colSec[0] * k, H * k, .9); }
+  for (const y of g.correasLat) d.line(X(0), Y(y), X(L), Y(y), .7);
+  d.line(X(-60), Y(0), X(L + 60), Y(0), 1);
+  for (let i = 0; i < g.porticos - 1; i++) d.ch(X(i * sep), X((i + 1) * sep), Y(0) + 24, Y(0), f(sep));
+  d.ch(X(0), X(L), Y(0) + 54, Y(0), f(L));
+  d.cv(Y(0), Y(H), X(0) - 40, X(0), f(H));
+  d.text(X(L) - 4, Y(R) - 8, `cumbrera ${f(R)}`, 14, 'end');
+  d.text(X(L) + 14, Y(g.correasLat[0]) + 5, 'correas 100×50×2 c/ 1 m', 13, 'start');
+  return d.out();
+}
+
+function planta(g) {
+  const { W, L, bc } = geo(g); const k = Math.min(0.5, 560 / L, 760 / W), ox = 594 - W * k / 2, oy = 110;
+  const X = x => ox + x * k, Z = z => oy + z * k, d = base();
+  d.rect(X(0), Z(0), W * k, L * k, 1.4);
+  const sep = L / (g.porticos - 1), cs = 10;
+  for (let i = 0; i < g.porticos; i++) { const z = i * sep;
+    for (const x of [0, W]) { const xx = X(x) - (x ? cs : 0), zz = Math.min(Math.max(Z(z) - cs / 2, Z(0)), Z(L) - cs); d.rect(xx, zz, cs, cs, .9); d.line(xx, zz, xx + cs, zz + cs, .5); d.line(xx + cs, zz, xx, zz + cs, .5); }
+    if (i > 0 && i < g.porticos - 1) d.line(X(0), Z(z), X(W), Z(z), .6, '8 4'); }
+  // correas de techo (a lo largo)
+  const n = Math.ceil((W / 2) / 100);
+  for (let i = 0; i <= 2 * n; i++) { const x = W * i / (2 * n); d.line(X(x), Z(0), X(x), Z(L), .5, '5 4'); }
+  if (g.aguas !== 1) d.line(X(W / 2), Z(-20), X(W / 2), Z(L + 20), .9, '14 4 2 4');
+  if (g.porton) { const pw = g.porton[0] * 100, px0 = W / 2 - pw / 2;
+    for (const x of [px0 - bc, px0 + pw]) d.rect(X(x), Z(L) - cs, bc * k, cs, .9);
+    d.line(X(px0), Z(L) + 4, X(px0 + pw), Z(L) + 4, 3); d.text(X(W / 2), Z(L) + 22, `Portón ${f(pw / 100)} m (opcional)`, 14); }
+  d.text(X(W / 2), Z(L) + 104, 'FRENTE', 17); d.text(X(W / 2), Z(0) - 14, 'FONDO', 17);
+  d.ch(X(0), X(W), Z(L) + 60, Z(L), f(W));
+  for (let i = 0; i < g.porticos - 1; i++) d.cv(Z(i * sep), Z((i + 1) * sep), X(W) + 30, X(W), f(sep));
+  d.cv(Z(0), Z(L), X(0) - 34, X(0), f(L));
+  d.text(X(W / 4), Z(L / 4) + 5, `${2 * (n + 1)} correas de techo 100×50×2 (${n + 1} por faldón)`, 13);
+  return d.out();
+}
+
+module.exports = { hoja, portico, frente, lateral, planta };
+
+window.PLANO=module.exports;</script>
+<script src="three.min.js"></script>
+<script src="OrbitControls.js"></script>
+<script>
+(function(){
+// ---------------- medidas (metros) ----------------
+const G = window.__G || window.REMECO_G;
+const UNO = !!G.UNO, XR = UNO ? G.L : G.L/2;               // un agua: sube de x=0 (bajo) a x=L (alto)
+const s = G.CAIDA/XR, Ye = G.H, Yr = G.H + G.CAIDA;
+const ytop = x => UNO ? Ye + s*x : Ye + s*(x<=G.L/2 ? x : G.L-x);              // cara superior cordón superior
+const ybot = x => UNO ? Ye - G.d + s*x : Ye - G.d + s*(x<=G.L/2 ? x : G.L-x);  // cara inferior cabreada
+
+const canvas = document.getElementById('scene');
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true, preserveDrawingBuffer:true}); renderer.setClearColor(0x000000,0);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 0.92;
+const scene = new THREE.Scene();
+
+// cielo equirectangular (fondo + reflejos del metal), con sol, nubes y línea de árboles
+const SUN_DIR = new THREE.Vector3(0.55, 0.62, -0.56).normalize();
+function skyEquirect(){
+  const W=4096,H=2048,c=document.createElement('canvas'); c.width=W; c.height=H; const g=c.getContext('2d');
+  const gr=g.createLinearGradient(0,0,0,H/2);
+  gr.addColorStop(0,'#0f3f86'); gr.addColorStop(.45,'#2a6cc0'); gr.addColorStop(.78,'#5d9ad8'); gr.addColorStop(.95,'#a9cbe8'); gr.addColorStop(1,'#cfe0ec');
+  g.fillStyle=gr; g.fillRect(0,0,W,H/2);
+  const lon=Math.atan2(SUN_DIR.x,-SUN_DIR.z), lat=Math.asin(SUN_DIR.y);
+  const sx=(lon/(2*Math.PI)+.5)*W, sy=(.5-lat/Math.PI)*H;
+  let rg=g.createRadialGradient(sx,sy,0,sx,sy,420); rg.addColorStop(0,'rgba(255,253,245,1)'); rg.addColorStop(.04,'rgba(255,250,235,1)'); rg.addColorStop(.2,'rgba(255,245,225,.35)'); rg.addColorStop(1,'rgba(255,245,225,0)');
+  g.fillStyle=rg; g.fillRect(0,0,W,H/2);
+  // nubes cúmulo: racimos de bolas con base gris y tope blanco
+  let seed=3; const rnd=()=>((seed=(seed*16807)%2147483647)/2147483647);
+  function nube(cx,cy,ancho){ const n=18+rnd()*22|0;
+    for(let pass=0;pass<2;pass++) for(let i=0;i<n;i++){
+      const t=rnd(), x=cx+(t-.5)*ancho, alto=Math.sin(t*Math.PI)*ancho*.32, y=cy-rnd()*alto, r=ancho*(.08+rnd()*.12)*(1-.4*Math.abs(t-.5));
+      const gg=g.createRadialGradient(x,y-r*.25,r*.1,x,y,r);
+      if(pass===0){ gg.addColorStop(0,'rgba(170,182,198,.9)'); gg.addColorStop(1,'rgba(170,182,198,0)'); g.fillStyle=gg; g.beginPath(); g.arc(x,y+r*.25,r,0,7); g.fill(); }
+      else { gg.addColorStop(0,'rgba(255,255,255,1)'); gg.addColorStop(.6,'rgba(250,252,255,.85)'); gg.addColorStop(1,'rgba(250,252,255,0)'); g.fillStyle=gg; g.beginPath(); g.arc(x,y-r*.1,r*.92,0,7); g.fill(); }
+    }
+    g.fillStyle='rgba(185,195,210,.55)'; g.fillRect(cx-ancho*.45,cy,ancho*.9,ancho*.02);
+  }
+  for(let i=0;i<16;i++){ const y=H*.5*(.55+rnd()*.38); nube(rnd()*W, y, 260+rnd()*520*(y/(H*.5))); }
+  // campo + línea de árboles
+  const gg=g.createLinearGradient(0,H/2,0,H); gg.addColorStop(0,'#8e8f86'); gg.addColorStop(1,'#7a7b72'); g.fillStyle=gg; g.fillRect(0,H/2,W,H/2);
+  const tc=document.createElement('canvas'); tc.width=W; tc.height=90; const tg=tc.getContext('2d'); tg.fillStyle='#5d665a'; tg.beginPath(); tg.moveTo(0,90);
+  for(let x=0;x<=W;x+=3){ const h=6+Math.abs(Math.sin(x*.009)*16+Math.sin(x*.031)*8+Math.sin(x*.0017)*14)*(rnd()*.3+.8); tg.lineTo(x,90-h); }
+  tg.lineTo(W,90); tg.closePath(); tg.fill(); g.filter='blur(1.5px)'; g.drawImage(tc,0,H/2-90); g.filter='none';
+  g.fillStyle='rgba(190,210,225,.28)'; g.fillRect(0,H/2-40,W,40);
+  const t=new THREE.CanvasTexture(c); t.mapping=THREE.EquirectangularReflectionMapping; t.encoding=THREE.sRGBEncoding; return t;
+}
+const skyT = skyEquirect();
+scene.background = null; // el cielo se pinta en alta resolución en #cielo
+const pmrem = new THREE.PMREMGenerator(renderer); scene.environment = pmrem.fromEquirectangular(skyT).texture;
+scene.fog = new THREE.Fog(0xbcd2e3, 90, 260);
+
+const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 400);
+const controls = new THREE.OrbitControls(camera, canvas);
+controls.enableDamping = true; controls.dampingFactor = .08;
+controls.maxPolarAngle = Math.PI*0.495; controls.minDistance = 4; controls.maxDistance = Math.max(70, G.LG*2.2);
+controls.target.set(G.L/2, 2.4, G.LG/2);
+
+scene.add(new THREE.HemisphereLight(0xcfe0ee, 0x5d5a44, 0.22));
+const sun = new THREE.DirectionalLight(0xfff1dc, 2.4);
+sun.position.copy(SUN_DIR).multiplyScalar(30).add(new THREE.Vector3(G.L/2,0,G.LG/2)); sun.castShadow = true;
+sun.shadow.mapSize.set(4096,4096); sun.shadow.radius = 3;
+const SR=Math.max(G.L,G.LG)*0.9+6;
+Object.assign(sun.shadow.camera,{left:-SR,right:SR,top:SR,bottom:-SR,near:1,far:90});
+sun.shadow.bias = -0.0003; sun.shadow.normalBias = 0.02; sun.target.position.set(G.L/2,0,G.LG/2); scene.add(sun, sun.target);
+
+// terreno natural: pasto verde y seco mezclado, manchas de tierra alrededor del galpón, huellas
+function hashN(x,y){ let h=(x*374761393+y*668265263)|0; h=(h^(h>>>13))*1274126177|0; return ((h^(h>>>16))>>>0)/4294967295; }
+function vnoise(x,y){ const xi=Math.floor(x), yi=Math.floor(y), xf=x-xi, yf=y-yi, u=xf*xf*(3-2*xf), v=yf*yf*(3-2*yf);
+  const a=hashN(xi,yi), b=hashN(xi+1,yi), c=hashN(xi,yi+1), d=hashN(xi+1,yi+1); return a+(b-a)*u+(c-a)*v+(a-b-c+d)*u*v; }
+function fbm(x,y,o){ let s2=0,a=.5,f=1; for(let i=0;i<o;i++){ s2+=a*vnoise(x*f,y*f); a*=.5; f*=2.03; } return s2; }
+const AREA=Math.max(90, Math.max(G.L,G.LG)+50), TPX=2048;
+const terrenoTex=(()=>{ const c=document.createElement('canvas'); c.width=c.height=TPX; const g=c.getContext('2d'); const img=g.createImageData(TPX,TPX), D=img.data;
+  const cx=G.L/2, cz=G.LG/2;
+  for(let j=0;j<TPX;j++) for(let i=0;i<TPX;i++){
+    const X=(i/TPX-.5)*AREA+cx, Z=(j/TPX-.5)*AREA+cz;
+    const seco=fbm(X*.08,Z*.08,4), det=fbm(X*1.7,Z*1.7,3), grano=hashN(i,j);
+    // pasto: verde ↔ seco amarillento
+    let r=95+seco*85, gg=112+seco*55, b=58+seco*25;
+    const verde=Math.max(0,.55-seco)*1.3; r-=verde*30; gg+=verde*10; b-=verde*10;
+    // tierra cerca del galpón (playa de obra) con borde irregular
+    const dx=Math.max(0,Math.abs(X-cx)-G.L/2), dz=Math.max(0,Math.abs(Z-cz)-G.LG/2), dist=Math.hypot(dx,dz);
+    let tierra=Math.min(1,Math.max(0,(2.6+fbm(X*.35,Z*.35,3)*3.2-dist)/1.6));
+    tierra=Math.max(tierra, Math.max(0, fbm(X*.12+40,Z*.12,3)-.68)*2.2);      // manchas sueltas
+    const huella=Math.abs(X-(cx-1.2+Math.sin(Z*.08)*1.5))<.35||Math.abs(X-(cx+1.2+Math.sin(Z*.08)*1.5))<.35; // huellas al portón
+    if(Z<cz-G.LG/2 && huella) tierra=Math.max(tierra,.75*Math.min(1,(cz-G.LG/2-Z)/30+.4));
+    const tr=150+det*45, tg2=136+det*40, tb=112+det*32;
+    r=r*(1-tierra)+tr*tierra; gg=gg*(1-tierra)+tg2*tierra; b=b*(1-tierra)+tb*tierra;
+    const k=.82+det*.3+(grano-.5)*.22; const o=(j*TPX+i)*4;
+    const ed=Math.min(i,j,TPX-1-i,TPX-1-j)/(TPX*.12); D[o]=Math.min(255,r*k); D[o+1]=Math.min(255,gg*k); D[o+2]=Math.min(255,b*k); D[o+3]=Math.min(255,ed*255); }
+  g.putImageData(img,0,0);
+  const t=new THREE.CanvasTexture(c); t.encoding=THREE.sRGBEncoding; t.anisotropy=renderer.capabilities.getMaxAnisotropy(); return t; })();
+const pastoLejos=(()=>{ const c=document.createElement('canvas'); c.width=c.height=256; const g=c.getContext('2d'); const img=g.createImageData(256,256), D=img.data;
+  for(let j=0;j<256;j++) for(let i=0;i<256;i++){ const n=fbm(i*.05,j*.05,3), q=hashN(i+999,j); const o=(j*256+i)*4;
+    D[o]=(92+n*58)*(.85+q*.25); D[o+1]=(104+n*40)*(.85+q*.25); D[o+2]=(56+n*20)*(.85+q*.25); D[o+3]=255; }
+  g.putImageData(img,0,0); const t=new THREE.CanvasTexture(c); t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.set(70,70); t.encoding=THREE.sRGBEncoding; return t; })();
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(400,400), new THREE.MeshStandardMaterial({map:pastoLejos, roughness:1, envMapIntensity:.3}));
+ground.rotation.x=-Math.PI/2; ground.position.set(G.L/2,-.01,G.LG/2); ground.receiveShadow=true; scene.add(ground);
+const terreno = new THREE.Mesh(new THREE.PlaneGeometry(AREA,AREA), new THREE.MeshStandardMaterial({map:terrenoTex, roughness:1, envMapIntensity:.3, transparent:true, depthWrite:false}));
+terreno.rotation.x=-Math.PI/2; terreno.position.set(G.L/2,0,G.LG/2); terreno.receiveShadow=true; scene.add(terreno);
+// detalle fino de pasto encima (se multiplica con el color del terreno)
+const detalleTex=(()=>{ const c=document.createElement('canvas'); c.width=c.height=512; const g=c.getContext('2d'); g.fillStyle='#e8e8e8'; g.fillRect(0,0,512,512);
+  for(let i=0;i<26000;i++){ const x=Math.random()*512, y=Math.random()*512, l=2+Math.random()*9, v=95+Math.random()*160|0;
+    g.strokeStyle=`rgb(${v},${v},${v})`; g.lineWidth=.8; g.beginPath(); g.moveTo(x,y); g.lineTo(x+(Math.random()-.5)*2.5,y-l); g.stroke(); }
+  const t=new THREE.CanvasTexture(c); t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.set(AREA/1.1,AREA/1.1); t.anisotropy=renderer.capabilities.getMaxAnisotropy(); return t; })();
+const detalle=new THREE.Mesh(new THREE.PlaneGeometry(AREA,AREA), new THREE.MeshBasicMaterial({map:detalleTex, blending:THREE.MultiplyBlending, transparent:true, depthWrite:false, premultipliedAlpha:true}));
+detalle.rotation.x=-Math.PI/2; detalle.position.set(G.L/2,.006,G.LG/2); detalle.renderOrder=1; scene.add(detalle);
+// árboles
+const mTronco=new THREE.MeshStandardMaterial({color:0x2e261f, roughness:.95});
+function arbol(x,z,h,nb){ nb=nb||22; const grp=new THREE.Group();
+  const tr=new THREE.Mesh(new THREE.CylinderGeometry(h*.018,h*.03,h*.55,6),mTronco); tr.position.y=h*.27; tr.castShadow=true; grp.add(tr);
+  let sd=Math.abs(Math.floor(x*13+z*7))%100000+17; const rnd=()=>((sd=(sd*16807+11)%2147483647)/2147483647);
+  for(let i=0;i<nb;i++){ const r=h*(nb<15?.17:.12)*(1+rnd()*.8);
+    const m=new THREE.Mesh(new THREE.IcosahedronGeometry(r,2), new THREE.MeshStandardMaterial({color:new THREE.Color().setHSL(.24+rnd()*.07,.38,.055+rnd()*.045), roughness:1, envMapIntensity:.15}));
+    m.position.set((rnd()-.5)*h*.45, h*(.62+rnd()*.35), (rnd()-.5)*h*.45); m.castShadow=true; m.receiveShadow=true; grp.add(m); }
+  grp.position.set(x,0,z); scene.add(grp); }
+// sin árboles (pedido del cliente)
+
+// ---------------- materiales ----------------
+const mHierro = new THREE.MeshStandardMaterial({color:0x2a2d30, metalness:.2, roughness:.6, envMapIntensity:.45}); // pintado gris oscuro
+const mPerfil = new THREE.MeshStandardMaterial({color:0xc3c9cd, metalness:.9, roughness:.3}); // galvanizado
+const mChapa  = new THREE.MeshStandardMaterial({color:0xc8cdd1, metalness:.72, roughness:.32, side:THREE.DoubleSide});
+const mPorton = new THREE.MeshStandardMaterial({color:0xaeb5ba, metalness:.7, roughness:.38, side:THREE.DoubleSide});
+const mHormigon = new THREE.MeshStandardMaterial({color:0x9c9a94, roughness:.95});
+
+// ---------------- barras de hierro (instanciadas) ----------------
+const barras = []; // [x1,y1,z1,x2,y2,z2,r]
+const bar = (a,b,r)=>barras.push([...a,...b,r]);
+const R16=.011, R10=.0075, R8=.006;
+function enrejado(A,B,C,D, n){ // dos cordones paralelos A->B y C->D, zigzag entre ellos
+  for(let i=0;i<n;i++){
+    const t0=i/n, t1=(i+1)/n, lp=(P,Q,t)=>[P[0]+(Q[0]-P[0])*t,P[1]+(Q[1]-P[1])*t,P[2]+(Q[2]-P[2])*t];
+    const p = i%2 ? [lp(A,B,t0),lp(C,D,t1)] : [lp(C,D,t0),lp(A,B,t1)];
+    bar(p[0],p[1],R10);
+  }
+}
+// columna reticulada: 4 cordones Ø16, x0..x0+dx, z0..z0+dz, de y=0 a ytopA (lado a) / ytopB (lado b)
+function columna(x0,dx,z0,dz,yA,yB){
+  const e=.02, xs=[x0+e,x0+dx-e], zs=[z0+e,z0+dz-e], ys=[yA,yB];
+  for(let i=0;i<2;i++) for(const z of zs) bar([xs[i],0,z],[xs[i],ys[i],z],R16);
+  const h=Math.min(yA,yB), n=Math.max(2,Math.round(h/G.paso));
+  for(const z of zs) enrejado([xs[0],0,z],[xs[0],h,z],[xs[1],0,z],[xs[1],h,z],n);
+  for(const x of xs){ const n2=Math.max(2,Math.round(h/0.5));
+    for(let i=0;i<n2;i++){ const y0=h*i/n2,y1=h*(i+1)/n2; bar([x,y0,zs[i%2]],[x,y1,zs[(i+1)%2]],R8);} }
+}
+function portico(zc){
+  const z0=Math.min(Math.max(zc-G.b/2,0),G.LG-G.b), e=.02, zs=[z0+e,z0+G.b-e], d=G.d;
+  const Yi = Ye - d + s*d;
+  columna(0,d,z0,G.b,Ye,Yi);
+  if(UNO){ const YiR = Yr - d - s*d; columna(G.L-d,d,z0,G.b,YiR,Yr); }
+  else columna(G.L-d,d,z0,G.b,Yi,Ye);
+  const uEnd = UNO ? G.L-d : G.L/2;                          // fin del cordón inferior
+  for(const side of (UNO?[1]:[1,-1])){
+    const X = u => side>0 ? u : G.L-u;
+    for(const z of zs){
+      bar([X(0),Ye,z],[X(XR),Yr,z],R16);                                  // cordón superior
+      bar([X(d),Yi,z],[X(uEnd),Ye-d+s*uEnd,z],R16);                      // cordón inferior
+      const n=Math.round((uEnd-d)/G.paso);
+      enrejado([X(d),Ye+s*d,z],[X(uEnd),Ye+s*uEnd,z],[X(d),Yi,z],[X(uEnd),Ye-d+s*uEnd,z],n);
+      bar([X(0),Ye,z],[X(d),Yi,z],R10);                                   // nudo bajo
+      const g1=[X(d),Yi-1.2*d,z], g2=[X(2*d),Ye-d+s*2*d,z];
+      bar(g1,g2,R10); bar([X(0),Ye,z],[(g1[0]+g2[0])/2,(g1[1]+g2[1])/2,z],R10);
+      if(UNO){                                                            // nudo alto
+        const YiR=Yr-d-s*d; bar([G.L,Yr,z],[G.L-d,YiR,z],R10);
+        const h1=[G.L-d,YiR-1.2*d,z], h2=[G.L-2*d,Ye-d+s*(G.L-2*d),z];
+        bar(h1,h2,R10); bar([G.L,Yr,z],[(h1[0]+h2[0])/2,(h1[1]+h2[1])/2,z],R10);
+      }
+    }
+    const n=Math.round(XR/0.5);
+    for(let i=0;i<=n;i++){const u=i*XR/n; bar([X(u),Ye+s*u-.01,zs[0]],[X(u),Ye+s*u-.01,zs[1]],R8);
+      if(u>=d && u<=uEnd) bar([X(u),Ye-d+s*u+.01,zs[0]],[X(u),Ye-d+s*u+.01,zs[1]],R8);}
+  }
+  if(!UNO) for(const z of zs) bar([G.L/2,Yr-d,z],[G.L/2,Yr,z],R10);
+  // bases de hormigón
+  for(const x of [d/2,G.L-d/2]){ const m=new THREE.Mesh(new THREE.BoxGeometry(.5,.12,.45),mHormigon);
+    m.position.set(x,.06,zc<=0?.22:(zc>=G.LG?G.LG-.22:zc)); m.receiveShadow=true; scene.add(m);}
+}
+G.porticos.forEach(portico);
+// columnas de frente (jambas del portón) y fondo
+const xp0 = G.L/2 - G.porton.w/2, xp1 = G.L/2 + G.porton.w/2;
+function repartir(a,c,sep){ const W=c-a, nb=Math.max(1,Math.ceil((W+G.b)/(sep+G.b)-1e-6)), bay=(W-(nb-1)*G.b)/nb, r=[];
+  for(let i=1;i<nb;i++) r.push(a+i*(bay+G.b)-G.b); return r; }
+const HASP = G.porton && G.porton.w>0;
+const colFrente = HASP ? [...repartir(G.d,xp0-G.b,5), xp0-G.b, xp1, ...repartir(xp1+G.b,G.L-G.d,5)] : repartir(G.d,G.L-G.d,5), colFondo=repartir(G.d,G.L-G.d,5);
+for(const x of colFrente) columna(x,G.b,0,G.b,ybot(x),ybot(x+G.b));
+for(const x of colFondo)  columna(x,G.b,G.LG-G.b,G.b,ybot(x),ybot(x+G.b));
+
+(function construirBarras(){
+  // perfil U + ángulo: cordones como alas del U (7 cm) y diagonales de ángulo 1¼" ; hierro redondo: cilindros
+  const geo = G.PERFIL ? new THREE.BoxGeometry(1,1,1) : new THREE.CylinderGeometry(1,1,1,6,1);
+  if(G.PERFIL) barras.forEach(b=>{ b[6] = b[6]>=R16-1e-6 ? .07 : .032; });
+  const inst=new THREE.InstancedMesh(geo,mHierro,barras.length);
+  const m=new THREE.Matrix4(), q=new THREE.Quaternion(), up=new THREE.Vector3(0,1,0), v=new THREE.Vector3();
+  barras.forEach((b,i)=>{ const A=new THREE.Vector3(b[0],b[1],b[2]), B=new THREE.Vector3(b[3],b[4],b[5]);
+    v.subVectors(B,A); const L=v.length(); q.setFromUnitVectors(up,v.clone().normalize());
+    m.compose(A.clone().add(B).multiplyScalar(.5), q, new THREE.Vector3(b[6],L,b[6])); inst.setMatrixAt(i,m); });
+  inst.castShadow=true; inst.receiveShadow=true; scene.add(inst);
+})();
+
+// ---------------- correas (perfil C 100x50) ----------------
+const correas = new THREE.Group(); scene.add(correas);
+function perfil(A,B,alto,ancho,mat){ const v=new THREE.Vector3().subVectors(B,A), L=v.length();
+  const m=new THREE.Mesh(new THREE.BoxGeometry(ancho,alto,L),mat||mPerfil);
+  m.position.copy(A).add(B).multiplyScalar(.5); m.lookAt(B); m.castShadow=true; m.receiveShadow=true; correas.add(m); return m;}
+const raf = Math.hypot(G.L/2,G.CAIDA), filasAgua = Math.ceil(raf/1.1)+1;
+const nrm = new THREE.Vector3(-s,1,0).normalize();
+const rafLen = UNO ? Math.hypot(G.L,G.CAIDA) : raf, filasT = UNO ? Math.ceil(rafLen/1.1)+1 : filasAgua;
+for(const side of (UNO?[1]:[1,-1])) for(let i=0;i<filasT;i++){
+  const u = .08 + i*(XR-.2)/(filasT-1), x = side>0?u:G.L-u, y = ytop(x)+.05/Math.cos(Math.atan(s));
+  const m=perfil(new THREE.Vector3(x,y,-.12),new THREE.Vector3(x,y,G.LG+.12),.10,.05);
+  m.rotateZ(side>0? -Math.atan(s): Math.atan(s));
+}
+const ZB=(G.ZB||0)+.05; const filasDe=h=>{ if(G.YLAT) return G.YLAT.filter(y=>y<=h-.2+1e-6); const r=[]; for(let y=.3;y<=h-.2+1e-6;y+=1.05) r.push(y); return r;}; const filasLat=filasDe(G.H);
+const yCorreasCara=[]; if(G.YCARA) yCorreasCara.push(...G.YCARA); else for(let y=.3;y<=Yr;y+=1.05) yCorreasCara.push(y);
+const PL = G.portonLat && G.portonLat.w ? G.portonLat : null;
+const zl0 = PL ? PL.zc-PL.w/2 : 0, zl1 = PL ? PL.zc+PL.w/2 : 0;
+for(const [x,h] of [[G.ENTRE?.05:-.025,Ye],[G.ENTRE?G.L-.05:G.L+.025,UNO?Yr:Ye]]){ for(const y of filasDe(h)){
+  if(PL && x<0 && y<PL.h+.3){ perfil(new THREE.Vector3(x,y,0),new THREE.Vector3(x,y,zl0-.12),.05,.10); perfil(new THREE.Vector3(x,y,zl1+.12),new THREE.Vector3(x,y,G.LG),.05,.10); }
+  else perfil(new THREE.Vector3(x,y,0),new THREE.Vector3(x,y,G.LG),.05,.10); } }
+if(PL){ // jambas, dintel y guía del portón lateral
+  for(const z of [zl0-.12,zl1]) perfil(new THREE.Vector3(-.05,0,z+.06),new THREE.Vector3(-.05,PL.h+.2,z+.06),.12,.10,mHierro);
+  perfil(new THREE.Vector3(-.03,PL.h+.12,zl0-.12),new THREE.Vector3(-.03,PL.h+.12,zl1+.12),.12,.10,mHierro);
+  perfil(new THREE.Vector3(-.2,PL.h+.03,zl0-PL.w/2-.15),new THREE.Vector3(-.2,PL.h+.03,zl1+PL.w/2+.15),.05,.05);
+}
+function correasCara(z, cols, conPorton){
+  const edges=[G.d,...cols.flatMap(x=>[x,x+G.b]),G.L-G.d];
+  for(let k=0;k<edges.length;k+=2){ const a=edges[k],c=edges[k+1];
+    for(const y of yCorreasCara){ if(conPorton && a>=xp0-.01 && c<=xp1+.01 && y<G.porton.h+.3) continue;
+      const lim=Math.min(ybot(a),ybot(c))-.15; if(y>lim) continue;
+      perfil(new THREE.Vector3(a,y,z),new THREE.Vector3(c,y,z),.05,.10);} }
+}
+correasCara(-.025,colFrente,HASP); correasCara(G.LG+.025,colFondo,false);
+if(HASP) perfil(new THREE.Vector3(xp0-G.b,G.porton.h+.12,-.03),new THREE.Vector3(xp1+G.b,G.porton.h+.12,-.03),.12,.10); // dintel
+if(HASP) perfil(new THREE.Vector3(xp0-G.porton.w/2-.15,G.porton.h+.03,-.2),new THREE.Vector3(xp1+G.porton.w/2+.15,G.porton.h+.03,-.2),.05,.05);
+ // guía
+
+// ---------------- chapas acanaladas ----------------
+const chapas = new THREE.Group(); scene.add(chapas);
+const ONDA=.0762;
+// textura de chapa acanalada: mapa de normales + sombreado suave, con mipmaps (sin rayado a la distancia)
+const ONDAS_HOJA=14; // una chapa acanalada ≈ 14 ondas (≈1,07 m)
+function texChapa(){
+  const PW=64, W=PW*ONDAS_HOJA, H=256;
+  const c=document.createElement('canvas'); c.width=W; c.height=H; const g=c.getContext('2d');
+  const n=document.createElement('canvas'); n.width=W; n.height=H; const gn=n.getContext('2d');
+  let seed=11; const rnd=()=>((seed=(seed*16807)%2147483647)/2147483647);
+  const tinte=rnd()*8-4;
+  for(let i=0;i<W;i++){ const a=(i%PW)/PW*2*Math.PI, dx=Math.cos(a);
+    const k=Math.pow((Math.sin(a)+1)/2,1.4);              // brillo de la cresta, sombra en el valle
+    let v=128+120*k; if(i<3||i>W-3) v*=.72;               // solape entre chapas
+    v+=tinte;
+    g.fillStyle=`rgb(${v|0},${(v+4)|0},${(v+9)|0})`; g.fillRect(i,0,1,H);
+    const nx=Math.round((dx*.85*0.5+0.5)*255); gn.fillStyle=`rgb(${nx},128,235)`; gn.fillRect(i,0,1,H); }
+  // vetas verticales suaves del galvanizado (variación a lo largo de la chapa)
+  g.globalAlpha=.06; for(let k=0;k<160;k++){ g.fillStyle=rnd()<.5?'#000':'#fff'; g.fillRect(rnd()*W,0,1+rnd()*3,H); } g.globalAlpha=1;
+  const t=new THREE.CanvasTexture(c), tn=new THREE.CanvasTexture(n);
+  for(const x of [t,tn]){ x.wrapS=x.wrapT=THREE.RepeatWrapping; x.anisotropy=renderer.capabilities.getMaxAnisotropy(); }
+  t.encoding=THREE.sRGBEncoding; return [t,tn];
+}
+const [tC,tN]=texChapa();
+mChapa.map=tC; mChapa.normalMap=tN; mChapa.normalScale.set(.55,.55); mChapa.color.set(G.COLOR||0xffffff); mChapa.metalness=.9; mChapa.roughness=.28; mChapa.envMapIntensity=1.15; mChapa.needsUpdate=true;
+mPorton.map=tC; mPorton.normalMap=tN; mPorton.color.set(G.COLOR||0xf4f6f8); mPorton.metalness=.92; mPorton.roughness=.22; mPorton.envMapIntensity=1.1; mPorton.needsUpdate=true;
+// franja: puntos base/tope a lo largo de un eje; u de textura = distancia/ONDA (una onda por período)
+function franja(pts, mat){ // pts: [[distancia, [xb,yb,zb], [xt,yt,zt]], ...]
+  const pos=[],uv=[],idx=[];
+  pts.forEach(([d,B,T])=>{ pos.push(...B,...T); uv.push(d/(ONDA*ONDAS_HOJA),0, d/(ONDA*ONDAS_HOJA),1); });
+  for(let i=0;i<pts.length-1;i++){ const a=2*i; idx.push(a,a+2,a+1, a+1,a+2,a+3); }
+  const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+  g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2)); g.setIndex(idx); g.computeVertexNormals();
+  const m=new THREE.Mesh(g,mat||mChapa); m.castShadow=true; m.receiveShadow=true; chapas.add(m); return m; }
+const muestras=(a,b,paso)=>{const n=Math.max(1,Math.ceil(Math.abs(b-a)/paso)),r=[];for(let i=0;i<=n;i++)r.push(a+(b-a)*i/n);return r;};
+// techo: ondas a lo largo del largo, del alero a la cumbrera
+if(UNO){ const off=.105; franja(muestras(-.12,G.LG+.12,1).map(z=>[z,[-.12,Ye-.12*s+off,z],[G.L+.12,Yr+.12*s+off,z]])); }
+else for(const side of [1,-1]){
+  const off=.105, xA=side>0?-.12:G.L+.12, yA=Ye-.12*s+off, yB=Yr+off;
+  franja(muestras(-.12,G.LG+.12,1).map(z=>[z,[xA,yA,z],[G.L/2,yB,z]]));
+}
+if(!UNO) (function(){ const sh=new THREE.Shape(); sh.moveTo(-.18,-.036); sh.lineTo(0,.0); sh.lineTo(.18,-.036);
+  const g=new THREE.ExtrudeGeometry(sh,{depth:G.LG+.24,bevelEnabled:false}); const m=new THREE.Mesh(g,mPerfil);
+  m.position.set(G.L/2,Yr+.125,-.12); m.castShadow=true; chapas.add(m);})();
+// laterales
+for(const [x,h] of [[-.11,Ye],[G.L+.11,UNO?Yr:Ye]]){
+  if(PL && x<0){ const zs=[...new Set([...muestras(-.11,G.LG+.11,.5),zl0-.001,zl0+.001,zl1-.001,zl1+.001])].sort((a,b)=>a-b);
+    franja(zs.map(z=>[z,[x,(z>zl0&&z<zl1)?PL.h+.2:.05,z],[x,h+.08,z]])); }
+  else franja(muestras(-.11,G.LG+.11,1).map(z=>[z,[x,ZB,z],[x,h+.08,z]])); }
+// frente y fondo, hasta la línea del techo; arriba del portón arranca sobre el dintel
+function testero(z, conPorton){
+  const xs=[...new Set([...muestras(-.11,G.L+.11,.25),G.L/2, ...(conPorton?[xp0-.001,xp0+.001,xp1-.001,xp1+.001]:[])])].sort((a,b)=>a-b);
+  franja(xs.map(x=>{ const xc=Math.min(Math.max(x,0),G.L), top=ytop(xc)+.07;
+    const base = conPorton && x>xp0 && x<xp1 ? Math.max(G.porton.h+.2,ZB) : ZB; return [x,[x,base,z],[x,top,z]]; }));
+}
+testero(-.11,HASP); testero(G.LG+.11,false);
+// terminaciones: esquineros (ángulo) de 10 x 10 cm
+const mTerm = new THREE.MeshStandardMaterial({color:0xe2e7eb, metalness:.92, roughness:.22, envMapIntensity:1.1});
+const T10=.10, TE=.006;
+function placa(A,B,alto,ancho){ // placa a lo largo de A->B (alto: perpendicular dentro del plano vertical, ancho: eje z)
+  const v=new THREE.Vector3().subVectors(B,A), L=v.length();
+  const m=new THREE.Mesh(new THREE.BoxGeometry(ancho,alto,L),mTerm);
+  m.position.copy(A).add(B).multiplyScalar(.5); m.lookAt(B); m.castShadow=true; m.receiveShadow=true; chapas.add(m); return m; }
+// 1) esquinas verticales: ángulo 10x10 que tapa el encuentro de lateral con frente/fondo
+for(const [x,z,sx,sz] of [[-.11,-.11,1,1],[G.L+.11,-.11,-1,1],[-.11,G.LG+.11,1,-1],[G.L+.11,G.LG+.11,-1,-1]]){
+  const hTop=(UNO&&sx<0)?Yr+.03:Ye, h=hTop+.09-ZB, yc=ZB+h/2, xo=x-sx*.012, zo=z-sz*.012;
+  const a=new THREE.Mesh(new THREE.BoxGeometry(T10,h,TE),mTerm); a.position.set(xo+sx*(T10/2-.006),yc,zo); // sobre frente/fondo
+  const b=new THREE.Mesh(new THREE.BoxGeometry(TE,h,T10),mTerm); b.position.set(xo,yc,zo+sz*(T10/2-.006)); // sobre lateral
+  for(const m of [a,b]){ m.castShadow=true; m.receiveShadow=true; chapas.add(m); }
+}
+// 2) bordes del techo en frente y fondo (frontón): ángulo 10x10 de alero a cumbrera
+const yTecho = x => ytop(x) + .105 + .012;
+for(const [zf,sz] of [[-.11,1],[G.LG+.11,-1]]){
+  for(const [x0,x1] of (UNO?[[-.12,G.L+.12]]:[[-.12,G.L/2],[G.L+.12,G.L/2]])){
+    const zo=zf-sz*.016;
+    // cara vertical (sobre la chapa del frente)
+    placa(new THREE.Vector3(x0,yTecho(Math.min(Math.max(x0,0),G.L))-T10/2,zo), new THREE.Vector3(x1,yTecho(Math.min(Math.max(x1,0),G.L))-T10/2,zo), T10, TE);
+    // ala superior (sobre la chapa del techo)
+    placa(new THREE.Vector3(x0,yTecho(Math.max(Math.min(x0,G.L),0))+.003,zo+sz*(T10/2)), new THREE.Vector3(x1,yTecho(Math.min(Math.max(x1,0),G.L))+.003,zo+sz*(T10/2)), TE, T10);
+  }
+}
+
+if(G.CANALETA){ const w=G.CANALETA.w, hc=G.CANALETA.h, x0=.06, yt=Ye+.06, mC=mTerm;
+  const add=(geo,x,y)=>{const m=new THREE.Mesh(geo,mC); m.position.set(x,y,G.LG/2); m.castShadow=true; m.receiveShadow=true; chapas.add(m);};
+  add(new THREE.BoxGeometry(w,.006,G.LG+.2), x0+w/2, yt-hc);
+  add(new THREE.BoxGeometry(.006,hc,G.LG+.2), x0, yt-hc/2);
+  add(new THREE.BoxGeometry(.006,hc,G.LG+.2), x0+w, yt-hc/2); }
+// ---------------- portón corredizo doble hoja (cada hoja abre para su lado) ----------------
+const porton = new THREE.Group(); scene.add(porton);
+const hojas = [];
+function hoja(lado, W, H, x0, padre){ // lado -1: hoja izquierda, +1: hoja derecha
+  W=W||G.porton.w; H=H||G.porton.h; x0=(x0===undefined)?xp0:x0; padre=padre||porton;
+  const grp=new THREE.Group(), w=W/2, h=H-.02, zf=-.17;
+  const marco=[[0,0,w,0],[0,h,w,h],[0,0,0,h],[w,0,w,h],[0,h/2,w,h/2]];
+  for(const [x1,y1,x2,y2] of marco){ const L=Math.hypot(x2-x1,y2-y1);
+    const m=new THREE.Mesh(new THREE.BoxGeometry(x1===x2?.06:L+.06, y1===y2?.06:L, .05),mHierro);
+    m.position.set((x1+x2)/2,(y1+y2)/2,zf); m.castShadow=true; grp.add(m);}
+  const pos=[],uv=[],idx=[]; const xs=muestras(0,w,.5);
+  xs.forEach(x=>{ pos.push(x,.03,zf-.035, x,h-.03,zf-.035); uv.push(x/(ONDA*ONDAS_HOJA),0,x/(ONDA*ONDAS_HOJA),1); });
+  for(let i=0;i<xs.length-1;i++){ const a=2*i; idx.push(a,a+2,a+1, a+1,a+2,a+3); }
+  const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+  g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2)); g.setIndex(idx); g.computeVertexNormals();
+  const s1=new THREE.Mesh(g,mPorton); s1.castShadow=true; s1.receiveShadow=true; grp.add(s1);
+  for(const x of [.35,w-.35]){ const r=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,.04,16),mHierro);
+    r.rotation.x=Math.PI/2; r.position.set(x,h+.03,zf-.03); grp.add(r);}
+  const manija=new THREE.Mesh(new THREE.BoxGeometry(.04,.35,.04),mHierro);
+  manija.position.set(lado<0 ? w-.18 : .18,1.1,zf-.08); grp.add(manija);
+  const cerrado = lado<0 ? x0 : x0+w, abierto = lado<0 ? x0-w-.05 : x0+W+.05;
+  grp.position.x=cerrado; grp.userData={cerrado,abierto,objetivo:cerrado};
+  padre.add(grp); hojas.push(grp);
+}
+if(HASP){ hoja(-1); hoja(1); }
+if(PL){ const lat=new THREE.Group(); lat.rotation.y=Math.PI/2; lat.position.set(0,0,zl1); porton.add(lat);
+  hoja(-1,PL.w,PL.h,0,lat); hoja(1,PL.w,PL.h,0,lat); }
+
+// ---------------- estado / UI ----------------
+let modo='full';
+function setModo(m){
+  modo=m;
+  chapas.visible = m!=='frame'; porton.traverse(c=>{ if(c.material===mPorton) c.visible = m!=='frame';});
+  mChapa.transparent = m==='xray'; mChapa.opacity = m==='xray' ? .22 : 1; mChapa.depthWrite = m!=='xray';
+  mPorton.transparent = m==='xray'; mPorton.opacity = m==='xray' ? .25 : 1; mPorton.depthWrite = m!=='xray';
+  for(const [id,k] of [['m-full','full'],['m-xray','xray'],['m-frame','frame']]) document.getElementById(id).setAttribute('aria-pressed', String(k===m));
+}
+document.getElementById('m-full').onclick=()=>setModo('full');
+document.getElementById('m-xray').onclick=()=>setModo('xray');
+document.getElementById('m-frame').onclick=()=>setModo('frame');
+
+let abierto=false;
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+document.getElementById('porton').onclick=e=>{ abierto=!abierto; hojas.forEach(h=>{ h.userData.objetivo = abierto ? h.userData.abierto : h.userData.cerrado; if(reduce) h.position.x=h.userData.objetivo; });
+  e.currentTarget.textContent = abierto?'Cerrar portón':'Abrir portón'; e.currentTarget.setAttribute('aria-pressed',String(abierto)); };
+
+const DV = Math.max(G.L*1.7, G.LG*0.4, 18);
+const VISTAS = {
+  iso:     {p:[-0.6*DV,0.5*DV,-0.75*DV], t:[G.L/2,Ye*0.45,G.LG/2]},
+  frente:  {p:[G.L/2,Ye*0.6,-Math.max(17,G.L*1.7)], t:[G.L/2,Ye*0.55,G.LG/2]},
+  lateral: {p:[-Math.max(17,G.LG*1.05),Ye*0.6,G.LG/2], t:[G.L/2,Ye*0.55,G.LG/2]},
+  arriba:  {p:[G.L/2,Math.max(24,G.LG*1.1),-G.LG*0.25], t:[G.L/2,1.5,G.LG/2]},
+  atras:   {p:[19,7.5,20],      t:[5,2.2,5]},
+  esquina: {p:[-2.6,Ye+1.7,-3.4],   t:[.4,Ye-.3,.6]},
+  foto1:   {p:[-0.55*DV,1.65,-0.8*DV], t:[G.L*0.5,(Ye+Yr)/2*0.55,G.LG*0.32]},
+  foto2:   {p:[G.L+0.6*DV,1.65,-0.75*DV], t:[G.L*0.45,(Ye+Yr)/2*0.55,G.LG*0.32]},
+  foto3:   {p:[G.L*0.5,1.65,-0.95*DV],   t:[G.L*0.5,(Ye+Yr)/2*0.6,G.LG*0.5]},
+  interior:{p:[G.L*0.5,1.65,G.LG-Math.min(2.5,G.LG*0.15)], t:[G.L*0.5,(Ye+Yr)/2*0.62,0]},
+};
+let anim=null;
+function setVista(k, inmediato){
+  const v=VISTAS[k]; if(!v) return;
+  if(inmediato||reduce){ camera.position.set(...v.p); controls.target.set(...v.t); controls.update(); return; }
+  anim={t:0, p0:camera.position.clone(), t0:controls.target.clone(), p1:new THREE.Vector3(...v.p), t1:new THREE.Vector3(...v.t)};
+}
+document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>setVista(b.dataset.view));
+const hud=document.getElementById('hud'), ti=document.getElementById('toggleInfo');
+ti.onclick=()=>{ const min=hud.classList.toggle('min'); ti.textContent=min?'Ver ficha':'Ocultar ficha'; ti.setAttribute('aria-expanded',String(!min)); };
+
+function pintarCielo(){
+  const cv=document.getElementById('cielo'), dpr=Math.min(window.devicePixelRatio||1,2), W=cv.clientWidth*dpr|0, H=cv.clientHeight*dpr|0;
+  cv.width=W; cv.height=H; const g=cv.getContext('2d');
+  const gr=g.createLinearGradient(0,0,0,H*.62); gr.addColorStop(0,'#1552a6'); gr.addColorStop(.5,'#3b7fcc'); gr.addColorStop(.85,'#7fb2e3'); gr.addColorStop(1,'#bcd7ec');
+  g.fillStyle=gr; g.fillRect(0,0,W,H);
+  // nubes: ruido fbm calculado a 1/3 de resolución y escalado (bordes suaves, forma de cúmulo)
+  const q=3, w=Math.ceil(W/q), h=Math.ceil(H/q), oc=document.createElement('canvas'); oc.width=w; oc.height=h;
+  const og=oc.getContext('2d'), img=og.createImageData(w,h), D=img.data, esc=Math.max(w,h*1.7);
+  const dens=(x,y)=>{ const yy=y/h; const banda=Math.max(0,1-Math.abs(yy-.3)/.28);            // franja de nubes en el cielo
+    const base=fbm(x/esc*5.5+3.1, y/esc*9.5+1.7, 6);
+    return (base-.47+banda*.13)*2.6*banda; };
+  for(let y=0;y<h;y++) for(let x=0;x<w;x++){
+    const d=dens(x,y); if(d<=0) continue;
+    const arriba=dens(x-1.5,y-3), luz=Math.min(1,Math.max(0,.62+(d-arriba)*-2.2+(1-y/h)*.15));
+    const a2=Math.min(1,d*1.6), c=170+luz*85, o=(y*w+x)*4;
+    D[o]=c; D[o+1]=c+4*(1-luz); D[o+2]=c+14*(1-luz); D[o+3]=a2*255; }
+  og.putImageData(img,0,0); g.imageSmoothingQuality='high'; g.drawImage(oc,0,0,W,H);
+  const U=1;
+  
+}
+function resize(){ pintarCielo(); const w=canvas.clientWidth, h=canvas.clientHeight; renderer.setSize(w,h,false); camera.aspect=w/h;
+  camera.fov = w/h < 0.8 ? 55 : 40; camera.updateProjectionMatrix(); }
+window.addEventListener('resize', resize); resize();
+setVista(window.innerWidth/window.innerHeight<0.8 ? 'iso' : 'iso', true);
+if(window.innerWidth/window.innerHeight<0.8){ camera.position.set(-13,10,-16); controls.update(); }
+
+function loop(){
+  requestAnimationFrame(loop);
+  if(anim){ anim.t=Math.min(1,anim.t+0.035); const e=anim.t<.5?2*anim.t*anim.t:1-Math.pow(-2*anim.t+2,2)/2;
+    camera.position.lerpVectors(anim.p0,anim.p1,e); controls.target.lerpVectors(anim.t0,anim.t1,e); if(anim.t>=1) anim=null; }
+  hojas.forEach(h=>{ h.position.x += (h.userData.objetivo-h.position.x)*0.06; });
+  controls.update(); renderer.render(scene,camera);
+}
+loop();
+window.galpon = {setModo, setVista, abrir(v, ya){ if(v!==abierto) document.getElementById('porton').click(); if(ya) hojas.forEach(h=>h.position.x=h.userData.objetivo); }, render(){renderer.render(scene,camera);}};
+})();
+</script>
+
+<script>
+(function(){
+  const P=window.REMECO_P, C=window.REMECO_C, f=document.getElementById('f'), m=n=>String(Math.round(n*100)/100).replace('.',',');
+  for(const k in P){ if(f.elements[k]) f.elements[k].value=P[k]; }
+  const HR=C.aguas===1?C.alto+C.ancho*C.pendiente:C.alto+C.ancho/2*C.pendiente;
+  document.getElementById('tit').textContent=`Galpón ${m(C.ancho)} × ${m(C.largo)} m`;
+  document.getElementById('sub').textContent=`${C.aguas===1?'Un agua':'Dos aguas'} · ${m(C.alto)} m parte baja y ${m(HR)} m parte alta · ${C.sistema} · ${C.porticos} pórticos a ${m(C.largo/(C.porticos-1))} m · chapa ${C.cerrTxt}${C.porton?` · portón ${m(C.porton[0])} × ${m(C.porton[1])}`:''}`;
+  if(!C.porton){ const b=document.getElementById('porton'); if(b) b.parentNode.style.display='none'; }
+  f.onsubmit=e=>{e.preventDefault(); const q=new URLSearchParams(); for(const el of f.elements) if(el.name) q.set(el.name,el.value); location.search=q.toString();};
+  // croquis
+  const LOGO='data:image/png;base64,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';
+  const hoy=new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const nc=Math.ceil((C.aguas===1?C.ancho:C.ancho/2))+1;
+  const H=[['Frente',PLANO.frente(C),''],['Pórtico medio',PLANO.portico(C),`${nc} correas de techo 100x50x2 por faldón a 1 m`],['Vista lateral',PLANO.lateral(C),''],['Planta',PLANO.planta(C),'']];
+  document.getElementById('hojas').innerHTML=H.map((h,i)=>`<div class="hoja">${PLANO.hoja(C,h[0],h[2],'Escala aprox. 1:50',i+1,H.length,h[1],LOGO,hoy)}</div>`).join('');
+  const cq=document.getElementById('croq');
+  document.getElementById('bCroquis').onclick=()=>{cq.hidden=false;};
+  document.getElementById('bVolver').onclick=()=>{cq.hidden=true;};
+  document.getElementById('bPrint').onclick=()=>window.print();
+  // fotos: cielo + escena en un JPG
+  function foto(nombre){ galpon.render(); const a=document.getElementById('cielo'), b=document.getElementById('scene');
+    const c=document.createElement('canvas'); c.width=b.width; c.height=b.height; const g=c.getContext('2d');
+    g.drawImage(a,0,0,c.width,c.height); g.drawImage(b,0,0);
+    const l=document.createElement('a'); l.download=nombre+'.jpg'; l.href=c.toDataURL('image/jpeg',.9); document.body.appendChild(l); l.click(); l.remove(); }
+  const wait=ms=>new Promise(r=>setTimeout(r,ms));
+  window.remecoFotos=async function(bajar=true){
+    const base=`galpon-${m(C.ancho)}x${m(C.largo)}`, out=[];
+    const tomas=[['foto1','full',false,'1-frente'],['foto2','full',false,'2-esquina'],['frente','full',true,'3-porton-abierto'],['iso','frame',false,'4-estructura'],['interior','full',false,'5-interior']];
+    for(const [v,mo,ab,n] of tomas){ if(ab&&!C.porton) continue; galpon.setModo(mo); galpon.setVista(v,true); galpon.abrir(ab,true); await wait(250); if(bajar) foto(base+'-'+n); out.push(n); }
+    galpon.setModo('full'); galpon.abrir(false,true); galpon.setVista('iso',true); return out; };
+  document.getElementById('bFotos').onclick=()=>remecoFotos(true);
+  // para la calculadora: devuelve las fotos y los croquis como imágenes (data URL), sin descargar nada
+  function fotoURL(){ galpon.render(); const a=document.getElementById('cielo'), b=document.getElementById('scene');
+    const c=document.createElement('canvas'); c.width=b.width; c.height=b.height; const g=c.getContext('2d');
+    g.drawImage(a,0,0,c.width,c.height); g.drawImage(b,0,0); return {src:c.toDataURL('image/jpeg',.88),w:c.width,h:c.height}; }
+  function svgAJpg(svg,W,H){ return new Promise((ok,mal)=>{ const s=svg.replace('style="width:100%;height:100%;display:block"',`width="${W}" height="${H}"`);
+    const im=new Image(); im.onload=()=>{ const c=document.createElement('canvas'); c.width=W; c.height=H; const g=c.getContext('2d');
+      g.fillStyle='#fff'; g.fillRect(0,0,W,H); g.drawImage(im,0,0,W,H); ok({src:c.toDataURL('image/jpeg',.9),w:W,h:H}); };
+    im.onerror=mal; im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(s); }); }
+  window.remecoImagenes=async function(){
+    const tomas=[['foto1','full',false,'Vista frente'],['foto2','full',false,'Vista esquina'],['frente','full',true,'Portón abierto'],['iso','frame',false,'Estructura'],['interior','full',false,'Interior']];
+    const fotos=[];
+    for(const [v,mo,ab,t] of tomas){ if(ab&&!C.porton) continue; galpon.setModo(mo); galpon.setVista(v,true); galpon.abrir(ab,true); await wait(250); fotos.push({titulo:t,...fotoURL()}); }
+    galpon.setModo('full'); galpon.abrir(false,true); galpon.setVista('iso',true);
+    const croquis=[]; for(let i=0;i<H.length;i++){ const h=H[i]; croquis.push({titulo:h[0],...await svgAJpg(PLANO.hoja(C,h[0],h[2],'Escala aprox. 1:50',i+1,H.length,h[1],LOGO,hoy),2376,1680)}); }
+    return {fotos,croquis}; };
+  window.remecoListo=true;
+  // desde la calculadora dentro de un iframe: postMessage({remeco:{ancho:12,largo:8,...}})
+  window.addEventListener('message',e=>{ const d=e.data&&e.data.remeco; if(!d) return; const q=new URLSearchParams(location.search); for(const k in d) q.set(k,d[k]); location.search=q.toString(); });
+})();
+</script>
+</body></html>

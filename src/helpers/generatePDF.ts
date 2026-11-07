@@ -17,15 +17,7 @@ export function convertPDF(client: string, images: PDFImage[] = []) {
 
   doc.html(pdfBody, {
     callback: (pdf) => {
-      if (images.length > 0) {
-        images.forEach((img) => {
-          pdf.addPage();
-          if (img.title) {
-            pdf.text(img.title, 10, 20);
-          }
-          pdf.addImage(img.src, "JPEG", 10, 30, 190, 120);
-        });
-      }
+      addImagesToPDF(pdf, images);
 
       pdf.save(`presupuesto ${client}.pdf`);
     },
@@ -37,6 +29,46 @@ export function convertPDF(client: string, images: PDFImage[] = []) {
     },
     width: 210,
     windowWidth: 794,
+  });
+}
+
+/**
+ * Agrega las imágenes al final del PDF, después del presupuesto.
+ * - Sin layout (silos): una por hoja, como siempre.
+ * - "half" (fotos 3D): dos por hoja vertical, sin deformar.
+ * - "landscape" (croquis): una hoja A4 apaisada entera.
+ */
+export function addImagesToPDF(pdf: jsPDF, images: PDFImage[]) {
+  let halfSlot = 0;
+  images.forEach((img) => {
+    if (img.layout === "landscape") {
+      pdf.addPage("a4", "landscape");
+      pdf.addImage(img.src, "JPEG", 0, 0, 297, 210);
+      halfSlot = 0;
+      return;
+    }
+
+    if (img.layout === "half") {
+      if (halfSlot === 0) pdf.addPage("a4", "portrait");
+      const top = halfSlot === 0 ? 15 : 152;
+      const ratio = img.width && img.height ? img.height / img.width : 2 / 3;
+      const w = Math.min(190, 120 / ratio);
+      const h = w * ratio;
+      if (img.title) {
+        pdf.setFontSize(12);
+        pdf.text(img.title, 10, top);
+      }
+      pdf.addImage(img.src, "JPEG", (210 - w) / 2, top + 4, w, h);
+      halfSlot = halfSlot === 0 ? 1 : 0;
+      return;
+    }
+
+    pdf.addPage("a4", "portrait");
+    if (img.title) {
+      pdf.text(img.title, 10, 20);
+    }
+    pdf.addImage(img.src, "JPEG", 10, 30, 190, 120);
+    halfSlot = 0;
   });
 }
 

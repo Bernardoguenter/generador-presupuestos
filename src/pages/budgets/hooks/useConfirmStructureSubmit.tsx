@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { usePDFContext, usePreferencesContext } from "@/common/context";
+import {
+  useCompanyContext,
+  usePDFContext,
+  usePreferencesContext,
+} from "@/common/context";
 import {
   CreateBudgetToastError,
   CreateBudgetToastSuccess,
@@ -8,7 +12,12 @@ import {
   UpdateBudgetToastSuccess,
 } from "@/utils/alerts";
 import { createBudget, updateBudget } from "@/common/lib";
-import { convertPDF } from "@/helpers";
+import {
+  companyHasRenders,
+  convertPDF,
+  getStructurePDFImages,
+  waitNextFrame,
+} from "@/helpers";
 import { paymentMethods } from "@/helpers";
 import {
   getDefaultCaption,
@@ -30,15 +39,20 @@ export const useConfirmStructureSubmit = ({
   const { id } = useParams();
   const { pdfInfo, setPdfInfo, setShowPDF } = usePDFContext();
   const { preferences } = usePreferencesContext();
+  const { company } = useCompanyContext();
   const [viewPdf, setViewPdf] = useState<boolean>(false);
   const [budget, setBudget] = useState<StructureBudget | null>(null);
   const navigate = useNavigate();
 
-  const handleDownloadPdf = (customer: string, isNew: boolean) => {
+  const handleDownloadPdf = async (savedBudget: StructureBudget, isNew: boolean) => {
     setViewPdf(true);
-    setTimeout(() => {
-      convertPDF(customer);
-    }, 300);
+    // Fotos 3D y croquis debajo del presupuesto (solo Remeco)
+    const images = companyHasRenders(company?.company_name)
+      ? await getStructurePDFImages(savedBudget)
+      : [];
+    await waitNextFrame();
+    await waitNextFrame();
+    convertPDF(savedBudget.customer, images);
 
     setTimeout(() => {
       setViewPdf(false);
@@ -87,12 +101,12 @@ export const useConfirmStructureSubmit = ({
     if (!error && !id) {
       if (data.id) {
         setBudget(data);
-        handleDownloadPdf(data.customer, true);
+        handleDownloadPdf(data, true);
         CreateBudgetToastSuccess();
       }
     } else if (!error && id) {
       setViewPdf(true);
-      handleDownloadPdf(data.customer, false);
+      handleDownloadPdf(data, false);
       UpdateBudgetToastSuccess();
 
       if (getBudget) {
