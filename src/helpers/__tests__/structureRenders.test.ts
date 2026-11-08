@@ -50,6 +50,13 @@ describe("getGeneradorParams", () => {
   });
 });
 
+describe("getGeneradorParams aguas", () => {
+  it("dos aguas por defecto y un agua si se pide", () => {
+    expect(getGeneradorParams(base).get("aguas")).toBe("2");
+    expect(getGeneradorParams(base, 1).get("aguas")).toBe("1");
+  });
+});
+
 describe("companyHasRenders", () => {
   it("solo para Remeco", () => {
     expect(companyHasRenders("Metalúrgica Remeco")).toBe(true);

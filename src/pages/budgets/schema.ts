@@ -135,6 +135,9 @@ export const calculateSiloBudgetSchema = z
 
 export const calculateStructureBudgetSchema = z
   .object({
+    // Opciones del PDF (no se guardan en la base de datos)
+    roof_slopes: z.coerce.number().int().min(1).max(2).optional(),
+    include_renders: z.boolean().optional(),
     material: z.string({
       required_error: "Debes ingresar un marterial",
       invalid_type_error: "El material debe ser una cadena de texto",

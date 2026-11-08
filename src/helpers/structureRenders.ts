@@ -50,12 +50,15 @@ const sistemaPorMaterial: Record<string, string> = {
 };
 
 /** Arma los parámetros del link del generador a partir del presupuesto. */
-export const getGeneradorParams = (budget: GeneradorBudget) => {
+export const getGeneradorParams = (
+  budget: GeneradorBudget,
+  roofSlopes: 1 | 2 = 2,
+) => {
   const params = new URLSearchParams();
   params.set("ancho", String(budget.width));
   params.set("largo", String(budget.length));
   params.set("alto", String(budget.height));
-  params.set("aguas", "2");
+  params.set("aguas", String(roofSlopes));
   params.set("pend", "10");
   params.set("sistema", sistemaPorMaterial[budget.material] ?? "torsionado");
 
@@ -82,8 +85,10 @@ export const getGeneradorParams = (budget: GeneradorBudget) => {
   return params;
 };
 
-export const getGeneradorURL = (budget: GeneradorBudget) =>
-  `${GENERADOR_URL}?${getGeneradorParams(budget).toString()}`;
+export const getGeneradorURL = (
+  budget: GeneradorBudget,
+  roofSlopes: 1 | 2 = 2,
+) => `${GENERADOR_URL}?${getGeneradorParams(budget, roofSlopes).toString()}`;
 
 /**
  * Abre el generador en un iframe oculto y devuelve las fotos y los croquis.
@@ -91,6 +96,7 @@ export const getGeneradorURL = (budget: GeneradorBudget) =>
  */
 export async function getStructureRenders(
   budget: GeneradorBudget,
+  roofSlopes: 1 | 2 = 2,
 ): Promise<StructureRenders> {
   const iframe = document.createElement("iframe");
   iframe.setAttribute("aria-hidden", "true");
@@ -103,7 +109,7 @@ export async function getStructureRenders(
     height: "1200px",
     border: "0",
   });
-  iframe.src = getGeneradorURL(budget);
+  iframe.src = getGeneradorURL(budget, roofSlopes);
   document.body.appendChild(iframe);
 
   try {

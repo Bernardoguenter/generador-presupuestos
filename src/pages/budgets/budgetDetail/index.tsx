@@ -25,13 +25,17 @@ export default function BudgetDetail() {
   const { company } = useCompanyContext();
   const { preferences } = usePreferencesContext();
   const [isDownloading, setIsDownloading] = useState(false);
+  // Opciones del PDF (no se guardan con el presupuesto)
+  const [roofSlopes, setRoofSlopes] = useState<1 | 2>(2);
+  const [includeRenders, setIncludeRenders] = useState(true);
 
   const isStructure = pathName.includes("/structures/");
   const isSilo = pathName.includes("/silos/");
   const showRenders =
     isStructure && !!budget && companyHasRenders(company?.company_name);
   const { renders, isLoading: rendersLoading } = useStructureRenders(
-    showRenders ? (budget as StructureBudget) : null,
+    showRenders && includeRenders ? (budget as StructureBudget) : null,
+    roofSlopes,
   );
 
   if (isLoading) return <p className="p-4">Cargando presupuesto...</p>;
@@ -48,8 +52,10 @@ export default function BudgetDetail() {
           dollarQuote: preferences.dollar_quote,
           ivaPercentage: preferences.iva_percentage,
           company,
+          roofSlopes,
+          includeRenders,
         },
-        renders,
+        includeRenders ? renders : null,
       );
     } finally {
       setIsDownloading(false);
@@ -96,6 +102,29 @@ export default function BudgetDetail() {
       </div>
 
       {!viewDetail && showRenders && (
+        <div className="mt-4 flex flex-col sm:flex-row gap-4 sm:items-center lg:w-1/2">
+          <label className="flex items-center gap-2 font-medium">
+            Techo
+            <select
+              className="bg-white text-black px-2 py-2 rounded"
+              value={roofSlopes}
+              onChange={(e) => setRoofSlopes(e.target.value === "1" ? 1 : 2)}>
+              <option value={2}>Dos aguas</option>
+              <option value={1}>Un agua</option>
+            </select>
+          </label>
+          <label className="flex items-center gap-2 font-medium">
+            <input
+              type="checkbox"
+              checked={includeRenders}
+              onChange={(e) => setIncludeRenders(e.target.checked)}
+            />
+            Agregar fotos 3D y medidas al PDF
+          </label>
+        </div>
+      )}
+
+      {!viewDetail && showRenders && includeRenders && (
         <StructureRendersSection
           renders={renders}
           isLoading={rendersLoading}
@@ -106,7 +135,7 @@ export default function BudgetDetail() {
         <div className="mt-4 flex flex-col gap-2 lg:w-2/5">
           <DownloadBudgetButton
             customer={budget.customer}
-            disabled={showRenders && (rendersLoading || isDownloading)}
+            disabled={showRenders && ((includeRenders && rendersLoading) || isDownloading)}
             onDownload={showRenders ? handleRemecoDownload : undefined}
           />
           <CustomLink

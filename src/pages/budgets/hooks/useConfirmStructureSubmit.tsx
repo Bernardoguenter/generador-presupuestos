@@ -36,7 +36,7 @@ export const useConfirmStructureSubmit = ({
   handleView,
 }: UseConfirmStructureSubmitProps) => {
   const { id } = useParams();
-  const { pdfInfo, setPdfInfo, setShowPDF } = usePDFContext();
+  const { pdfInfo, setPdfInfo, setShowPDF, pdfOptions } = usePDFContext();
   const { preferences } = usePreferencesContext();
   const { company } = useCompanyContext();
   const [viewPdf, setViewPdf] = useState<boolean>(false);
@@ -51,6 +51,8 @@ export const useConfirmStructureSubmit = ({
         dollarQuote: preferences.dollar_quote,
         ivaPercentage: preferences.iva_percentage,
         company,
+        roofSlopes: pdfOptions.roofSlopes,
+        includeRenders: pdfOptions.includeRenders,
       });
     } else {
       setTimeout(() => convertPDF(savedBudget.customer), 300);

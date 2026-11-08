@@ -19,7 +19,11 @@ export const useStructureBudgetSubmit = (initialBudget?: StructureBudget) => {
   const { authUser } = useAuthContext();
   const { preferences } = usePreferencesContext();
   const { company } = useCompanyContext();
-  const { setPdfInfo: setPdfInfoGeneric, setShowPDF } = usePDFContext();
+  const {
+    setPdfInfo: setPdfInfoGeneric,
+    setShowPDF,
+    setPdfOptions,
+  } = usePDFContext();
 
   const setPdfInfo = setPdfInfoGeneric as React.Dispatch<
     React.SetStateAction<StructurePDFInfo | null>
@@ -55,7 +59,15 @@ export const useStructureBudgetSubmit = (initialBudget?: StructureBudget) => {
       has_sides_membrane,
       roof_sheets_option,
       sides_sheets_option,
+      roof_slopes,
+      include_renders,
     } = formData;
+
+    // Opciones del PDF: van al contexto, no a la base de datos
+    setPdfOptions({
+      roofSlopes: roof_slopes === 1 ? 1 : 2,
+      includeRenders: include_renders ?? true,
+    });
 
     const newAddress =
       includes_freight && distanceCalculation === "address"
@@ -221,6 +233,8 @@ export const useStructureBudgetSubmit = (initialBudget?: StructureBudget) => {
               (val) => val === initialBudget.enclousure_height[0],
             )
           : false,
+        roof_slopes: 2,
+        include_renders: true,
       };
     }
 
@@ -252,6 +266,8 @@ export const useStructureBudgetSubmit = (initialBudget?: StructureBudget) => {
       has_roof_membrane: false,
       has_sides_membrane: false,
       uniform_enclousure: true,
+      roof_slopes: 2,
+      include_renders: true,
     };
   }, [initialBudget]);
 

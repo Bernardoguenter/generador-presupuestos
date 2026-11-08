@@ -3,7 +3,10 @@ import { getStructureRenders, type StructureRenders } from "@/helpers";
 import type { StructureBudget } from "@/types";
 
 /** Genera las fotos 3D y los croquis del presupuesto de galpón/tinglado. */
-export const useStructureRenders = (budget: StructureBudget | null) => {
+export const useStructureRenders = (
+  budget: StructureBudget | null,
+  roofSlopes: 1 | 2 = 2,
+) => {
   const [renders, setRenders] = useState<StructureRenders | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -14,7 +17,7 @@ export const useStructureRenders = (budget: StructureBudget | null) => {
     }
     let cancelled = false;
     setIsLoading(true);
-    getStructureRenders(budget).then((result) => {
+    getStructureRenders(budget, roofSlopes).then((result) => {
       if (cancelled) return;
       setRenders(result);
       setIsLoading(false);
@@ -22,7 +25,7 @@ export const useStructureRenders = (budget: StructureBudget | null) => {
     return () => {
       cancelled = true;
     };
-  }, [budget]);
+  }, [budget, roofSlopes]);
 
   return { renders, isLoading };
 };

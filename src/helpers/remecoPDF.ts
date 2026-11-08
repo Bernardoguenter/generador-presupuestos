@@ -18,6 +18,10 @@ const PAGE_H = 1123; // 297 mm a 96 dpi
 export interface RemecoPDFOptions {
   dollarQuote: number;
   ivaPercentage: number;
+  /** 2 = dos aguas (por defecto), 1 = un agua */
+  roofSlopes?: 1 | 2;
+  /** Agregar la hoja de fotos 3D con medidas (por defecto sí) */
+  includeRenders?: boolean;
   company?: Company | null;
 }
 
@@ -110,16 +114,18 @@ function pageOne(b: StructureBudget, o: RemecoPDFOptions) {
   const total = getStructureTotalArs(b, o.dollarQuote);
   const m2 = b.width * b.length;
   const created = b.created_at ? new Date(b.created_at) : new Date();
-  const valid = new Date(created.getTime() + 10 * 24 * 3600 * 1000);
+  const valid = new Date(created.getTime() + 30 * 24 * 3600 * 1000);
   const isGalpon = b.structure_type === "Galpón";
   // Remeco: en dos aguas el 10 % es sobre el ancho total (20 % por faldón)
+  const unAgua = o.roofSlopes === 1;
+  const aguasTxt = unAgua ? "a un agua" : "a dos aguas";
   const cumbrera = b.height + b.width * 0.1;
   const nombre = (b.customer ?? "").trim().split(/\s+/)[0] ?? "";
   const chapa = b.color_side_sheet || b.color_roof_sheet ? "chapa color" : "chapa Cincalum";
   const cerr = enclosureText(b);
   const lead = isGalpon
-    ? `un galpón metálico cerrado a dos aguas de <b>${num(b.width)} m × ${num(b.length)} m × ${num(b.height)} m de alto</b>, con estructura de ${esc(materialTexto[b.material] ?? b.material.toLowerCase())} y cerramiento de ${chapa}${cerr ? ` (${esc(cerr)})` : ""}.`
-    : `un tinglado metálico a dos aguas de <b>${num(b.width)} m × ${num(b.length)} m × ${num(b.height)} m de alto</b>, con estructura de ${esc(materialTexto[b.material] ?? b.material.toLowerCase())}.`;
+    ? `un galpón metálico cerrado ${aguasTxt} de <b>${num(b.width)} m × ${num(b.length)} m × ${num(b.height)} m de alto</b>, con estructura de ${esc(materialTexto[b.material] ?? b.material.toLowerCase())} y cerramiento de ${chapa}${cerr ? ` (${esc(cerr)})` : ""}.`
+    : `un tinglado metálico ${aguasTxt} de <b>${num(b.width)} m × ${num(b.length)} m × ${num(b.height)} m de alto</b>, con estructura de ${esc(materialTexto[b.material] ?? b.material.toLowerCase())}.`;
 
   const incluye: [boolean, string][] = [
     [true, "Fabricación y materiales"],
@@ -132,7 +138,7 @@ function pageOne(b: StructureBudget, o: RemecoPDFOptions) {
   const rows: [string, string][] = [
     [
       "Medidas",
-      `${num(b.width)} m de ancho × ${num(b.length)} m de largo. ${num(b.height)} m de alto en los laterales y ${num(cumbrera)} m en la cumbrera (pendiente 10 %).`,
+      `${num(b.width)} m de ancho × ${num(b.length)} m de largo. ${num(b.height)} m de alto ${unAgua ? "en la parte baja" : "en los laterales"} y ${num(cumbrera)} m ${unAgua ? "en la parte alta" : "en la cumbrera"} (pendiente 10 %${unAgua ? ", un agua" : ", dos aguas"}).`,
     ],
     ...detailsToRows(b.details),
   ];
@@ -274,7 +280,10 @@ export async function buildRemecoStructurePDF(
   options: RemecoPDFOptions,
   renders?: StructureRenders | null,
 ): Promise<jsPDF> {
-  const r = renders ?? (await getStructureRenders(budget));
+  const withRenders = options.includeRenders ?? true;
+  const r = withRenders
+    ? (renders ?? (await getStructureRenders(budget, options.roofSlopes ?? 2)))
+    : { principal: null, fotos: [], croquis: [] };
   const hasPhotos = !!r.principal || r.fotos.length > 0;
   const pages = [pageOne(budget, options)];
   if (hasPhotos) pages.push(pageTwo(budget, await recortarFotos(r)));
