@@ -24,11 +24,14 @@ type GeneradorBudget = Pick<
 
 type GeneradorImagen = { titulo: string; src: string; w: number; h: number };
 type GeneradorResultado = {
+  principal?: GeneradorImagen;
   fotos: GeneradorImagen[];
   croquis: GeneradorImagen[];
 };
 
 export type StructureRenders = {
+  /** Foto 3/4 con las medidas (cotas) dibujadas encima */
+  principal: PDFImage | null;
   fotos: PDFImage[];
   croquis: PDFImage[];
 };
@@ -120,8 +123,16 @@ export async function getStructureRenders(
       },
     );
 
-    const { fotos, croquis } = await win.remecoImagenes!();
+    const { principal, fotos, croquis } = await win.remecoImagenes!();
     return {
+      principal: principal
+        ? {
+            src: principal.src,
+            title: principal.titulo,
+            width: principal.w,
+            height: principal.h,
+          }
+        : null,
       fotos: fotos.map((f) => ({
         src: f.src,
         title: f.titulo,
@@ -138,7 +149,7 @@ export async function getStructureRenders(
     };
   } catch (error) {
     console.error(error);
-    return { fotos: [], croquis: [] };
+    return { principal: null, fotos: [], croquis: [] };
   } finally {
     iframe.remove();
   }

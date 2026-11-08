@@ -15,8 +15,7 @@ import { createBudget, updateBudget } from "@/common/lib";
 import {
   companyHasRenders,
   convertPDF,
-  getStructurePDFImages,
-  waitNextFrame,
+  downloadRemecoStructurePDF,
 } from "@/helpers";
 import { paymentMethods } from "@/helpers";
 import {
@@ -46,13 +45,16 @@ export const useConfirmStructureSubmit = ({
 
   const handleDownloadPdf = async (savedBudget: StructureBudget, isNew: boolean) => {
     setViewPdf(true);
-    // Fotos 3D y croquis debajo del presupuesto (solo Remeco)
-    const images = companyHasRenders(company?.company_name)
-      ? await getStructurePDFImages(savedBudget)
-      : [];
-    await waitNextFrame();
-    await waitNextFrame();
-    convertPDF(savedBudget.customer, images);
+    if (companyHasRenders(company?.company_name)) {
+      // Remeco: presupuesto con un solo precio + hoja de fotos con medidas
+      await downloadRemecoStructurePDF(savedBudget, {
+        dollarQuote: preferences.dollar_quote,
+        ivaPercentage: preferences.iva_percentage,
+        company,
+      });
+    } else {
+      setTimeout(() => convertPDF(savedBudget.customer), 300);
+    }
 
     setTimeout(() => {
       setViewPdf(false);

@@ -6,15 +6,22 @@ interface Props {
   customer: string;
   images?: PDFImage[];
   disabled?: boolean;
+  /** Si se pasa, reemplaza la descarga común (PDF de Remeco con fotos) */
+  onDownload?: () => void;
 }
 
-export const DownloadBudgetButton = ({ customer, images, disabled }: Props) => {
+export const DownloadBudgetButton = ({
+  customer,
+  images,
+  disabled,
+  onDownload,
+}: Props) => {
   return (
     <Button
       color="info"
       type="button"
       disabled={disabled}
-      onClick={() => convertPDF(customer, images)}>
+      onClick={() => (onDownload ? onDownload() : convertPDF(customer, images))}>
       Descargar PDF y compartir
     </Button>
   );

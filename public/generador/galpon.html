@@ -732,7 +732,9 @@ function loop(){
   controls.update(); renderer.render(scene,camera);
 }
 loop();
-window.galpon = {setModo, setVista, abrir(v, ya){ if(v!==abierto) document.getElementById('porton').click(); if(ya) hojas.forEach(h=>h.position.x=h.userData.objetivo); }, render(){renderer.render(scene,camera);}};
+window.galpon = {setModo, setVista, abrir(v, ya){ if(v!==abierto) document.getElementById('porton').click(); if(ya) hojas.forEach(h=>h.position.x=h.userData.objetivo); }, render(){renderer.render(scene,camera);},
+  // para las cotas sobre la foto: punto 3D -> posición en la imagen (0..1)
+  proyectar(x,y,z){ const v=new THREE.Vector3(x,y,z).project(camera); return [(v.x+1)/2,(1-v.y)/2]; }, Ye, Yr};
 })();
 </script>
 
@@ -775,13 +777,34 @@ window.galpon = {setModo, setVista, abrir(v, ya){ if(v!==abierto) document.getEl
     const im=new Image(); im.onload=()=>{ const c=document.createElement('canvas'); c.width=W; c.height=H; const g=c.getContext('2d');
       g.fillStyle='#fff'; g.fillRect(0,0,W,H); g.drawImage(im,0,0,W,H); ok({src:c.toDataURL('image/jpeg',.9),w:W,h:H}); };
     im.onerror=mal; im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(s); }); }
+  // cotas (medidas) dibujadas sobre una foto: ancho, largo, alto y cumbrera
+  function cotas(img){ return new Promise(ok=>{ const im=new Image(); im.onload=()=>{
+    const W=img.w, Hh=img.h, c=document.createElement('canvas'); c.width=W; c.height=Hh; const g=c.getContext('2d'); g.drawImage(im,0,0);
+    const s=W/1200, pr=(x,y,z)=>{const q=galpon.proyectar(x,y,z); return [q[0]*W,q[1]*Hh];};
+    const o=Math.max(.9,C.ancho*.06);
+    function cota(a,b,txt){ const A=pr(...a), B=pr(...b), ang=Math.atan2(B[1]-A[1],B[0]-A[0]);
+      const flecha=(P,d)=>{ g.beginPath(); g.moveTo(P[0],P[1]); g.lineTo(P[0]-d*14*s*Math.cos(ang-0.4),P[1]-d*14*s*Math.sin(ang-0.4)); g.lineTo(P[0]-d*14*s*Math.cos(ang+0.4),P[1]-d*14*s*Math.sin(ang+0.4)); g.closePath(); g.fill(); };
+      g.lineCap='round'; g.strokeStyle='rgba(255,255,255,.9)'; g.lineWidth=6*s; g.beginPath(); g.moveTo(...A); g.lineTo(...B); g.stroke();
+      g.strokeStyle='#1f2b45'; g.fillStyle='#1f2b45'; g.lineWidth=2.4*s; g.beginPath(); g.moveTo(...A); g.lineTo(...B); g.stroke(); flecha(B,1); flecha(A,-1);
+      const mx=(A[0]+B[0])/2, my=(A[1]+B[1])/2; g.font=`700 ${Math.round(24*s)}px Arial, Helvetica, sans-serif`; const tw=g.measureText(txt).width, ph=10*s, bh=34*s;
+      g.fillStyle='rgba(255,255,255,.95)'; g.strokeStyle='#1f2b45'; g.lineWidth=1.5*s; g.beginPath(); if(g.roundRect) g.roundRect(mx-tw/2-ph,my-bh/2,tw+2*ph,bh,6*s); else g.rect(mx-tw/2-ph,my-bh/2,tw+2*ph,bh); g.fill(); g.stroke();
+      g.fillStyle='#1f2b45'; g.textAlign='center'; g.textBaseline='middle'; g.fillText(txt,mx,my+1*s); }
+    const Ye=galpon.Ye, Yr=galpon.Yr;
+    cota([0,0,-o],[C.ancho,0,-o],'Ancho '+m(C.ancho)+' m');
+    cota([-o,0,0],[-o,0,C.largo],'Largo '+m(C.largo)+' m');
+    cota([-o,0,-o*.15],[-o,Ye,-o*.15],'Alto '+m(C.alto)+' m');
+    if(C.aguas!==1) cota([C.ancho/2,0,-o*.15],[C.ancho/2,Yr,-o*.15],'Cumbrera '+m(C.alto+C.ancho/2*C.pendiente)+' m');
+    else cota([C.ancho+o,0,-o*.15],[C.ancho+o,Yr,-o*.15],'Parte alta '+m(C.alto+C.ancho*C.pendiente)+' m');
+    ok({src:c.toDataURL('image/jpeg',.9),w:W,h:Hh}); }; im.src=img.src; }); }
   window.remecoImagenes=async function(){
     const tomas=[['foto1','full',false,'Vista frente'],['foto2','full',false,'Vista esquina'],['frente','full',true,'Portón abierto'],['iso','frame',false,'Estructura'],['interior','full',false,'Interior']];
+    galpon.setModo('full'); galpon.setVista('foto1',true); galpon.abrir(false,true); await wait(250);
+    const principal={titulo:'Medidas',...await cotas(fotoURL())};
     const fotos=[];
     for(const [v,mo,ab,t] of tomas){ if(ab&&!C.porton) continue; galpon.setModo(mo); galpon.setVista(v,true); galpon.abrir(ab,true); await wait(250); fotos.push({titulo:t,...fotoURL()}); }
     galpon.setModo('full'); galpon.abrir(false,true); galpon.setVista('iso',true);
     const croquis=[]; for(let i=0;i<H.length;i++){ const h=H[i]; croquis.push({titulo:h[0],...await svgAJpg(PLANO.hoja(C,h[0],h[2],'Escala aprox. 1:50',i+1,H.length,h[1],LOGO,hoy),2376,1680)}); }
-    return {fotos,croquis}; };
+    return {principal,fotos,croquis}; };
   window.remecoListo=true;
   // desde la calculadora dentro de un iframe: postMessage({remeco:{ancho:12,largo:8,...}})
   window.addEventListener('message',e=>{ const d=e.data&&e.data.remeco; if(!d) return; const q=new URLSearchParams(location.search); for(const k in d) q.set(k,d[k]); location.search=q.toString(); });

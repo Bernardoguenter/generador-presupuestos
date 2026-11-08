@@ -10,12 +10,25 @@ export const StructureRendersSection = ({ renders, isLoading }: Props) => {
   if (isLoading) {
     return <p className="mt-6">Generando fotos 3D y croquis...</p>;
   }
-  if (!renders || (renders.fotos.length === 0 && renders.croquis.length === 0)) {
+  if (
+    !renders ||
+    (!renders.principal && renders.fotos.length === 0 && renders.croquis.length === 0)
+  ) {
     return null;
   }
 
   return (
     <section className="mt-6 flex flex-col gap-6 lg:w-1/2 max-w-[20cm]">
+      {renders.principal && (
+        <div>
+          <h2 className="mb-2 font-bold text-lg">Medidas</h2>
+          <img
+            src={renders.principal.src}
+            alt="Galpón con medidas"
+            className="w-full rounded"
+          />
+        </div>
+      )}
       {renders.fotos.length > 0 && (
         <div>
           <h2 className="mb-2 font-bold text-lg">Fotos 3D</h2>

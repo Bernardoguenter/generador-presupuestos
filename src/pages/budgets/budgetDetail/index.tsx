@@ -7,8 +7,9 @@ import { SiloBudgetEditForm } from "./pdf/silo/SiloBudgetEditForm";
 import { useBudgetDetail } from "./hooks/useBudgetDetail";
 import { useStructureRenders } from "./hooks/useStructureRenders";
 import { StructureRendersSection } from "./StructureRendersSection";
-import { useCompanyContext } from "@/common/context";
-import { companyHasRenders } from "@/helpers";
+import { useCompanyContext, usePreferencesContext } from "@/common/context";
+import { companyHasRenders, downloadRemecoStructurePDF } from "@/helpers";
+import { useState } from "react";
 
 export default function BudgetDetail() {
   const {
@@ -22,6 +23,8 @@ export default function BudgetDetail() {
     pathName,
   } = useBudgetDetail();
   const { company } = useCompanyContext();
+  const { preferences } = usePreferencesContext();
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const isStructure = pathName.includes("/structures/");
   const isSilo = pathName.includes("/silos/");
@@ -35,7 +38,23 @@ export default function BudgetDetail() {
   if (error) return <p className="p-4 text-danger">{error}</p>;
   if (!budget) return <p className="p-4">No se ha obtenido un Presupuesto</p>;
 
-  const rendersImages = renders ? [...renders.fotos, ...renders.croquis] : [];
+  // Remeco: PDF propio (presupuesto con un solo precio + hoja de fotos con medidas)
+  const handleRemecoDownload = async () => {
+    setIsDownloading(true);
+    try {
+      await downloadRemecoStructurePDF(
+        budget as StructureBudget,
+        {
+          dollarQuote: preferences.dollar_quote,
+          ivaPercentage: preferences.iva_percentage,
+          company,
+        },
+        renders,
+      );
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   return (
     <section>
@@ -87,8 +106,8 @@ export default function BudgetDetail() {
         <div className="mt-4 flex flex-col gap-2 lg:w-2/5">
           <DownloadBudgetButton
             customer={budget.customer}
-            images={rendersImages}
-            disabled={showRenders && rendersLoading}
+            disabled={showRenders && (rendersLoading || isDownloading)}
+            onDownload={showRenders ? handleRemecoDownload : undefined}
           />
           <CustomLink
             href="/budgets/calculator"
