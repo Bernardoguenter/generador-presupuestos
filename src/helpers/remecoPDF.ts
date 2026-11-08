@@ -112,7 +112,8 @@ function pageOne(b: StructureBudget, o: RemecoPDFOptions) {
   const created = b.created_at ? new Date(b.created_at) : new Date();
   const valid = new Date(created.getTime() + 10 * 24 * 3600 * 1000);
   const isGalpon = b.structure_type === "Galpón";
-  const cumbrera = b.height + (b.width / 2) * 0.1;
+  // Remeco: en dos aguas el 10 % es sobre el ancho total (20 % por faldón)
+  const cumbrera = b.height + b.width * 0.1;
   const nombre = (b.customer ?? "").trim().split(/\s+/)[0] ?? "";
   const chapa = b.color_side_sheet || b.color_roof_sheet ? "chapa color" : "chapa Cincalum";
   const cerr = enclosureText(b);
@@ -189,6 +190,11 @@ function pageTwo(b: StructureBudget, r: StructureRenders) {
   <p class="note">Imágenes ilustrativas generadas con las medidas del presupuesto. La ubicación del portón y las terminaciones se acuerdan con el cliente.</p>`;
 }
 
+const BIG_W = PAGE_W - 112;
+const BIG_H = 400;
+const GRID_W = (BIG_W - 10) / 2;
+const GRID_H = 165;
+
 const CSS = `
 .rp{width:${PAGE_W}px;height:${PAGE_H}px;padding:52px 56px 0;box-sizing:border-box;position:relative;background:#fff;color:#1d2427;font-family:Inter,"Helvetica Neue",Arial,sans-serif;font-size:13.5px;line-height:1.4;overflow:hidden}
 .rp *{box-sizing:border-box}
@@ -209,11 +215,55 @@ const CSS = `
 .rp td:first-child{width:28%;color:#5a666c;font-weight:600}
 .rp .pagos{margin:6px 0 0;padding-left:18px;font-size:13px;line-height:1.6}
 .rp .ft{position:absolute;left:56px;right:56px;bottom:30px;border-top:1px solid #d5dbe2;padding-top:7px;font-size:11px;color:#5a666c;display:flex;justify-content:space-between}
-.rp .big{width:100%;height:370px;object-fit:cover;object-position:50% 62%;border-radius:5px;display:block;margin-top:10px}
-.rp .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.rp .grid img{width:100%;height:165px;object-fit:cover;object-position:50% 60%;border-radius:5px;display:block}
+.rp .big{width:100%;height:${BIG_H}px;border-radius:5px;display:block;margin-top:10px}
+.rp .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.rp .grid img{width:100%;height:${GRID_H}px;border-radius:5px;display:block}
 .rp .cap{font-size:11.5px;color:#5a666c;margin-top:4px}
 .rp .note{font-size:11.5px;color:#5a666c;margin-top:10px;line-height:1.45}
 `;
+
+/**
+ * Recorta una foto a la proporción del recuadro (html2canvas no respeta
+ * object-fit y estiraba las fotos, quedaban "petisas").
+ */
+function recortar(src: string, ratio: number, posY = 0.5): Promise<string> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const w = img.naturalWidth;
+      const h = img.naturalHeight;
+      let cw = w;
+      let ch = Math.round(w / ratio);
+      if (ch > h) {
+        ch = h;
+        cw = Math.round(h * ratio);
+      }
+      const sx = Math.round((w - cw) / 2);
+      const sy = Math.round((h - ch) * posY);
+      const c = document.createElement("canvas");
+      c.width = cw;
+      c.height = ch;
+      c.getContext("2d")!.drawImage(img, sx, sy, cw, ch, 0, 0, cw, ch);
+      resolve(c.toDataURL("image/jpeg", 0.92));
+    };
+    img.onerror = () => resolve(src);
+    img.src = src;
+  });
+}
+
+async function recortarFotos(r: StructureRenders): Promise<StructureRenders> {
+  return {
+    ...r,
+    principal: r.principal
+      ? { ...r.principal, src: await recortar(r.principal.src, BIG_W / BIG_H, 0.7) }
+      : null,
+    fotos: await Promise.all(
+      r.fotos.map(async (f) => ({
+        ...f,
+        src: await recortar(f.src, GRID_W / GRID_H, 0.6),
+      })),
+    ),
+  };
+}
 
 const footer = (n: number, total: number) =>
   `<div class="ft"><span>Metalúrgica Remeco · Colonia Menonita, La Pampa · metalurgicaremeco1@gmail.com</span><span>Página ${n} de ${total}</span></div>`;
@@ -227,7 +277,7 @@ export async function buildRemecoStructurePDF(
   const r = renders ?? (await getStructureRenders(budget));
   const hasPhotos = !!r.principal || r.fotos.length > 0;
   const pages = [pageOne(budget, options)];
-  if (hasPhotos) pages.push(pageTwo(budget, r));
+  if (hasPhotos) pages.push(pageTwo(budget, await recortarFotos(r)));
 
   const host = document.createElement("div");
   host.setAttribute("aria-hidden", "true");

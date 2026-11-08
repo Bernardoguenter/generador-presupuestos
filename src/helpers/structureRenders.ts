@@ -99,8 +99,8 @@ export async function getStructureRenders(
     position: "fixed",
     left: "-10000px",
     top: "0",
-    width: "1200px",
-    height: "800px",
+    width: "1800px",
+    height: "1200px",
     border: "0",
   });
   iframe.src = getGeneradorURL(budget);

@@ -117,7 +117,8 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
   if(!(P.ancho>0))P.ancho=D.ancho; if(!(P.largo>0))P.largo=D.largo; if(!(P.alto>0))P.alto=D.alto; if(!(P.pend>0))P.pend=D.pend; if(!(P.sep>0))P.sep=D.sep;
   const pt=String(P.porton).toLowerCase().replace(',','.').split(/[x×*]/).map(parseFloat);
   const pw=pt[0]>0?Math.min(pt[0],P.ancho-1):0, ph=pw?Math.min(pt[1]>0?pt[1]:Math.min(4,P.alto-0.3),P.alto-0.2):0;
-  const UNO=+P.aguas===1, p=P.pend/100, CAIDA=UNO?P.ancho*p:P.ancho/2*p;
+  // Remeco: en dos aguas la pendiente que se pide (ej. 10 %) es del ancho total, o sea el doble por faldón (20 %)
+  const UNO=+P.aguas===1, p=P.pend/100*(UNO?1:2), CAIDA=UNO?P.ancho*p:P.ancho/2*p;
   const n=Math.max(2,Math.ceil(P.largo/P.sep)+1), por=[]; for(let i=0;i<n;i++) por.push(+(P.largo*i/(n-1)).toFixed(3));
   const sec={torsionado:{d:.3,b:.22,col:[22,30],cab:[22,30],txt:'Hierro torsionado Ø16 + Ø10/Ø8',perfil:false},
              perfil:{d:.35,b:.18,col:[18,35],cab:[20,45],txt:'Perfil U 1/8" + ángulo 1 1/4"x1/8"',perfil:true},
@@ -734,6 +735,13 @@ function loop(){
 loop();
 window.galpon = {setModo, setVista, abrir(v, ya){ if(v!==abierto) document.getElementById('porton').click(); if(ya) hojas.forEach(h=>h.position.x=h.userData.objetivo); }, render(){renderer.render(scene,camera);},
   // para las cotas sobre la foto: punto 3D -> posición en la imagen (0..1)
+  // encuadre automático: cámara desde una esquina, a la distancia justa para que el galpón llene la foto
+  encuadrar(dx,dz,elev,margen){ const m=margen||1; const t=new THREE.Vector3(G.L/2,Yr*0.42,G.LG/2);
+    const d=new THREE.Vector3(dx,0,dz).normalize(); const pts=[]; for(const x of [-m,G.L+m]) for(const z of [-m,G.LG+m]) for(const y of [0,Yr]) pts.push(new THREE.Vector3(x,y,z));
+    const cabe=D=>{ camera.position.set(t.x+d.x*D*Math.cos(elev), t.y+D*Math.sin(elev), t.z+d.z*D*Math.cos(elev)); camera.lookAt(t); camera.updateMatrixWorld(); camera.updateProjectionMatrix();
+      let a=1e9,b=-1e9,c=1e9,e=-1e9; for(const q of pts){ const v=q.clone().project(camera); a=Math.min(a,v.x); b=Math.max(b,v.x); c=Math.min(c,v.y); e=Math.max(e,v.y);} return (b-a)<=1.76 && (e-c)<=1.5; };
+    let lo=2, hi=400; for(let i=0;i<40;i++){ const mid=(lo+hi)/2; if(cabe(mid)) hi=mid; else lo=mid; }
+    cabe(hi); controls.target.copy(t); controls.update(); },
   proyectar(x,y,z){ const v=new THREE.Vector3(x,y,z).project(camera); return [(v.x+1)/2,(1-v.y)/2]; }, Ye, Yr};
 })();
 </script>
@@ -782,26 +790,30 @@ window.galpon = {setModo, setVista, abrir(v, ya){ if(v!==abierto) document.getEl
     const W=img.w, Hh=img.h, c=document.createElement('canvas'); c.width=W; c.height=Hh; const g=c.getContext('2d'); g.drawImage(im,0,0);
     const s=W/1200, pr=(x,y,z)=>{const q=galpon.proyectar(x,y,z); return [q[0]*W,q[1]*Hh];};
     const o=Math.max(.9,C.ancho*.06);
-    function cota(a,b,txt){ const A=pr(...a), B=pr(...b), ang=Math.atan2(B[1]-A[1],B[0]-A[0]);
-      const flecha=(P,d)=>{ g.beginPath(); g.moveTo(P[0],P[1]); g.lineTo(P[0]-d*14*s*Math.cos(ang-0.4),P[1]-d*14*s*Math.sin(ang-0.4)); g.lineTo(P[0]-d*14*s*Math.cos(ang+0.4),P[1]-d*14*s*Math.sin(ang+0.4)); g.closePath(); g.fill(); };
-      g.lineCap='round'; g.strokeStyle='rgba(255,255,255,.9)'; g.lineWidth=6*s; g.beginPath(); g.moveTo(...A); g.lineTo(...B); g.stroke();
+    function cota(a,b,txt,abajo){ const A=pr(...a), B=pr(...b); let ang=Math.atan2(B[1]-A[1],B[0]-A[0]);
+      const flecha=(P,d)=>{ g.beginPath(); g.moveTo(P[0],P[1]); g.lineTo(P[0]-d*16*s*Math.cos(ang-0.35),P[1]-d*16*s*Math.sin(ang-0.35)); g.lineTo(P[0]-d*16*s*Math.cos(ang+0.35),P[1]-d*16*s*Math.sin(ang+0.35)); g.closePath(); g.fill(); };
+      g.lineCap='round'; g.strokeStyle='rgba(255,255,255,.85)'; g.lineWidth=6*s; g.beginPath(); g.moveTo(...A); g.lineTo(...B); g.stroke();
       g.strokeStyle='#1f2b45'; g.fillStyle='#1f2b45'; g.lineWidth=2.4*s; g.beginPath(); g.moveTo(...A); g.lineTo(...B); g.stroke(); flecha(B,1); flecha(A,-1);
-      const mx=(A[0]+B[0])/2, my=(A[1]+B[1])/2; g.font=`700 ${Math.round(24*s)}px Arial, Helvetica, sans-serif`; const tw=g.measureText(txt).width, ph=10*s, bh=34*s;
-      g.fillStyle='rgba(255,255,255,.95)'; g.strokeStyle='#1f2b45'; g.lineWidth=1.5*s; g.beginPath(); if(g.roundRect) g.roundRect(mx-tw/2-ph,my-bh/2,tw+2*ph,bh,6*s); else g.rect(mx-tw/2-ph,my-bh/2,tw+2*ph,bh); g.fill(); g.stroke();
-      g.fillStyle='#1f2b45'; g.textAlign='center'; g.textBaseline='middle'; g.fillText(txt,mx,my+1*s); }
+      // texto sobre la línea, en el mismo sentido (siempre legible, nunca cabeza abajo)
+      let t=ang; if(t>Math.PI/2) t-=Math.PI; if(t<-Math.PI/2) t+=Math.PI; if(Math.abs(Math.abs(t)-Math.PI/2)<0.25) t=-Math.PI/2;
+      const mx=(A[0]+B[0])/2, my=(A[1]+B[1])/2; g.save(); g.translate(mx,my); g.rotate(t);
+      g.font=`700 ${Math.round(30*s)}px Arial, Helvetica, sans-serif`; g.textAlign='center'; g.textBaseline=abajo?'top':'bottom'; const ty=abajo?7*s:-7*s;
+      g.lineJoin='round'; g.strokeStyle='rgba(255,255,255,.95)'; g.lineWidth=7*s; g.strokeText(txt,0,ty); g.fillStyle='#1f2b45'; g.fillText(txt,0,ty); g.restore(); }
     const Ye=galpon.Ye, Yr=galpon.Yr;
-    cota([0,0,-o],[C.ancho,0,-o],'Ancho '+m(C.ancho)+' m');
-    cota([-o,0,0],[-o,0,C.largo],'Largo '+m(C.largo)+' m');
-    cota([-o,0,-o*.15],[-o,Ye,-o*.15],'Alto '+m(C.alto)+' m');
-    if(C.aguas!==1) cota([C.ancho/2,0,-o*.15],[C.ancho/2,Yr,-o*.15],'Cumbrera '+m(C.alto+C.ancho/2*C.pendiente)+' m');
-    else cota([C.ancho+o,0,-o*.15],[C.ancho+o,Yr,-o*.15],'Parte alta '+m(C.alto+C.ancho*C.pendiente)+' m');
+    cota([0,0,-o],[C.ancho,0,-o],m(C.ancho)+' m',true);
+    cota([-o,0,0],[-o,0,C.largo],m(C.largo)+' m',true);
+    cota([-o,0,-o],[-o,Ye,-o],m(C.alto)+' m');
+    if(C.aguas!==1) cota([C.ancho/2,0,-.25],[C.ancho/2,Yr,-.25],m(C.alto+C.ancho/2*C.pendiente)+' m');
+    else cota([C.ancho+o,0,-o],[C.ancho+o,Yr,-o],m(C.alto+C.ancho*C.pendiente)+' m');
     ok({src:c.toDataURL('image/jpeg',.9),w:W,h:Hh}); }; im.src=img.src; }); }
   window.remecoImagenes=async function(){
     const tomas=[['foto1','full',false,'Vista frente'],['foto2','full',false,'Vista esquina'],['frente','full',true,'Portón abierto'],['iso','frame',false,'Estructura'],['interior','full',false,'Interior']];
-    galpon.setModo('full'); galpon.setVista('foto1',true); galpon.abrir(false,true); await wait(250);
+    galpon.setModo('full'); galpon.abrir(false,true); galpon.encuadrar(-0.62,-1,0.2,Math.max(.9,C.ancho*.06)+.6); await wait(250);
     const principal={titulo:'Medidas',...await cotas(fotoURL())};
     const fotos=[];
-    for(const [v,mo,ab,t] of tomas){ if(ab&&!C.porton) continue; galpon.setModo(mo); galpon.setVista(v,true); galpon.abrir(ab,true); await wait(250); fotos.push({titulo:t,...fotoURL()}); }
+    for(const [v,mo,ab,t] of tomas){ if(ab&&!C.porton) continue; galpon.setModo(mo); galpon.abrir(ab,true);
+      if(v==='foto2') galpon.encuadrar(1,-0.85,0.16,.3); else if(v==='foto1') galpon.encuadrar(-0.62,-1,0.16,.3); else if(v==='iso') galpon.encuadrar(-0.7,-0.9,0.42,.3); else galpon.setVista(v,true);
+      await wait(250); fotos.push({titulo:t,...fotoURL()}); }
     galpon.setModo('full'); galpon.abrir(false,true); galpon.setVista('iso',true);
     const croquis=[]; for(let i=0;i<H.length;i++){ const h=H[i]; croquis.push({titulo:h[0],...await svgAJpg(PLANO.hoja(C,h[0],h[2],'Escala aprox. 1:50',i+1,H.length,h[1],LOGO,hoy),2376,1680)}); }
     return {principal,fotos,croquis}; };
