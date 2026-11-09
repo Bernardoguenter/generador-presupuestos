@@ -38,10 +38,18 @@ export default function UserDetail() {
         onSubmit={handleSubmit}
         schema={createUserSchema}
         defaultValues={defaultValues}>
-        <h2 className="my-4 text-2xl font-medium"> {user?.fullName}</h2>
+        <h2 className="my-4 text-2xl font-medium">
+          {user?.fullName}
+          {user?.nickname ? ` (${user.nickname})` : ""}
+        </h2>
         <TextInput
           label="Nombre completo"
           name="fullName"
+          type="text"
+        />
+        <TextInput
+          label="Apodo (solo para reconocerlo acá, no sale en el presupuesto)"
+          name="nickname"
           type="text"
         />
         <TextInput

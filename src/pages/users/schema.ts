@@ -20,6 +20,7 @@ export const createUserSchema = z.object({
   company_id: z.string({
     required_error: "Debes asignar una empresa para el usuario",
   }),
+  nickname: z.string().optional(),
 });
 
 export type CreateUserFormData = z.infer<typeof createUserSchema>;

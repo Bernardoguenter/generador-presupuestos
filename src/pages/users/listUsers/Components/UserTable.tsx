@@ -50,6 +50,11 @@ export const UserTable = ({
               className="flex items-center w-full ">
               <td className="px-2 py-2 text-xs overflow-hidden w-2/6">
                 {user.fullName}
+                {user.nickname && (
+                  <span className="block text-[11px] opacity-70">
+                    {user.nickname}
+                  </span>
+                )}
               </td>
               <td className="px-2 py-2 text-xs overflow-hidden w-1/6">
                 {user.role}
