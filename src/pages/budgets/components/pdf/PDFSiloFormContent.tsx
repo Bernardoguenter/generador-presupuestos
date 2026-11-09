@@ -14,9 +14,9 @@ type Draft = { key: string; budget: SiloBudget };
 
 interface Props {
   /** Arma el borrador del presupuesto con los valores del formulario */
-  buildDraft?: (values: unknown) => Draft | null;
+  buildDraft?: (values: unknown) => Draft | "ready" | "pending";
   /** Se llama cuando el borrador ya está dibujado (oculto) */
-  onDraftRendered?: (element: HTMLElement, key: string, budget: SiloBudget) => void;
+  onDraftRendered?: (element: HTMLElement, key: string, budget: SiloBudget) => Promise<boolean>;
 }
 
 export const PDFSiloFormContent = ({ buildDraft, onDraftRendered }: Props) => {
@@ -47,18 +47,30 @@ export const PDFSiloFormContent = ({ buildDraft, onDraftRendered }: Props) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const draftRef = useRef<HTMLDivElement>(null);
 
+  // Mientras se arma, el botón espera: así el toque abre directo "Compartir".
+  const [preparing, setPreparing] = useState<boolean>(!!buildDraft);
+
   useEffect(() => {
     if (!buildDraft) return;
+    setPreparing(true);
     const t = setTimeout(() => {
       const d = buildDraft(JSON.parse(valuesKey));
-      if (d) setDraft(d);
-    }, 1000);
+      if (d === "ready") setPreparing(false);
+      else if (d !== "pending") setDraft(d);
+    }, 500);
     return () => clearTimeout(t);
   }, [buildDraft, valuesKey]);
 
   useEffect(() => {
     const el = draftRef.current?.querySelector<HTMLElement>("#pdf-draft");
-    if (draft && el && onDraftRendered) onDraftRendered(el, draft.key, draft.budget);
+    if (!draft || !el || !onDraftRendered) return;
+    let active = true;
+    onDraftRendered(el, draft.key, draft.budget).then((ok) => {
+      if (ok && active) setPreparing(false);
+    });
+    return () => {
+      active = false;
+    };
   }, [draft, onDraftRendered]);
 
   return (
@@ -72,8 +84,9 @@ export const PDFSiloFormContent = ({ buildDraft, onDraftRendered }: Props) => {
       <BudgetFooter />
       <Button
         type="submit"
-        color="info">
-        Confirmar Presupuesto
+        color="info"
+        disabled={preparing}>
+        {preparing ? "Preparando el PDF..." : "Confirmar Presupuesto"}
       </Button>
       {draft && (
         <div

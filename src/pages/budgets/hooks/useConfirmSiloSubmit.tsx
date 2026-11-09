@@ -182,13 +182,13 @@ export const useConfirmSiloSubmit = ({
    * en la página). Devuelve null si no hace falta.
    */
   const buildDraft = useCallback(
-    (values: unknown): { key: string; budget: SiloBudget } | null => {
-      if (!isRemeco || !pdfInfo || !canShareRemecoPDF()) return null;
+    (values: unknown): { key: string; budget: SiloBudget } | "ready" | "pending" => {
+      if (!isRemeco || !pdfInfo || !canShareRemecoPDF()) return "ready";
       const parsed = ConfirmSiloPDFSchema.safeParse(values);
-      if (!parsed.success) return null;
+      if (!parsed.success) return "ready";
       const key = JSON.stringify(parsed.data);
-      if (preparedRef.current?.key === key || draftKeyRef.current === key)
-        return null;
+      if (preparedRef.current?.key === key) return "ready";
+      if (draftKeyRef.current === key) return "pending";
       draftKeyRef.current = key;
       const budget = {
         ...buildSubmitData(parsed.data),
@@ -203,19 +203,21 @@ export const useConfirmSiloSubmit = ({
 
   /** Se llama cuando el borrador ya está dibujado (oculto) en la página. */
   const onDraftRendered = useCallback(
-    async (element: HTMLElement, key: string, budget: SiloBudget) => {
+    async (element: HTMLElement, key: string, budget: SiloBudget): Promise<boolean> => {
       try {
         await waitNextFrame();
         await waitNextFrame();
         const images = await getImages(budget.silos as unknown as Silo[]);
         const doc = await buildPDFFromElement(element, images);
-        if (draftKeyRef.current !== key) return;
+        if (draftKeyRef.current !== key) return false;
         preparedRef.current = {
           key,
           pdf: prepareSiloPDF(doc, budget.silos as unknown as Silo[], budget.customer),
         };
+        return true;
       } catch (error) {
         console.error("No se pudo armar el PDF de antemano", error);
+        return draftKeyRef.current === key;
       }
     },
     [],

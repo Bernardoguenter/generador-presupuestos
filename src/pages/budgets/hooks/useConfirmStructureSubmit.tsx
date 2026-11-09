@@ -120,13 +120,13 @@ export const useConfirmStructureSubmit = ({
   };
 
   const preparePdf = useCallback(
-    async (values: unknown) => {
-      if (!isRemeco || !pdfInfo || !canShareRemecoPDF()) return;
+    async (values: unknown): Promise<boolean> => {
+      if (!isRemeco || !pdfInfo || !canShareRemecoPDF()) return true;
       const parsed = ConfirmPDFSchema.safeParse(values);
-      if (!parsed.success) return;
+      if (!parsed.success) return true;
       const seq = ++prepareSeq.current;
       const key = JSON.stringify(parsed.data);
-      if (preparedRef.current?.key === key) return;
+      if (preparedRef.current?.key === key) return true;
       try {
         const info = await getBudgetInfo();
         const budget = {
@@ -144,12 +144,14 @@ export const useConfirmStructureSubmit = ({
             };
           renders = await rendersRef.current.promise;
         }
-        if (seq !== prepareSeq.current) return;
+        if (seq !== prepareSeq.current) return false;
         const pdf = await prepareRemecoPDF(budget, remecoOptions(info.number), renders);
-        if (seq !== prepareSeq.current) return;
+        if (seq !== prepareSeq.current) return false;
         preparedRef.current = { key, pdf };
+        return true;
       } catch (error) {
         console.error("No se pudo armar el PDF de antemano", error);
+        return seq === prepareSeq.current;
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps

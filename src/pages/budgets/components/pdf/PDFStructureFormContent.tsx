@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components";
 import { usePDFContext } from "@/common/context";
 import { useFormContext, useWatch } from "react-hook-form";
@@ -11,7 +11,7 @@ import { PDFEstimatedDelivery } from "./PDFEstimatedDelivery";
 
 interface Props {
   /** Se llama con los valores del formulario cuando dejan de cambiar */
-  onValuesReady?: (values: unknown) => void;
+  onValuesReady?: (values: unknown) => Promise<boolean>;
 }
 
 export const PDFStructureFormContent = ({ onValuesReady }: Props) => {
@@ -50,21 +50,27 @@ export const PDFStructureFormContent = ({ onValuesReady }: Props) => {
 
   // Arma el PDF de antemano (un segundo después del último cambio), así al
   // confirmar se abre directo el menú de compartir.
+  // Mientras se arma, el botón espera: así el toque abre directo "Compartir".
+  const [preparing, setPreparing] = useState<boolean>(!!onValuesReady);
   useEffect(() => {
     if (!onValuesReady) return;
-    const t = setTimeout(
-      () =>
-        onValuesReady({
-          description,
-          details,
-          paymentMethods,
-          total,
-          caption,
-          estimatedDelivery,
-        }),
-      1000,
-    );
-    return () => clearTimeout(t);
+    let active = true;
+    setPreparing(true);
+    const t = setTimeout(async () => {
+      const ok = await onValuesReady({
+        description,
+        details,
+        paymentMethods,
+        total,
+        caption,
+        estimatedDelivery,
+      });
+      if (ok && active) setPreparing(false);
+    }, 500);
+    return () => {
+      active = false;
+      clearTimeout(t);
+    };
   }, [onValuesReady, description, details, paymentMethods, total, caption, estimatedDelivery]);
 
   return (
@@ -77,8 +83,9 @@ export const PDFStructureFormContent = ({ onValuesReady }: Props) => {
       <BudgetFooter />
       <Button
         type="submit"
-        color="info">
-        Confirmar Presupuesto
+        color="info"
+        disabled={preparing}>
+        {preparing ? "Preparando el PDF..." : "Confirmar Presupuesto"}
       </Button>
     </div>
   );
