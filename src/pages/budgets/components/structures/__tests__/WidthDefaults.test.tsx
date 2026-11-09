@@ -1,11 +1,19 @@
 import { describe, it, expect } from "vitest";
 import { render, act } from "@testing-library/react";
 import { FormProvider, useForm, type UseFormReturn } from "react-hook-form";
+
+type Values = {
+  width: number;
+  height: number;
+  enclousure_height: number[];
+  uniform_enclousure: boolean;
+  gates_measurements: { width: number; height: number }[];
+};
 import { WidthDefaults } from "../WidthDefaults";
 
-let form: UseFormReturn<Record<string, unknown>>;
+let form: UseFormReturn<Values>;
 const Harness = ({ width }: { width: number }) => {
-  form = useForm({
+  form = useForm<Values>({
     defaultValues: {
       width,
       height: 7,
