@@ -2,6 +2,7 @@ import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { NumberInput } from "@/components";
 import { useEffect, useRef } from "react";
 import type { GatesMeasurements } from "@/types";
+import { getStructureDefaultsByWidth } from "@/helpers";
 
 export const GatesInput = () => {
   const { control, setValue } = useFormContext();
@@ -38,8 +39,12 @@ export const GatesInput = () => {
 
     if (includesGate && !hasInitialized.current) {
       setValue("number_of_gates", 1);
+      const { gate } = getStructureDefaultsByWidth(Number(width));
       setValue("gates_measurements", [
-        { width: width < 5 ? width : 5, height: height < 4.5 ? height : 4.5 },
+        {
+          width: width < gate.width ? width : gate.width,
+          height: height < gate.height ? height : gate.height,
+        },
       ]);
       hasInitialized.current = true;
       return;

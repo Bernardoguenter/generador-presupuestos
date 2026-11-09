@@ -1,8 +1,10 @@
 import { Fieldset, NumberInput } from "@/components";
+import { WidthDefaults } from "./WidthDefaults";
 
 export const MeasuresFieldset = () => {
   return (
     <>
+      <WidthDefaults />
       <Fieldset title="Medidas">
         <NumberInput
           label="Ancho"

@@ -254,7 +254,7 @@ export const useStructureBudgetSubmit = (initialBudget?: StructureBudget) => {
       customer: "",
       has_gutter: false,
       gutter_metters: 0,
-      gates_measurements: [{ width: 5, height: 4.5 }],
+      gates_measurements: [{ width: 4.5, height: 5 }],
       includes_gate: true,
       number_of_gates: 1,
       address: "",

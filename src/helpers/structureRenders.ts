@@ -82,6 +82,7 @@ export const getGeneradorParams = (
   params.set("porton", hasGate ? `${gate.width}x${gate.height}` : "0");
 
   params.set("color", budget.color_side_sheet ? "gris" : "cincalum");
+  if (budget.structure_type !== "Galpón") params.set("tipo", "tinglado");
   return params;
 };
 

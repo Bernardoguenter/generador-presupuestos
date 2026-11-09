@@ -162,7 +162,7 @@ function pageOne(b: StructureBudget, o: RemecoPDFOptions) {
     <div><span>Localidad de la obra</span><b>${esc(localidad)}</b></div>
     <div><span>Trabajo</span><b>${esc(trabajo)}</b></div>
   </div>
-  <p class="lead">Estimado ${esc(nombre)}: gracias por su consulta. Le acercamos la cotización para la <b>fabricación, provisión de materiales y montaje</b> de ${lead}</p>
+  <p class="lead">${nombre ? `Estimado ${esc(nombre)}:` : "Estimado cliente:"} gracias por su consulta. Le acercamos la cotización para la <b>fabricación, provisión de materiales y montaje</b> de ${lead}</p>
   <div class="price">
     <div class="pbox"><div class="l">Precio total</div><div class="v">${pesos(total)}</div>
       <div class="s">${b.includes_taxes ? `IVA ${num(o.ivaPercentage)} % incluido` : `No incluye IVA (${num(o.ivaPercentage)} %)`} · ${num(m2)} m² cubiertos<br>Equivale a ${pesos(total / m2)} por m²</div></div>
@@ -179,7 +179,10 @@ function pageTwo(b: StructureBudget, r: StructureRenders) {
     "Portón abierto": "Frente con el portón corredizo abierto.",
     "Vista esquina": "Vista desde la otra esquina.",
     Estructura: `Estructura: pórticos de ${mat} y correas galvanizadas.`,
-    Interior: "Interior: cabreadas y portón vistos desde adentro.",
+    Interior:
+      b.structure_type === "Galpón"
+        ? "Interior: cabreadas y portón vistos desde adentro."
+        : "Vista desde abajo: cabreadas y techo.",
     "Vista frente": "Vista general.",
   };
   const grid = (r.fotos.length >= 5 || !r.principal
@@ -193,7 +196,7 @@ function pageTwo(b: StructureBudget, r: StructureRenders) {
   <h2>Cómo quedaría</h2>
   ${big ? `<img class="big" src="${big.src}"><div class="cap">Medidas principales del ${b.structure_type === "Galpón" ? "galpón" : "tinglado"}.</div>` : ""}
   <div class="grid">${grid.map((f) => `<div><img src="${f.src}"><div class="cap">${esc(cap[f.title ?? ""] ?? f.title)}</div></div>`).join("")}</div>
-  <p class="note">Imágenes ilustrativas generadas con las medidas del presupuesto. La ubicación del portón y las terminaciones se acuerdan con el cliente.</p>`;
+  <p class="note">Imágenes ilustrativas generadas con las medidas del presupuesto. ${b.structure_type === "Galpón" ? "La ubicación del portón y las terminaciones se acuerdan con el cliente." : "Las terminaciones se acuerdan con el cliente."}</p>`;
 }
 
 const BIG_W = PAGE_W - 112;
@@ -329,12 +332,69 @@ export async function buildRemecoStructurePDF(
   }
 }
 
-/** Descarga el PDF de Remeco. */
+/** "Presupuesto Galpón 10 × 15 m" (lo que se ve al compartir) */
+export const getRemecoPDFTitle = (
+  b: Pick<StructureBudget, "structure_type" | "width" | "length">,
+) =>
+  `Presupuesto ${b.structure_type === "Galpón" ? "Galpón" : "Tinglado"} ${num(b.width)} × ${num(b.length)} m`;
+
+/** Nombre del archivo: "Presupuesto Galpón 10x15 - Juan Pérez.pdf" */
+export const getRemecoPDFFileName = (
+  b: Pick<StructureBudget, "structure_type" | "width" | "length" | "customer">,
+) => {
+  const tipo = b.structure_type === "Galpón" ? "Galpón" : "Tinglado";
+  const cliente = (b.customer ?? "").trim().replace(/[\\/:*?"<>|]/g, "");
+  return `Presupuesto ${tipo} ${num(b.width)}x${num(b.length)}${cliente ? ` - ${cliente}` : ""}.pdf`;
+};
+
+/**
+ * Descarga el PDF de Remeco. En el celular abre directamente el menú de
+ * compartir con el archivo y el título "Presupuesto Galpón 10 × 15 m",
+ * en vez del link "blob:..." que aparecía antes.
+ */
 export async function downloadRemecoStructurePDF(
   budget: StructureBudget,
   options: RemecoPDFOptions,
   renders?: StructureRenders | null,
 ) {
   const doc = await buildRemecoStructurePDF(budget, options, renders);
-  doc.save(`presupuesto ${budget.customer}.pdf`);
+  const fileName = getRemecoPDFFileName(budget);
+  const title = getRemecoPDFTitle(budget);
+  const file = new File([doc.output("blob")], fileName, {
+    type: "application/pdf",
+  });
+
+  const canShareFile =
+    typeof navigator !== "undefined" &&
+    typeof navigator.share === "function" &&
+    typeof navigator.canShare === "function" &&
+    navigator.canShare({ files: [file] }) &&
+    /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  if (!canShareFile) {
+    doc.save(fileName);
+    return;
+  }
+
+  // El navegador solo deja compartir justo después de un toque: por eso se
+  // pide un segundo toque cuando el PDF ya está armado.
+  const { default: Swal } = await import("sweetalert2");
+  await Swal.fire({
+    title: "PDF listo",
+    text: title,
+    showCancelButton: true,
+    confirmButtonText: "Compartir",
+    cancelButtonText: "Descargar",
+    confirmButtonColor: "#FF8303",
+    cancelButtonColor: "#1f2b45",
+    preConfirm: async () => {
+      try {
+        await navigator.share({ files: [file], title, text: title });
+      } catch (error) {
+        if ((error as DOMException)?.name !== "AbortError") doc.save(fileName);
+      }
+    },
+  }).then((result) => {
+    if (result.dismiss === Swal.DismissReason.cancel) doc.save(fileName);
+  });
 }

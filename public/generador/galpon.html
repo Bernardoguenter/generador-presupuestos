@@ -111,7 +111,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 <script>
 // ======= Parámetros: vienen del link (?ancho=12&largo=8...) o del formulario =======
 (function(){
-  const D={ancho:12,largo:8,alto:4.5,aguas:2,pend:10,sistema:'torsionado',sep:5,porton:'4x4',cerr:0,color:'cincalum'};
+  const D={ancho:12,largo:8,alto:4.5,aguas:2,pend:10,sistema:'torsionado',sep:5,porton:'4x4',cerr:0,color:'cincalum',tipo:'galpon'};
   const q=new URLSearchParams(location.search); const P={};
   for(const k in D){ const v=q.get(k); P[k]= v===null||v==='' ? D[k] : (typeof D[k]==='number'? parseFloat(String(v).replace(',','.')) : v); }
   if(!(P.ancho>0))P.ancho=D.ancho; if(!(P.largo>0))P.largo=D.largo; if(!(P.alto>0))P.alto=D.alto; if(!(P.pend>0))P.pend=D.pend; if(!(P.sep>0))P.sep=D.sep;
@@ -128,7 +128,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
   const colores={cincalum:0xffffff,gris:0x9aa1a7,azul:0x3c6aa6,verde:0x4f8a5c,rojo:0xb0403a,blanco:0xf5f7f8,negro:0x3a3d40};
   window.REMECO_P=P;
   window.REMECO_G={L:P.ancho,LG:P.largo,H:P.alto,CAIDA,UNO,PERFIL:S.perfil,d:S.d,b:S.b,porticos:por,porton:{w:pw,h:ph},paso:.25,portonLat:null,
-    ZB:P.cerr,YLAT:filas(P.cerr,P.alto),YCARA:filas(P.cerr,P.alto+CAIDA),ENTRE:true,CANALETA:null,COLOR:colores[P.color]||0xffffff};
+    ZB:P.cerr,YLAT:filas(P.cerr,P.alto),YCARA:P.tipo==='tinglado'?[]:filas(P.cerr,P.alto+CAIDA),TINGLADO:P.tipo==='tinglado',ENTRE:true,CANALETA:null,COLOR:colores[P.color]||0xffffff};
   window.REMECO_C={ancho:P.ancho,largo:P.largo,alto:P.alto,aguas:+P.aguas,pendiente:p,porticos:n,porton:pw?[pw,ph]:null,colSec:S.col,cabSec:S.cab,
     correasCara:filas(P.cerr,P.alto).map(y=>y*100),correasLat:filas(P.cerr,P.alto).map(y=>y*100),sistema:S.txt,tipo:P.sistema,
     chapaTxt:(P.color==='cincalum'?'cincalum':'chapa color '+P.color)+' n°25',cerrTxt:P.cerr>=P.alto?'sin chapa lateral':P.cerr>0?('desde '+String(P.cerr).replace('.',',')+' m'):'hasta el piso'};
@@ -491,8 +491,8 @@ function repartir(a,c,sep){ const W=c-a, nb=Math.max(1,Math.ceil((W+G.b)/(sep+G.
   for(let i=1;i<nb;i++) r.push(a+i*(bay+G.b)-G.b); return r; }
 const HASP = G.porton && G.porton.w>0;
 const colFrente = HASP ? [...repartir(G.d,xp0-G.b,5), xp0-G.b, xp1, ...repartir(xp1+G.b,G.L-G.d,5)] : repartir(G.d,G.L-G.d,5), colFondo=repartir(G.d,G.L-G.d,5);
-for(const x of colFrente) columna(x,G.b,0,G.b,ybot(x),ybot(x+G.b));
-for(const x of colFondo)  columna(x,G.b,G.LG-G.b,G.b,ybot(x),ybot(x+G.b));
+// columnas intermedias de frente y fondo (sostienen la chapa): el tinglado no las lleva
+if(!G.TINGLADO){ for(const x of colFrente) columna(x,G.b,0,G.b,ybot(x),ybot(x+G.b)); for(const x of colFondo)  columna(x,G.b,G.LG-G.b,G.b,ybot(x),ybot(x+G.b)); }
 
 (function construirBarras(){
   // perfil U + ángulo: cordones como alas del U (7 cm) y diagonales de ángulo 1¼" ; hierro redondo: cilindros
@@ -588,7 +588,7 @@ if(!UNO) (function(){ const sh=new THREE.Shape(); sh.moveTo(-.18,-.036); sh.line
   const g=new THREE.ExtrudeGeometry(sh,{depth:G.LG+.24,bevelEnabled:false}); const m=new THREE.Mesh(g,mPerfil);
   m.position.set(G.L/2,Yr+.125,-.12); m.castShadow=true; chapas.add(m);})();
 // laterales
-for(const [x,h] of [[-.11,Ye],[G.L+.11,UNO?Yr:Ye]]){
+if(!G.TINGLADO) for(const [x,h] of [[-.11,Ye],[G.L+.11,UNO?Yr:Ye]]){
   if(PL && x<0){ const zs=[...new Set([...muestras(-.11,G.LG+.11,.5),zl0-.001,zl0+.001,zl1-.001,zl1+.001])].sort((a,b)=>a-b);
     franja(zs.map(z=>[z,[x,(z>zl0&&z<zl1)?PL.h+.2:.05,z],[x,h+.08,z]])); }
   else franja(muestras(-.11,G.LG+.11,1).map(z=>[z,[x,ZB,z],[x,h+.08,z]])); }
@@ -598,7 +598,8 @@ function testero(z, conPorton){
   franja(xs.map(x=>{ const xc=Math.min(Math.max(x,0),G.L), top=ytop(xc)+.07;
     const base = conPorton && x>xp0 && x<xp1 ? Math.max(G.porton.h+.2,ZB) : ZB; return [x,[x,base,z],[x,top,z]]; }));
 }
-testero(-.11,HASP); testero(G.LG+.11,false);
+// tinglado: sin chapa en frente, fondo ni en el pico
+if(!G.TINGLADO){ testero(-.11,HASP); testero(G.LG+.11,false); }
 // terminaciones: esquineros (ángulo) de 10 x 10 cm
 const mTerm = new THREE.MeshStandardMaterial({color:0xe2e7eb, metalness:.92, roughness:.22, envMapIntensity:1.1});
 const T10=.10, TE=.006;
@@ -607,7 +608,7 @@ function placa(A,B,alto,ancho){ // placa a lo largo de A->B (alto: perpendicular
   const m=new THREE.Mesh(new THREE.BoxGeometry(ancho,alto,L),mTerm);
   m.position.copy(A).add(B).multiplyScalar(.5); m.lookAt(B); m.castShadow=true; m.receiveShadow=true; chapas.add(m); return m; }
 // 1) esquinas verticales: ángulo 10x10 que tapa el encuentro de lateral con frente/fondo
-for(const [x,z,sx,sz] of [[-.11,-.11,1,1],[G.L+.11,-.11,-1,1],[-.11,G.LG+.11,1,-1],[G.L+.11,G.LG+.11,-1,-1]]){
+if(!G.TINGLADO) for(const [x,z,sx,sz] of [[-.11,-.11,1,1],[G.L+.11,-.11,-1,1],[-.11,G.LG+.11,1,-1],[G.L+.11,G.LG+.11,-1,-1]]){
   const hTop=(UNO&&sx<0)?Yr+.03:Ye, h=hTop+.09-ZB, yc=ZB+h/2, xo=x-sx*.012, zo=z-sz*.012;
   const a=new THREE.Mesh(new THREE.BoxGeometry(T10,h,TE),mTerm); a.position.set(xo+sx*(T10/2-.006),yc,zo); // sobre frente/fondo
   const b=new THREE.Mesh(new THREE.BoxGeometry(TE,h,T10),mTerm); b.position.set(xo,yc,zo+sz*(T10/2-.006)); // sobre lateral
@@ -619,7 +620,7 @@ for(const [zf,sz] of [[-.11,1],[G.LG+.11,-1]]){
   for(const [x0,x1] of (UNO?[[-.12,G.L+.12]]:[[-.12,G.L/2],[G.L+.12,G.L/2]])){
     const zo=zf-sz*.016;
     // cara vertical (sobre la chapa del frente)
-    placa(new THREE.Vector3(x0,yTecho(Math.min(Math.max(x0,0),G.L))-T10/2,zo), new THREE.Vector3(x1,yTecho(Math.min(Math.max(x1,0),G.L))-T10/2,zo), T10, TE);
+    if(!G.TINGLADO) placa(new THREE.Vector3(x0,yTecho(Math.min(Math.max(x0,0),G.L))-T10/2,zo), new THREE.Vector3(x1,yTecho(Math.min(Math.max(x1,0),G.L))-T10/2,zo), T10, TE);
     // ala superior (sobre la chapa del techo)
     placa(new THREE.Vector3(x0,yTecho(Math.max(Math.min(x0,G.L),0))+.003,zo+sz*(T10/2)), new THREE.Vector3(x1,yTecho(Math.min(Math.max(x1,0),G.L))+.003,zo+sz*(T10/2)), TE, T10);
   }
