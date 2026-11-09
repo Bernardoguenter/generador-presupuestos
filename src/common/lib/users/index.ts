@@ -9,6 +9,7 @@ export type UpdateUserFormData = {
   fullName?: string;
   role?: string;
   isPasswordChanged?: boolean;
+  nickname?: string | null;
 };
 
 const getAllUsers = async (
