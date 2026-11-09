@@ -14,7 +14,15 @@ export const useUpdateUserForm = (user: User | null) => {
     try {
       setIsSubmitting(true);
       if (user?.id) {
-        const { data, error } = await updateUser(formData, user.id);
+        // El apodo solo se manda si cambió (así no falla si la base todavía
+        // no tiene la columna "nickname").
+        const { nickname, ...rest } = formData;
+        const newNickname = (nickname ?? "").trim();
+        const dataToUpdate =
+          newNickname !== (user.nickname ?? "")
+            ? { ...rest, nickname: newNickname || null }
+            : rest;
+        const { data, error } = await updateUser(dataToUpdate, user.id);
 
         if (!error) {
           UpdateUserToastSuccess(data?.fullName);
@@ -40,6 +48,7 @@ export const useUpdateUserForm = (user: User | null) => {
       email: user.email,
       company_id: user.company_id,
       fullName: user.fullName,
+      nickname: user.nickname ?? "",
     };
   }, [user]);
 

@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { BudgetPeriodFilter, Pagination, SearchInput } from "@/components";
 import { useBudgetCounts } from "@/common/hooks";
+import { useAuthContext } from "@/common/context";
 import { getBudgetPeriodLabel } from "@/helpers/budgetPeriods";
 import { useUserList } from "../../hooks";
 import { UserTable } from "./UserTable";
@@ -23,9 +24,14 @@ export const UserList = () => {
     removeUser,
   } = useUserList();
 
+  // La lista no incluye al usuario que está mirando: se lo cuenta aparte.
+  const { id: myId, authUser } = useAuthContext();
   const userIds = useMemo(
-    () => (paginatedUsers ?? []).map((u) => u.id),
-    [paginatedUsers],
+    () => [
+      ...(myId ? [myId] : []),
+      ...(paginatedUsers ?? []).map((u) => u.id).filter((uid) => uid !== myId),
+    ],
+    [paginatedUsers, myId],
   );
   const { period, day, counts, isLoading: countsLoading, onChange } =
     useBudgetCounts(userIds);
@@ -46,10 +52,19 @@ export const UserList = () => {
           day={day}
           onChange={onChange}
         />
+        {myId && (
+          <p className="text-sm">
+            Vos{authUser?.fullName ? ` (${authUser.fullName})` : ""}:{" "}
+            <b className="text-lg">
+              {countsLoading ? "…" : (counts[myId]?.total ?? 0)}
+            </b>{" "}
+            presupuestos {getBudgetPeriodLabel(period, day)}
+          </p>
+        )}
         <p className="text-xs opacity-80">
           {countsLoading
             ? "Contando presupuestos..."
-            : `${totalBudgets} presupuestos ${getBudgetPeriodLabel(period, day)} entre los usuarios de esta página.`}
+            : `${totalBudgets} presupuestos ${getBudgetPeriodLabel(period, day)} en total (vos y los usuarios de esta página).`}
         </p>
       </div>
       {users && (

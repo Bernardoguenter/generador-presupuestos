@@ -6,6 +6,8 @@ export interface User {
   isPasswordChanged: boolean;
   fullName: string;
   company_id: string;
+  /** Apodo para reconocerlo dentro de la calculadora (no sale en el PDF) */
+  nickname?: string | null;
 }
 
 export interface Role {
