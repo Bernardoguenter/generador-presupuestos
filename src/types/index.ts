@@ -161,6 +161,11 @@ export type FeederSilosPriceMap = Record<string, number>;
 export type PDFImage = {
   src: string;
   title?: string;
+  /** Tamaño original en px, para no deformar la imagen en el PDF */
+  width?: number;
+  height?: number;
+  /** "half": dos por hoja vertical (fotos). "landscape": una hoja apaisada entera (croquis). */
+  layout?: "half" | "landscape";
 };
 
 export type SiloFormValue = Partial<Silo>;

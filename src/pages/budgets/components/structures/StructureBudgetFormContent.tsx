@@ -7,6 +7,7 @@ import { MarginAndTaxesFieldset } from "../MarginAndTaxesFieldset";
 import { MaterialsAndStructuresFieldset } from "./MaterialsAndStructuresFieldset";
 import { MeasuresFieldset } from "./MeasuresFieldset";
 import { EnclousureInputs } from "./EnclousureInputs";
+import { PDFOptionsFieldset } from "./PDFOptionsFieldset";
 
 export const StructureBudgetFormContent = () => {
   return (
@@ -14,6 +15,7 @@ export const StructureBudgetFormContent = () => {
       <CustomerFieldset />
       <MaterialsAndStructuresFieldset />
       <MeasuresFieldset />
+      <PDFOptionsFieldset />
       <EnclousureInputs />
       <FreightInput />
       <GutterInput />

@@ -10,7 +10,7 @@ interface Props {
 }
 
 export const PDFSiloComponent = ({ getBudget, handleView }: Props) => {
-  const { defaultValues, handleSubmit, viewPdf, budget } =
+  const { defaultValues, handleSubmit, viewPdf, budget, buildDraft, onDraftRendered } =
     useConfirmSiloSubmit({ getBudget, handleView });
 
   if (!defaultValues) {
@@ -29,7 +29,10 @@ export const PDFSiloComponent = ({ getBudget, handleView }: Props) => {
           type="silo"
         />
       ) : (
-        <PDFSiloFormContent />
+        <PDFSiloFormContent
+          buildDraft={buildDraft}
+          onDraftRendered={onDraftRendered}
+        />
       )}
     </Form>
   );

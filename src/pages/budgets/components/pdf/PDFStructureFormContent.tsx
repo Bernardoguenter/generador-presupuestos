@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components";
 import { usePDFContext } from "@/common/context";
 import { useFormContext, useWatch } from "react-hook-form";
@@ -9,7 +9,12 @@ import { PDFPaymentMethods } from "./PDFPaymentMethods";
 import { PDFDetails } from "./PDFDetails";
 import { PDFEstimatedDelivery } from "./PDFEstimatedDelivery";
 
-export const PDFStructureFormContent = () => {
+interface Props {
+  /** Se llama con los valores del formulario cuando dejan de cambiar */
+  onValuesReady?: (values: unknown) => Promise<boolean>;
+}
+
+export const PDFStructureFormContent = ({ onValuesReady }: Props) => {
   const { pdfInfo } = usePDFContext();
   const { control, setValue } = useFormContext();
   const description = useWatch({ control, name: "description" });
@@ -43,6 +48,31 @@ export const PDFStructureFormContent = () => {
     setValue("estimatedDelivery", estimatedDelivery);
   }, [estimatedDelivery, setValue]);
 
+  // Arma el PDF de antemano (un segundo después del último cambio), así al
+  // confirmar se abre directo el menú de compartir.
+  // Mientras se arma, el botón espera: así el toque abre directo "Compartir".
+  const [preparing, setPreparing] = useState<boolean>(!!onValuesReady);
+  useEffect(() => {
+    if (!onValuesReady) return;
+    let active = true;
+    setPreparing(true);
+    const t = setTimeout(async () => {
+      const ok = await onValuesReady({
+        description,
+        details,
+        paymentMethods,
+        total,
+        caption,
+        estimatedDelivery,
+      });
+      if (ok && active) setPreparing(false);
+    }, 500);
+    return () => {
+      active = false;
+      clearTimeout(t);
+    };
+  }, [onValuesReady, description, details, paymentMethods, total, caption, estimatedDelivery]);
+
   return (
     <div className="mt-16 bg-white  p-4 lg:p-8 w-full text-black">
       <BudgetHeader customer={pdfInfo?.dataToSubmit?.customer ?? ""} />
@@ -53,8 +83,19 @@ export const PDFStructureFormContent = () => {
       <BudgetFooter />
       <Button
         type="submit"
-        color="info">
-        Confirmar Presupuesto
+        color="info"
+        disabled={preparing}>
+        {preparing ? (
+          <span className="inline-flex items-center justify-center gap-2">
+            <span
+              aria-hidden="true"
+              className="inline-block h-4 w-4 rounded-full border-2 border-current border-t-transparent animate-spin"
+            />
+            Preparando el PDF...
+          </span>
+        ) : (
+          "Confirmar Presupuesto"
+        )}
       </Button>
     </div>
   );

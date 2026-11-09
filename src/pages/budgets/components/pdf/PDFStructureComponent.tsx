@@ -10,7 +10,7 @@ interface Props {
 }
 
 export const PDFStructureComponent = ({ getBudget, handleView }: Props) => {
-  const { defaultValues, handleSubmit, viewPdf, budget } =
+  const { defaultValues, handleSubmit, viewPdf, budget, preparePdf } =
     useConfirmStructureSubmit({ getBudget, handleView });
 
   if (!defaultValues) {
@@ -29,7 +29,7 @@ export const PDFStructureComponent = ({ getBudget, handleView }: Props) => {
           type={"structure"}
         />
       ) : (
-        <PDFStructureFormContent />
+        <PDFStructureFormContent onValuesReady={preparePdf} />
       )}
     </Form>
   );
