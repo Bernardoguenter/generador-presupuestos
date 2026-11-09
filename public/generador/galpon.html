@@ -317,7 +317,8 @@ const ybot = x => UNO ? Ye - G.d + s*x : Ye - G.d + s*(x<=G.L/2 ? x : G.L-x);  /
 
 const canvas = document.getElementById('scene');
 const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true, preserveDrawingBuffer:true}); renderer.setClearColor(0x000000,0);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
+const LIVIANO=/[?&]liviano=1/.test(location.search); // desde la calculadora: menos carga para el celular
+renderer.setPixelRatio(LIVIANO?1:Math.min(window.devicePixelRatio||1, 2));
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 0.92;
@@ -368,7 +369,7 @@ controls.target.set(G.L/2, 2.4, G.LG/2);
 scene.add(new THREE.HemisphereLight(0xcfe0ee, 0x5d5a44, 0.22));
 const sun = new THREE.DirectionalLight(0xfff1dc, 2.4);
 sun.position.copy(SUN_DIR).multiplyScalar(30).add(new THREE.Vector3(G.L/2,0,G.LG/2)); sun.castShadow = true;
-sun.shadow.mapSize.set(4096,4096); sun.shadow.radius = 3;
+sun.shadow.mapSize.set(LIVIANO?2048:4096,LIVIANO?2048:4096); sun.shadow.radius = 3;
 const SR=Math.max(G.L,G.LG)*0.9+6;
 Object.assign(sun.shadow.camera,{left:-SR,right:SR,top:SR,bottom:-SR,near:1,far:90});
 sun.shadow.bias = -0.0003; sun.shadow.normalBias = 0.02; sun.target.position.set(G.L/2,0,G.LG/2); scene.add(sun, sun.target);
@@ -701,7 +702,7 @@ const hud=document.getElementById('hud'), ti=document.getElementById('toggleInfo
 ti.onclick=()=>{ const min=hud.classList.toggle('min'); ti.textContent=min?'Ver ficha':'Ocultar ficha'; ti.setAttribute('aria-expanded',String(!min)); };
 
 function pintarCielo(){
-  const cv=document.getElementById('cielo'), dpr=Math.min(window.devicePixelRatio||1,2), W=cv.clientWidth*dpr|0, H=cv.clientHeight*dpr|0;
+  const cv=document.getElementById('cielo'), dpr=/[?&]liviano=1/.test(location.search)?1:Math.min(window.devicePixelRatio||1,2), W=cv.clientWidth*dpr|0, H=cv.clientHeight*dpr|0;
   cv.width=W; cv.height=H; const g=cv.getContext('2d');
   const gr=g.createLinearGradient(0,0,0,H*.62); gr.addColorStop(0,'#1552a6'); gr.addColorStop(.5,'#3b7fcc'); gr.addColorStop(.85,'#7fb2e3'); gr.addColorStop(1,'#bcd7ec');
   g.fillStyle=gr; g.fillRect(0,0,W,H);
@@ -807,7 +808,7 @@ window.galpon = {setModo, setVista, abrir(v, ya){ if(v!==abierto) document.getEl
     if(C.aguas!==1) cota([C.ancho/2,0,-.25],[C.ancho/2,Yr,-.25],m(C.alto+C.ancho/2*C.pendiente)+' m');
     else cota([C.ancho,0,-.25],[C.ancho,Yr,-.25],m(C.alto+C.ancho*C.pendiente)+' m',true);
     ok({src:c.toDataURL('image/jpeg',.9),w:W,h:Hh}); }; im.src=img.src; }); }
-  window.remecoImagenes=async function(){
+  window.remecoImagenes=async function(op){ op=op||{};
     const tomas=[['foto1','full',false,'Vista frente'],['foto2','full',false,'Vista esquina'],['frente','full',true,'Portón abierto'],['iso','frame',false,'Estructura'],['interior','full',false,'Interior']];
     galpon.setModo('full'); galpon.abrir(false,true); galpon.encuadrar(-0.62,-1,0.2,Math.max(.9,C.ancho*.06)+.6); await wait(250);
     const principal={titulo:'Medidas',...await cotas(fotoURL())};
@@ -816,7 +817,7 @@ window.galpon = {setModo, setVista, abrir(v, ya){ if(v!==abierto) document.getEl
       if(v==='foto2') galpon.encuadrar(1,-0.85,0.16,.3); else if(v==='foto1') galpon.encuadrar(-0.62,-1,0.16,.3); else if(v==='iso') galpon.encuadrar(-0.7,-0.9,0.42,.3); else galpon.setVista(v,true);
       await wait(250); fotos.push({titulo:t,...fotoURL()}); }
     galpon.setModo('full'); galpon.abrir(false,true); galpon.setVista('iso',true);
-    const croquis=[]; for(let i=0;i<H.length;i++){ const h=H[i]; croquis.push({titulo:h[0],...await svgAJpg(PLANO.hoja(C,h[0],h[2],'Escala aprox. 1:50',i+1,H.length,h[1],LOGO,hoy),2376,1680)}); }
+    const croquis=[]; if(op.croquis!==false) for(let i=0;i<H.length;i++){ const h=H[i]; croquis.push({titulo:h[0],...await svgAJpg(PLANO.hoja(C,h[0],h[2],'Escala aprox. 1:50',i+1,H.length,h[1],LOGO,hoy),2376,1680)}); }
     return {principal,fotos,croquis}; };
   window.remecoListo=true;
   // desde la calculadora dentro de un iframe: postMessage({remeco:{ancho:12,largo:8,...}})

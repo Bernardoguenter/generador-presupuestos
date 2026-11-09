@@ -98,6 +98,8 @@ export const getGeneradorURL = (
 export async function getStructureRenders(
   budget: GeneradorBudget,
   roofSlopes: 1 | 2 = 2,
+  /** Para el PDF: sin croquis y fotos un poco más chicas (más rápido en el celular) */
+  { soloFotos = false }: { soloFotos?: boolean } = {},
 ): Promise<StructureRenders> {
   const iframe = document.createElement("iframe");
   iframe.setAttribute("aria-hidden", "true");
@@ -106,20 +108,21 @@ export async function getStructureRenders(
     position: "fixed",
     left: "-10000px",
     top: "0",
-    width: "1800px",
-    height: "1200px",
+    width: soloFotos ? "1500px" : "1800px",
+    height: soloFotos ? "1000px" : "1200px",
     border: "0",
   });
-  iframe.src = getGeneradorURL(budget, roofSlopes);
+  // liviano=1: sin multiplicar la resolución por la pantalla del celular
+  iframe.src = `${getGeneradorURL(budget, roofSlopes)}&liviano=1`;
   document.body.appendChild(iframe);
 
   try {
-    const win = await new Promise<Window & { remecoImagenes?: () => Promise<GeneradorResultado> }>(
+    const win = await new Promise<Window & { remecoImagenes?: (op?: { croquis?: boolean }) => Promise<GeneradorResultado> }>(
       (resolve, reject) => {
         const inicio = Date.now();
         const check = () => {
           const w = iframe.contentWindow as
-            | (Window & { remecoListo?: boolean; remecoImagenes?: () => Promise<GeneradorResultado> })
+            | (Window & { remecoListo?: boolean; remecoImagenes?: (op?: { croquis?: boolean }) => Promise<GeneradorResultado> })
             | null;
           if (w?.remecoListo && w.remecoImagenes) return resolve(w);
           if (Date.now() - inicio > TIMEOUT_MS)
@@ -130,7 +133,7 @@ export async function getStructureRenders(
       },
     );
 
-    const { principal, fotos, croquis } = await win.remecoImagenes!();
+    const { principal, fotos, croquis } = await win.remecoImagenes!({ croquis: !soloFotos });
     return {
       principal: principal
         ? {

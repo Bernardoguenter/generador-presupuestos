@@ -1,5 +1,4 @@
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+import type jsPDF from "jspdf";
 import type { Company, StructureBudget } from "@/types";
 import { getStructureRenders, type StructureRenders } from "./structureRenders";
 
@@ -288,7 +287,7 @@ export async function buildRemecoStructurePDF(
 ): Promise<jsPDF> {
   const withRenders = options.includeRenders ?? true;
   const r = withRenders
-    ? (renders ?? (await getStructureRenders(budget, options.roofSlopes ?? 2)))
+    ? (renders ?? (await getStructureRenders(budget, options.roofSlopes ?? 2, { soloFotos: true })))
     : { principal: null, fotos: [], croquis: [] };
   const hasPhotos = !!r.principal || r.fotos.length > 0;
   const pages = [pageOne(budget, options)];
@@ -315,7 +314,12 @@ export async function buildRemecoStructurePDF(
             }),
       ),
     );
-    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+    // Se cargan recién cuando hacen falta, así la calculadora abre más rápido
+    const [{ default: JsPDF }, { default: html2canvas }] = await Promise.all([
+      import("jspdf"),
+      import("html2canvas"),
+    ]);
+    const doc = new JsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
     const els = Array.from(host.querySelectorAll<HTMLElement>(".rp"));
     for (let i = 0; i < els.length; i++) {
       const canvas = await html2canvas(els[i], {
@@ -327,7 +331,7 @@ export async function buildRemecoStructurePDF(
         windowWidth: PAGE_W,
       });
       if (i > 0) doc.addPage("a4", "portrait");
-      doc.addImage(canvas.toDataURL("image/jpeg", 0.92), "JPEG", 0, 0, 210, 297);
+      doc.addImage(canvas.toDataURL("image/jpeg", 0.85), "JPEG", 0, 0, 210, 297);
     }
     return doc;
   } finally {

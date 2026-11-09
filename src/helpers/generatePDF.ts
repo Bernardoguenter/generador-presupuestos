@@ -1,15 +1,19 @@
-import jsPDF from "jspdf";
+import type jsPDF from "jspdf";
+
+// jsPDF se carga recién cuando hace falta, así la calculadora abre más rápido
+const loadJsPDF = async () => (await import("jspdf")).default;
 import { retrieveFileFromBucket } from "@/common/lib";
 import type { PDFImage, Silo } from "@/types";
 
 export const waitNextFrame = () =>
   new Promise((resolve) => requestAnimationFrame(resolve));
 
-export function convertPDF(client: string, images: PDFImage[] = []) {
+export async function convertPDF(client: string, images: PDFImage[] = []) {
   const pdfBody = document.getElementById("pdf");
   if (!pdfBody) return;
 
-  const doc = new jsPDF({
+  const JsPDF = await loadJsPDF();
+  const doc = new JsPDF({
     orientation: "portrait",
     unit: "mm",
     format: "a4",
@@ -80,7 +84,8 @@ export async function getPDFBase64(): Promise<string | null> {
     return null;
   }
 
-  const doc = new jsPDF({
+  const JsPDF = await loadJsPDF();
+  const doc = new JsPDF({
     orientation: "portrait",
     unit: "mm",
     format: "a4",
@@ -166,8 +171,9 @@ export async function generatePDFBlobURL(): Promise<string | null> {
     return null;
   }
 
+  const JsPDF = await loadJsPDF();
   return new Promise((resolve) => {
-    const doc = new jsPDF({
+    const doc = new JsPDF({
       orientation: "portrait",
       unit: "mm",
       format: "a4",
@@ -192,11 +198,12 @@ export async function generatePDFBlobURL(): Promise<string | null> {
 }
 
 /** Arma el PDF (formato de siempre) desde un elemento de la página. */
-export function buildPDFFromElement(
+export async function buildPDFFromElement(
   element: HTMLElement,
   images: PDFImage[] = [],
 ): Promise<jsPDF> {
-  const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  const JsPDF = await loadJsPDF();
+  const doc = new JsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   return new Promise((resolve) => {
     doc.html(element, {
       callback: (pdf) => {

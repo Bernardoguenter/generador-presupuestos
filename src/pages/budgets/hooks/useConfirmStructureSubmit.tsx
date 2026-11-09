@@ -140,7 +140,7 @@ export const useConfirmStructureSubmit = ({
           if (rendersRef.current?.key !== rKey)
             rendersRef.current = {
               key: rKey,
-              promise: getStructureRenders(budget, pdfOptions.roofSlopes),
+              promise: getStructureRenders(budget, pdfOptions.roofSlopes, { soloFotos: true }),
             };
           renders = await rendersRef.current.promise;
         }
