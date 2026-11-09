@@ -7,12 +7,13 @@ import { BudgetTable } from "./BudgetTable";
 interface Props {
   budget: StructureBudget | SiloBudget;
   type?: "silo" | "structure";
+  id?: string;
 }
 
-export const PDFViewComponent = ({ budget, type = "structure" }: Props) => {
+export const PDFViewComponent = ({ budget, type = "structure", id = "pdf" }: Props) => {
   return (
     <div
-      id="pdf"
+      id={id}
       style={{
         backgroundColor: "#ffffff",
         color: "#000000",

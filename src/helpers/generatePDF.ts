@@ -190,3 +190,37 @@ export async function generatePDFBlobURL(): Promise<string | null> {
     });
   });
 }
+
+/** Arma el PDF (formato de siempre) desde un elemento de la página. */
+export function buildPDFFromElement(
+  element: HTMLElement,
+  images: PDFImage[] = [],
+): Promise<jsPDF> {
+  const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  return new Promise((resolve) => {
+    doc.html(element, {
+      callback: (pdf) => {
+        addImagesToPDF(pdf, images);
+        resolve(pdf);
+      },
+      x: 10,
+      y: 10,
+      html2canvas: { scale: 0.25, useCORS: true },
+      width: 210,
+      windowWidth: 794,
+    });
+  });
+}
+
+/** "Presupuesto Silo Comedero 12tn" (o "Presupuesto Silos" si son varios). */
+export const getSiloPDFTitle = (silos: Silo[]) =>
+  silos.length === 1 ? `Presupuesto ${buildSiloTitle(silos[0])}` : "Presupuesto Silos";
+
+/** Arma el archivo listo para compartir: "Presupuesto Silos - Cliente.pdf". */
+export const prepareSiloPDF = (doc: jsPDF, silos: Silo[], customer: string) => {
+  const title = getSiloPDFTitle(silos);
+  const cliente = (customer ?? "").trim().replace(/[\\/:*?"<>|]/g, "");
+  const fileName = `${title}${cliente ? ` - ${cliente}` : ""}.pdf`;
+  const file = new File([doc.output("blob")], fileName, { type: "application/pdf" });
+  return { doc, file, fileName, title };
+};

@@ -1,4 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { SiloBudget } from "@/types";
+import { PDFViewComponent } from "../../budgetDetail/pdf/PDFViewComponent";
 import { Button } from "@/components";
 import { usePDFContext } from "@/common/context";
 import { useFormContext, useWatch } from "react-hook-form";
@@ -8,7 +10,16 @@ import { PDFPaymentMethods } from "./PDFPaymentMethods";
 import { PDFSiloTable } from "./PDFSiloTable";
 import { PDFEstimatedDelivery } from "./PDFEstimatedDelivery";
 
-export const PDFSiloFormContent = () => {
+type Draft = { key: string; budget: SiloBudget };
+
+interface Props {
+  /** Arma el borrador del presupuesto con los valores del formulario */
+  buildDraft?: (values: unknown) => Draft | null;
+  /** Se llama cuando el borrador ya está dibujado (oculto) */
+  onDraftRendered?: (element: HTMLElement, key: string, budget: SiloBudget) => void;
+}
+
+export const PDFSiloFormContent = ({ buildDraft, onDraftRendered }: Props) => {
   const { pdfInfo } = usePDFContext();
   const { control, setValue } = useFormContext();
   const paymentMethods = useWatch({ control, name: "paymentMethods" });
@@ -28,8 +39,32 @@ export const PDFSiloFormContent = () => {
     setValue("estimatedDelivery", estimatedDelivery);
   }, [estimatedDelivery, setValue]);
 
+  // Arma el PDF de antemano (un segundo después del último cambio), así al
+  // confirmar se abre directo el menú de compartir.
+  const allValues = useWatch({ control });
+  const valuesKey = JSON.stringify(allValues);
+  const [draft, setDraft] = useState<Draft | null>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const draftRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!buildDraft) return;
+    const t = setTimeout(() => {
+      const d = buildDraft(JSON.parse(valuesKey));
+      if (d) setDraft(d);
+    }, 1000);
+    return () => clearTimeout(t);
+  }, [buildDraft, valuesKey]);
+
+  useEffect(() => {
+    const el = draftRef.current?.querySelector<HTMLElement>("#pdf-draft");
+    if (draft && el && onDraftRendered) onDraftRendered(el, draft.key, draft.budget);
+  }, [draft, onDraftRendered]);
+
   return (
-    <div className="mt-16 bg-white  p-4 lg:p-8 w-full text-black">
+    <div
+      ref={wrapperRef}
+      className="mt-16 bg-white  p-4 lg:p-8 w-full text-black">
       <BudgetHeader customer={pdfInfo?.dataToSubmit?.customer ?? ""} />
       <PDFSiloTable />
       <PDFPaymentMethods />
@@ -40,6 +75,23 @@ export const PDFSiloFormContent = () => {
         color="info">
         Confirmar Presupuesto
       </Button>
+      {draft && (
+        <div
+          ref={draftRef}
+          aria-hidden="true"
+          style={{
+            position: "fixed",
+            left: "-10000px",
+            top: 0,
+            width: wrapperRef.current?.offsetWidth ?? 390,
+          }}>
+          <PDFViewComponent
+            budget={draft.budget}
+            type="silo"
+            id="pdf-draft"
+          />
+        </div>
+      )}
     </div>
   );
 };

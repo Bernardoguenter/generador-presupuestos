@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import {
   CreateBudgetToastError,
@@ -6,7 +6,17 @@ import {
   UpdateBudgetToastError,
   UpdateBudgetToastSuccess,
 } from "@/utils/alerts";
-import { convertPDF, waitNextFrame, getSiloPDFImages } from "@/helpers";
+import {
+  buildPDFFromElement,
+  canShareRemecoPDF,
+  companyHasRenders,
+  convertPDF,
+  getSiloPDFImages,
+  prepareSiloPDF,
+  shareRemecoPDF,
+  waitNextFrame,
+  type PreparedRemecoPDF,
+} from "@/helpers";
 import { paymentMethods } from "@/helpers";
 import { getDefaultCaption, getSilosDescriptions, priceInUSD } from "@/helpers";
 import {
@@ -14,9 +24,16 @@ import {
   getIndividualSiloPrices,
   getSilosPricestArsPriceWithTaxesAndMarkup,
 } from "@/helpers";
-import type { ConfirmSiloPDFFormData } from "@/pages/budgets/schema";
-import type { Silo, SiloBudget, SiloPDFInfo } from "@/types";
-import { usePDFContext, usePreferencesContext } from "@/common/context";
+import {
+  ConfirmSiloPDFSchema,
+  type ConfirmSiloPDFFormData,
+} from "@/pages/budgets/schema";
+import type { PDFImage, Silo, SiloBudget, SiloPDFInfo } from "@/types";
+import {
+  useCompanyContext,
+  usePDFContext,
+  usePreferencesContext,
+} from "@/common/context";
 import { updateBudget, createBudget } from "@/common/lib";
 
 interface UseConfirmSiloSubmitProps {
@@ -34,6 +51,21 @@ export const useConfirmSiloSubmit = ({
   const [viewPdf, setViewPdf] = useState<boolean>(false);
   const [budget, setBudget] = useState<SiloBudget | null>(null);
   const navigate = useNavigate();
+  const { company } = useCompanyContext();
+  const isRemeco = companyHasRenders(company?.company_name);
+
+  // PDF armado de antemano (en el celular), para que al tocar "Confirmar
+  // Presupuesto" se abra directo el menú de compartir, igual que en galpones.
+  const draftKeyRef = useRef<string | null>(null);
+  const preparedRef = useRef<{ key: string; pdf: PreparedRemecoPDF } | null>(null);
+  const imagesRef = useRef<{ key: string; promise: Promise<PDFImage[]> } | null>(null);
+
+  const getImages = (silos: Silo[]) => {
+    const key = JSON.stringify(silos);
+    if (imagesRef.current?.key !== key)
+      imagesRef.current = { key, promise: getSiloPDFImages(silos) };
+    return imagesRef.current.promise;
+  };
 
   const handleDownloadPdf = async (
     customer: string,
@@ -43,10 +75,20 @@ export const useConfirmSiloSubmit = ({
     setViewPdf(true);
     await waitNextFrame();
     await waitNextFrame();
-    const images = await getSiloPDFImages(silos);
+    const images = await getImages(silos);
 
-    convertPDF(customer, images);
+    const element = document.getElementById("pdf");
+    if (isRemeco && element && canShareRemecoPDF()) {
+      const doc = await buildPDFFromElement(element, images);
+      await shareRemecoPDF(prepareSiloPDF(doc, silos, customer));
+    } else {
+      convertPDF(customer, images);
+    }
 
+    finishView(isNew);
+  };
+
+  const finishView = (isNew: boolean) => {
     setTimeout(() => {
       setViewPdf(false);
       setPdfInfo(null);
@@ -57,8 +99,7 @@ export const useConfirmSiloSubmit = ({
     }, 1000);
   };
 
-  const handleSubmit = async (formData: ConfirmSiloPDFFormData) => {
-    if (!pdfInfo) return;
+  const buildSubmitData = (formData: ConfirmSiloPDFFormData) => {
     const { dataToSubmit } = pdfInfo as SiloPDFInfo;
     const {
       includes_taxes,
@@ -73,13 +114,12 @@ export const useConfirmSiloSubmit = ({
       ...restDataToSubmit
     } = dataToSubmit;
 
+    const description = [...(formData.description ?? [])];
     if (formData.extra_product !== "" && formData.extra_product) {
-      formData.description.push(formData.extra_product);
+      description.push(formData.extra_product);
     }
 
-    const descriptionString = Array.isArray(formData.description)
-      ? formData.description.join("; ")
-      : formData.description || "";
+    const descriptionString = description.join("; ");
 
     const budgetSubmitData = {
       ...restDataToSubmit,
@@ -134,6 +174,65 @@ export const useConfirmSiloSubmit = ({
       created_by: typeof created_by === "object" ? created_by.id : created_by,
     };
 
+    return budgetSubmitData;
+  };
+
+  /**
+   * Borrador del presupuesto para armar el PDF de antemano (se dibuja oculto
+   * en la página). Devuelve null si no hace falta.
+   */
+  const buildDraft = useCallback(
+    (values: unknown): { key: string; budget: SiloBudget } | null => {
+      if (!isRemeco || !pdfInfo || !canShareRemecoPDF()) return null;
+      const parsed = ConfirmSiloPDFSchema.safeParse(values);
+      if (!parsed.success) return null;
+      const key = JSON.stringify(parsed.data);
+      if (preparedRef.current?.key === key || draftKeyRef.current === key)
+        return null;
+      draftKeyRef.current = key;
+      const budget = {
+        ...buildSubmitData(parsed.data),
+        id: id ?? "",
+        created_at: new Date().toISOString(),
+      } as unknown as SiloBudget;
+      return { key, budget };
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isRemeco, pdfInfo, preferences, id],
+  );
+
+  /** Se llama cuando el borrador ya está dibujado (oculto) en la página. */
+  const onDraftRendered = useCallback(
+    async (element: HTMLElement, key: string, budget: SiloBudget) => {
+      try {
+        await waitNextFrame();
+        await waitNextFrame();
+        const images = await getImages(budget.silos as unknown as Silo[]);
+        const doc = await buildPDFFromElement(element, images);
+        if (draftKeyRef.current !== key) return;
+        preparedRef.current = {
+          key,
+          pdf: prepareSiloPDF(doc, budget.silos as unknown as Silo[], budget.customer),
+        };
+      } catch (error) {
+        console.error("No se pudo armar el PDF de antemano", error);
+      }
+    },
+    [],
+  );
+
+  const handleSubmit = async (formData: ConfirmSiloPDFFormData) => {
+    if (!pdfInfo) return;
+
+    // Si el PDF ya está armado con estos datos, se comparte en el mismo toque.
+    const ready =
+      isRemeco && preparedRef.current?.key === JSON.stringify(formData)
+        ? preparedRef.current.pdf
+        : null;
+    if (ready) void shareRemecoPDF(ready);
+
+    const budgetSubmitData = buildSubmitData(formData);
+
     const { data, error } = id
       ? await updateBudget(budgetSubmitData, id, "silo")
       : await createBudget(budgetSubmitData, "silo");
@@ -141,13 +240,15 @@ export const useConfirmSiloSubmit = ({
     if (!error && !id) {
       if (data.id) {
         setBudget(data);
-        handleDownloadPdf(data.customer, data.silos, true);
+        if (ready) finishView(true);
+        else handleDownloadPdf(data.customer, data.silos, true);
         CreateBudgetToastSuccess();
       }
     } else if (!error && id) {
       setViewPdf(true);
 
-      handleDownloadPdf(data.customer, data.silos, false);
+      if (ready) finishView(false);
+      else handleDownloadPdf(data.customer, data.silos, false);
       UpdateBudgetToastSuccess();
 
       if (getBudget) {
@@ -224,5 +325,7 @@ export const useConfirmSiloSubmit = ({
     viewPdf,
     budget,
     defaultValues: getSiloDefaultValues(),
+    buildDraft,
+    onDraftRendered,
   };
 };

@@ -158,7 +158,7 @@ function pageOne(b: StructureBudget, o: RemecoPDFOptions) {
 
   return `
   <div class="hd"><img class="lg" src="${LOGO}" crossorigin="anonymous">
-    <div class="meta"><b>PRESUPUESTO</b>${o.budgetNumber ? `<span class="nro">N° ${esc(String(o.budgetNumber).padStart(4, "0"))}</span>` : ""}Fecha <strong>${fecha(created)}</strong><br>Válido hasta <strong>${fecha(valid)}</strong></div></div>
+    <div class="meta"><b>PRESUPUESTO</b>${o.budgetNumber ? `N° <strong>${esc(String(o.budgetNumber).padStart(4, "0"))}</strong><br>` : ""}Fecha <strong>${fecha(created)}</strong><br>Válido hasta <strong>${fecha(valid)}</strong></div></div>
   <div class="boxes">
     <div><span>Cliente</span><b>${esc(b.customer)}</b></div>
     <div><span>Localidad de la obra</span><b>${esc(localidad)}</b></div>
@@ -167,8 +167,7 @@ function pageOne(b: StructureBudget, o: RemecoPDFOptions) {
   <p class="lead">${nombre ? `Estimado ${esc(nombre)}:` : "Estimado cliente:"} gracias por su consulta. Le acercamos la cotización para la <b>fabricación, provisión de materiales y montaje</b> de ${lead}</p>
   <div class="price">
     <div class="pbox"><div class="l">Precio total</div><div class="v">${pesos(total)}</div>
-      <div class="iva ${b.includes_taxes ? "" : "sin"}">${b.includes_taxes ? `IVA ${num(o.ivaPercentage)} % INCLUIDO` : `+ IVA ${num(o.ivaPercentage)} %`}</div>
-      <div class="s">${num(m2)} m² cubiertos · equivale a ${pesos(total / m2)} por m²${b.includes_taxes ? "" : "<br>El precio no incluye IVA"}</div></div>
+      <div class="s"><span class="iva">${b.includes_taxes ? `IVA ${num(o.ivaPercentage)} % incluido` : `No incluye IVA (${num(o.ivaPercentage)} %)`}</span> · ${num(m2)} m² cubiertos<br>Equivale a ${pesos(total / m2)} por m²</div></div>
     <div class="inc">${incluye.map(([ok, t]) => `<div><i class="${ok ? "ok" : "no"}">${ok ? "✓" : "✕"}</i>${esc(t)}</div>`).join("")}</div>
   </div>
   <h2>Qué incluye el ${isGalpon ? "galpón" : "tinglado"}</h2>
@@ -195,7 +194,7 @@ function pageTwo(b: StructureBudget, r: StructureRenders, o: RemecoPDFOptions) {
   const big = r.principal ?? r.fotos[0];
   return `
   <div class="hd"><img class="lg" src="${LOGO}" crossorigin="anonymous">
-    <div class="meta"><b>PRESUPUESTO</b>${o.budgetNumber ? `<span class="nro">N° ${esc(String(o.budgetNumber).padStart(4, "0"))}</span>` : ""}${esc(b.customer)}</div></div>
+    <div class="meta"><b>PRESUPUESTO</b>${o.budgetNumber ? `N° <strong>${esc(String(o.budgetNumber).padStart(4, "0"))}</strong><br>` : ""}${esc(b.customer)}</div></div>
   <h2>Cómo quedaría</h2>
   ${big ? `<img class="big" src="${big.src}"><div class="cap">Medidas principales del ${b.structure_type === "Galpón" ? "galpón" : "tinglado"}.</div>` : ""}
   <div class="grid">${grid.map((f) => `<div><img src="${f.src}"><div class="cap">${esc(cap[f.title ?? ""] ?? f.title)}</div></div>`).join("")}</div>
@@ -220,8 +219,7 @@ const CSS = `
 .rp .price{display:flex;margin-top:18px;border:1px solid #d5dbe2;border-radius:8px;overflow:hidden}
 .rp .pbox{flex:1.15;background:#1f2b45;color:#fff;padding:20px 24px}
 .rp .pbox .l{font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.8}.rp .pbox .v{font-size:38px;font-weight:800;margin-top:4px;line-height:1.1}.rp .pbox .s{font-size:12px;opacity:.88;margin-top:6px;line-height:1.5}
-.rp .iva{display:inline-block;margin-top:10px;background:#FF8303;color:#fff;font-weight:800;font-size:17px;letter-spacing:.04em;padding:5px 12px;border-radius:5px}.rp .iva.sin{background:#fff;color:#a5282c}
-.rp .meta .nro{display:block;color:#FF8303;font-size:17px;font-weight:800;margin:2px 0 4px;letter-spacing:.04em}
+.rp .iva{font-size:15.5px;font-weight:700}
 .rp .inc{flex:1;background:#eef3f7;padding:16px 22px;font-size:13.5px;line-height:1.75}
 .rp .inc i{font-style:normal;font-weight:700;display:inline-block;width:20px}.rp .ok{color:#2f7d4f}.rp .no{color:#a5282c}
 .rp h2{font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;margin:24px 0 6px;color:#1f2b45;font-weight:800;border-bottom:1px solid #d5dbe2;padding-bottom:7px}
