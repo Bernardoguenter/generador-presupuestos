@@ -23,6 +23,8 @@ export interface RemecoPDFOptions {
   /** Agregar la hoja de fotos 3D con medidas (por defecto sí) */
   includeRenders?: boolean;
   company?: Company | null;
+  /** N° de presupuesto (se cuenta desde que empezó la numeración) */
+  budgetNumber?: number | null;
 }
 
 const esc = (s: unknown) =>
@@ -130,7 +132,7 @@ function pageOne(b: StructureBudget, o: RemecoPDFOptions) {
   const incluye: [boolean, string][] = [
     [true, "Fabricación y materiales"],
     [true, "Montaje completo en obra"],
-    [b.includes_taxes, b.includes_taxes ? "IVA incluido" : "IVA"],
+    [b.includes_taxes, b.includes_taxes ? `IVA ${num(o.ivaPercentage)} % incluido` : `IVA ${num(o.ivaPercentage)} %`],
     [b.includes_freight, b.includes_freight ? "Flete incluido" : "Flete (según ubicación)"],
     [false, "Hormigón de las bases"],
   ];
@@ -156,7 +158,7 @@ function pageOne(b: StructureBudget, o: RemecoPDFOptions) {
 
   return `
   <div class="hd"><img class="lg" src="${LOGO}" crossorigin="anonymous">
-    <div class="meta"><b>PRESUPUESTO</b>Fecha <strong>${fecha(created)}</strong><br>Válido hasta <strong>${fecha(valid)}</strong></div></div>
+    <div class="meta"><b>PRESUPUESTO</b>${o.budgetNumber ? `<span class="nro">N° ${esc(String(o.budgetNumber).padStart(4, "0"))}</span>` : ""}Fecha <strong>${fecha(created)}</strong><br>Válido hasta <strong>${fecha(valid)}</strong></div></div>
   <div class="boxes">
     <div><span>Cliente</span><b>${esc(b.customer)}</b></div>
     <div><span>Localidad de la obra</span><b>${esc(localidad)}</b></div>
@@ -165,7 +167,8 @@ function pageOne(b: StructureBudget, o: RemecoPDFOptions) {
   <p class="lead">${nombre ? `Estimado ${esc(nombre)}:` : "Estimado cliente:"} gracias por su consulta. Le acercamos la cotización para la <b>fabricación, provisión de materiales y montaje</b> de ${lead}</p>
   <div class="price">
     <div class="pbox"><div class="l">Precio total</div><div class="v">${pesos(total)}</div>
-      <div class="s">${b.includes_taxes ? `IVA ${num(o.ivaPercentage)} % incluido` : `No incluye IVA (${num(o.ivaPercentage)} %)`} · ${num(m2)} m² cubiertos<br>Equivale a ${pesos(total / m2)} por m²</div></div>
+      <div class="iva ${b.includes_taxes ? "" : "sin"}">${b.includes_taxes ? `IVA ${num(o.ivaPercentage)} % INCLUIDO` : `+ IVA ${num(o.ivaPercentage)} %`}</div>
+      <div class="s">${num(m2)} m² cubiertos · equivale a ${pesos(total / m2)} por m²${b.includes_taxes ? "" : "<br>El precio no incluye IVA"}</div></div>
     <div class="inc">${incluye.map(([ok, t]) => `<div><i class="${ok ? "ok" : "no"}">${ok ? "✓" : "✕"}</i>${esc(t)}</div>`).join("")}</div>
   </div>
   <h2>Qué incluye el ${isGalpon ? "galpón" : "tinglado"}</h2>
@@ -173,7 +176,7 @@ function pageOne(b: StructureBudget, o: RemecoPDFOptions) {
   ${pagos.length ? `<h2>Formas de pago</h2><ul class="pagos">${pagos.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>` : ""}`;
 }
 
-function pageTwo(b: StructureBudget, r: StructureRenders) {
+function pageTwo(b: StructureBudget, r: StructureRenders, o: RemecoPDFOptions) {
   const mat = materialTexto[b.material] ?? b.material.toLowerCase();
   const cap: Record<string, string> = {
     "Portón abierto": "Frente con el portón corredizo abierto.",
@@ -192,7 +195,7 @@ function pageTwo(b: StructureBudget, r: StructureRenders) {
   const big = r.principal ?? r.fotos[0];
   return `
   <div class="hd"><img class="lg" src="${LOGO}" crossorigin="anonymous">
-    <div class="meta"><b>PRESUPUESTO</b>${esc(b.customer)}</div></div>
+    <div class="meta"><b>PRESUPUESTO</b>${o.budgetNumber ? `<span class="nro">N° ${esc(String(o.budgetNumber).padStart(4, "0"))}</span>` : ""}${esc(b.customer)}</div></div>
   <h2>Cómo quedaría</h2>
   ${big ? `<img class="big" src="${big.src}"><div class="cap">Medidas principales del ${b.structure_type === "Galpón" ? "galpón" : "tinglado"}.</div>` : ""}
   <div class="grid">${grid.map((f) => `<div><img src="${f.src}"><div class="cap">${esc(cap[f.title ?? ""] ?? f.title)}</div></div>`).join("")}</div>
@@ -217,6 +220,8 @@ const CSS = `
 .rp .price{display:flex;margin-top:18px;border:1px solid #d5dbe2;border-radius:8px;overflow:hidden}
 .rp .pbox{flex:1.15;background:#1f2b45;color:#fff;padding:20px 24px}
 .rp .pbox .l{font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.8}.rp .pbox .v{font-size:38px;font-weight:800;margin-top:4px;line-height:1.1}.rp .pbox .s{font-size:12px;opacity:.88;margin-top:6px;line-height:1.5}
+.rp .iva{display:inline-block;margin-top:10px;background:#FF8303;color:#fff;font-weight:800;font-size:17px;letter-spacing:.04em;padding:5px 12px;border-radius:5px}.rp .iva.sin{background:#fff;color:#a5282c}
+.rp .meta .nro{display:block;color:#FF8303;font-size:17px;font-weight:800;margin:2px 0 4px;letter-spacing:.04em}
 .rp .inc{flex:1;background:#eef3f7;padding:16px 22px;font-size:13.5px;line-height:1.75}
 .rp .inc i{font-style:normal;font-weight:700;display:inline-block;width:20px}.rp .ok{color:#2f7d4f}.rp .no{color:#a5282c}
 .rp h2{font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;margin:24px 0 6px;color:#1f2b45;font-weight:800;border-bottom:1px solid #d5dbe2;padding-bottom:7px}
@@ -289,7 +294,7 @@ export async function buildRemecoStructurePDF(
     : { principal: null, fotos: [], croquis: [] };
   const hasPhotos = !!r.principal || r.fotos.length > 0;
   const pages = [pageOne(budget, options)];
-  if (hasPhotos) pages.push(pageTwo(budget, await recortarFotos(r)));
+  if (hasPhotos) pages.push(pageTwo(budget, await recortarFotos(r), options));
 
   const host = document.createElement("div");
   host.setAttribute("aria-hidden", "true");
@@ -347,37 +352,60 @@ export const getRemecoPDFFileName = (
   return `Presupuesto ${tipo} ${num(b.width)}x${num(b.length)}${cliente ? ` - ${cliente}` : ""}.pdf`;
 };
 
-/**
- * Descarga el PDF de Remeco. En el celular abre directamente el menú de
- * compartir con el archivo y el título "Presupuesto Galpón 10 × 15 m",
- * en vez del link "blob:..." que aparecía antes.
- */
-export async function downloadRemecoStructurePDF(
+export type PreparedRemecoPDF = {
+  doc: jsPDF;
+  file: File;
+  fileName: string;
+  title: string;
+};
+
+/** Arma el PDF y el archivo listo para compartir. */
+export async function prepareRemecoPDF(
   budget: StructureBudget,
   options: RemecoPDFOptions,
   renders?: StructureRenders | null,
-) {
+): Promise<PreparedRemecoPDF> {
   const doc = await buildRemecoStructurePDF(budget, options, renders);
   const fileName = getRemecoPDFFileName(budget);
   const title = getRemecoPDFTitle(budget);
   const file = new File([doc.output("blob")], fileName, {
     type: "application/pdf",
   });
+  return { doc, file, fileName, title };
+}
 
-  const canShareFile =
-    typeof navigator !== "undefined" &&
-    typeof navigator.share === "function" &&
-    typeof navigator.canShare === "function" &&
-    navigator.canShare({ files: [file] }) &&
-    /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+/** Celular con menú de compartir archivos (WhatsApp, etc.). */
+export const canShareRemecoPDF = (file?: File) =>
+  typeof navigator !== "undefined" &&
+  typeof navigator.share === "function" &&
+  typeof navigator.canShare === "function" &&
+  /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) &&
+  (!file || navigator.canShare({ files: [file] }));
 
-  if (!canShareFile) {
+/**
+ * En el celular abre directamente el menú de compartir. Si el navegador no lo
+ * deja (pasó mucho tiempo desde el toque), muestra el botón "Compartir".
+ * En la computadora descarga el archivo.
+ */
+export async function shareRemecoPDF({ doc, file, fileName, title }: PreparedRemecoPDF) {
+  if (!canShareRemecoPDF(file)) {
     doc.save(fileName);
     return;
   }
+  try {
+    await navigator.share({ files: [file], title, text: title });
+    return;
+  } catch (error) {
+    const name = (error as DOMException)?.name;
+    if (name === "AbortError") return; // lo cerró el usuario
+    if (name !== "NotAllowedError") {
+      doc.save(fileName);
+      return;
+    }
+  }
 
-  // El navegador solo deja compartir justo después de un toque: por eso se
-  // pide un segundo toque cuando el PDF ya está armado.
+  // El navegador solo deja compartir justo después de un toque: si el PDF
+  // tardó en armarse, se pide un toque más.
   const { default: Swal } = await import("sweetalert2");
   await Swal.fire({
     title: "PDF listo",
@@ -397,4 +425,13 @@ export async function downloadRemecoStructurePDF(
   }).then((result) => {
     if (result.dismiss === Swal.DismissReason.cancel) doc.save(fileName);
   });
+}
+
+/** Arma el PDF de Remeco y lo comparte (celular) o lo descarga (computadora). */
+export async function downloadRemecoStructurePDF(
+  budget: StructureBudget,
+  options: RemecoPDFOptions,
+  renders?: StructureRenders | null,
+) {
+  await shareRemecoPDF(await prepareRemecoPDF(budget, options, renders));
 }

@@ -9,7 +9,8 @@ import { useStructureRenders } from "./hooks/useStructureRenders";
 import { StructureRendersSection } from "./StructureRendersSection";
 import { useCompanyContext, usePreferencesContext } from "@/common/context";
 import { companyHasRenders, downloadRemecoStructurePDF } from "@/helpers";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getBudgetNumber } from "@/common/lib";
 
 export default function BudgetDetail() {
   const {
@@ -38,6 +39,20 @@ export default function BudgetDetail() {
     roofSlopes,
   );
 
+  // N° de presupuesto para el PDF de Remeco
+  const [budgetNumber, setBudgetNumber] = useState<number | null>(null);
+  const budgetCreatedAt = budget?.created_at;
+  useEffect(() => {
+    if (!showRenders || !budgetCreatedAt) return;
+    let active = true;
+    getBudgetNumber(company?.id, budgetCreatedAt).then((n) => {
+      if (active) setBudgetNumber(n);
+    });
+    return () => {
+      active = false;
+    };
+  }, [showRenders, budgetCreatedAt, company?.id]);
+
   if (isLoading) return <p className="p-4">Cargando presupuesto...</p>;
   if (error) return <p className="p-4 text-danger">{error}</p>;
   if (!budget) return <p className="p-4">No se ha obtenido un Presupuesto</p>;
@@ -54,6 +69,7 @@ export default function BudgetDetail() {
           company,
           roofSlopes,
           includeRenders,
+          budgetNumber,
         },
         includeRenders ? renders : null,
       );

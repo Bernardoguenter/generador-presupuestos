@@ -9,7 +9,12 @@ import { PDFPaymentMethods } from "./PDFPaymentMethods";
 import { PDFDetails } from "./PDFDetails";
 import { PDFEstimatedDelivery } from "./PDFEstimatedDelivery";
 
-export const PDFStructureFormContent = () => {
+interface Props {
+  /** Se llama con los valores del formulario cuando dejan de cambiar */
+  onValuesReady?: (values: unknown) => void;
+}
+
+export const PDFStructureFormContent = ({ onValuesReady }: Props) => {
   const { pdfInfo } = usePDFContext();
   const { control, setValue } = useFormContext();
   const description = useWatch({ control, name: "description" });
@@ -42,6 +47,25 @@ export const PDFStructureFormContent = () => {
   useEffect(() => {
     setValue("estimatedDelivery", estimatedDelivery);
   }, [estimatedDelivery, setValue]);
+
+  // Arma el PDF de antemano (un segundo después del último cambio), así al
+  // confirmar se abre directo el menú de compartir.
+  useEffect(() => {
+    if (!onValuesReady) return;
+    const t = setTimeout(
+      () =>
+        onValuesReady({
+          description,
+          details,
+          paymentMethods,
+          total,
+          caption,
+          estimatedDelivery,
+        }),
+      1000,
+    );
+    return () => clearTimeout(t);
+  }, [onValuesReady, description, details, paymentMethods, total, caption, estimatedDelivery]);
 
   return (
     <div className="mt-16 bg-white  p-4 lg:p-8 w-full text-black">
