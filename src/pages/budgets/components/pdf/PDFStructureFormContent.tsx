@@ -85,7 +85,17 @@ export const PDFStructureFormContent = ({ onValuesReady }: Props) => {
         type="submit"
         color="info"
         disabled={preparing}>
-        {preparing ? "Preparando el PDF..." : "Confirmar Presupuesto"}
+        {preparing ? (
+          <span className="inline-flex items-center justify-center gap-2">
+            <span
+              aria-hidden="true"
+              className="inline-block h-4 w-4 rounded-full border-2 border-current border-t-transparent animate-spin"
+            />
+            Preparando el PDF...
+          </span>
+        ) : (
+          "Confirmar Presupuesto"
+        )}
       </Button>
     </div>
   );
