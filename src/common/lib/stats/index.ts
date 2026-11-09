@@ -34,6 +34,13 @@ export const getBudgetNumber = async (
     if (!companyId) return null;
     if (createdAt && new Date(createdAt) < new Date(BUDGET_NUMBER_START))
       return null;
+    // Función de la base (ve los presupuestos de toda la empresa). Si todavía
+    // no está creada, se cuenta con lo que el usuario puede ver.
+    const rpc = await supabase.rpc("numero_presupuesto", {
+      hasta: createdAt ?? null,
+    });
+    if (!rpc.error && typeof rpc.data === "number" && rpc.data > 0)
+      return rpc.data;
     const ids = await getCompanyUserIds(companyId);
     if (!ids?.length) return null;
     const counts = await Promise.all(
@@ -72,6 +79,24 @@ export const getBudgetCountsByUser = async (
   userIds.forEach((id) => (data[id] = { structures: 0, silos: 0, total: 0 }));
   if (!userIds.length) return { data, error: null };
   try {
+    // Función de la base: el admin ve los presupuestos de todos los de su empresa.
+    const rpc = await supabase.rpc("contar_presupuestos", {
+      desde: from.toISOString(),
+      hasta: to.toISOString(),
+    });
+    if (!rpc.error && Array.isArray(rpc.data)) {
+      (rpc.data as { user_id: string; galpones: number; silos: number }[]).forEach(
+        (r) => {
+          if (!data[r.user_id]) return;
+          data[r.user_id] = {
+            structures: r.galpones,
+            silos: r.silos,
+            total: r.galpones + r.silos,
+          };
+        },
+      );
+      return { data, error: null };
+    }
     const [structures, silos] = await Promise.all(
       TABLES.map(async (table) => {
         const { data: rows, error } = await supabase
