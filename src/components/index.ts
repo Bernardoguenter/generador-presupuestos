@@ -21,3 +21,4 @@ export { TextAreaInput } from "./TextAreaInput";
 export { TextInput } from "./TextInput";
 export { TextInputWithCloseIcon } from "./TextInputWithCloseIcon";
 export { getErrorByPath } from "./getErrorByPath";
+export { BudgetPeriodFilter } from "./BudgetPeriodFilter";

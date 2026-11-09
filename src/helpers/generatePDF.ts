@@ -1,15 +1,19 @@
-import jsPDF from "jspdf";
+import type jsPDF from "jspdf";
+
+// jsPDF se carga recién cuando hace falta, así la calculadora abre más rápido
+const loadJsPDF = async () => (await import("jspdf")).default;
 import { retrieveFileFromBucket } from "@/common/lib";
 import type { PDFImage, Silo } from "@/types";
 
 export const waitNextFrame = () =>
   new Promise((resolve) => requestAnimationFrame(resolve));
 
-export function convertPDF(client: string, images: PDFImage[] = []) {
+export async function convertPDF(client: string, images: PDFImage[] = []) {
   const pdfBody = document.getElementById("pdf");
   if (!pdfBody) return;
 
-  const doc = new jsPDF({
+  const JsPDF = await loadJsPDF();
+  const doc = new JsPDF({
     orientation: "portrait",
     unit: "mm",
     format: "a4",
@@ -17,15 +21,7 @@ export function convertPDF(client: string, images: PDFImage[] = []) {
 
   doc.html(pdfBody, {
     callback: (pdf) => {
-      if (images.length > 0) {
-        images.forEach((img) => {
-          pdf.addPage();
-          if (img.title) {
-            pdf.text(img.title, 10, 20);
-          }
-          pdf.addImage(img.src, "JPEG", 10, 30, 190, 120);
-        });
-      }
+      addImagesToPDF(pdf, images);
 
       pdf.save(`presupuesto ${client}.pdf`);
     },
@@ -40,6 +36,46 @@ export function convertPDF(client: string, images: PDFImage[] = []) {
   });
 }
 
+/**
+ * Agrega las imágenes al final del PDF, después del presupuesto.
+ * - Sin layout (silos): una por hoja, como siempre.
+ * - "half" (fotos 3D): dos por hoja vertical, sin deformar.
+ * - "landscape" (croquis): una hoja A4 apaisada entera.
+ */
+export function addImagesToPDF(pdf: jsPDF, images: PDFImage[]) {
+  let halfSlot = 0;
+  images.forEach((img) => {
+    if (img.layout === "landscape") {
+      pdf.addPage("a4", "landscape");
+      pdf.addImage(img.src, "JPEG", 0, 0, 297, 210);
+      halfSlot = 0;
+      return;
+    }
+
+    if (img.layout === "half") {
+      if (halfSlot === 0) pdf.addPage("a4", "portrait");
+      const top = halfSlot === 0 ? 15 : 152;
+      const ratio = img.width && img.height ? img.height / img.width : 2 / 3;
+      const w = Math.min(190, 120 / ratio);
+      const h = w * ratio;
+      if (img.title) {
+        pdf.setFontSize(12);
+        pdf.text(img.title, 10, top);
+      }
+      pdf.addImage(img.src, "JPEG", (210 - w) / 2, top + 4, w, h);
+      halfSlot = halfSlot === 0 ? 1 : 0;
+      return;
+    }
+
+    pdf.addPage("a4", "portrait");
+    if (img.title) {
+      pdf.text(img.title, 10, 20);
+    }
+    pdf.addImage(img.src, "JPEG", 10, 30, 190, 120);
+    halfSlot = 0;
+  });
+}
+
 export async function getPDFBase64(): Promise<string | null> {
   const pdfBody = document.getElementById("pdf");
 
@@ -48,7 +84,8 @@ export async function getPDFBase64(): Promise<string | null> {
     return null;
   }
 
-  const doc = new jsPDF({
+  const JsPDF = await loadJsPDF();
+  const doc = new JsPDF({
     orientation: "portrait",
     unit: "mm",
     format: "a4",
@@ -134,8 +171,9 @@ export async function generatePDFBlobURL(): Promise<string | null> {
     return null;
   }
 
+  const JsPDF = await loadJsPDF();
   return new Promise((resolve) => {
-    const doc = new jsPDF({
+    const doc = new JsPDF({
       orientation: "portrait",
       unit: "mm",
       format: "a4",
@@ -158,3 +196,38 @@ export async function generatePDFBlobURL(): Promise<string | null> {
     });
   });
 }
+
+/** Arma el PDF (formato de siempre) desde un elemento de la página. */
+export async function buildPDFFromElement(
+  element: HTMLElement,
+  images: PDFImage[] = [],
+): Promise<jsPDF> {
+  const JsPDF = await loadJsPDF();
+  const doc = new JsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  return new Promise((resolve) => {
+    doc.html(element, {
+      callback: (pdf) => {
+        addImagesToPDF(pdf, images);
+        resolve(pdf);
+      },
+      x: 10,
+      y: 10,
+      html2canvas: { scale: 0.25, useCORS: true },
+      width: 210,
+      windowWidth: 794,
+    });
+  });
+}
+
+/** "Presupuesto Silo Comedero 12tn" (o "Presupuesto Silos" si son varios). */
+export const getSiloPDFTitle = (silos: Silo[]) =>
+  silos.length === 1 ? `Presupuesto ${buildSiloTitle(silos[0])}` : "Presupuesto Silos";
+
+/** Arma el archivo listo para compartir: "Presupuesto Silos - Cliente.pdf". */
+export const prepareSiloPDF = (doc: jsPDF, silos: Silo[], customer: string) => {
+  const title = getSiloPDFTitle(silos);
+  const cliente = (customer ?? "").trim().replace(/[\\/:*?"<>|]/g, "");
+  const fileName = `${title}${cliente ? ` - ${cliente}` : ""}.pdf`;
+  const file = new File([doc.output("blob")], fileName, { type: "application/pdf" });
+  return { doc, file, fileName, title };
+};

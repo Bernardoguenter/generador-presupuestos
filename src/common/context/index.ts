@@ -6,3 +6,7 @@ export { useAuthContext } from "./AuthContext/AuthContext";
 export { useCompanyContext } from "./CompanyContext/CompanyContext";
 export { usePreferencesContext } from "./PreferencesContext/PreferencesContext";
 export { usePDFContext } from "./PDFContext/PDFContext";
+export {
+  defaultStructurePDFOptions,
+  type StructurePDFOptions,
+} from "./PDFContext/PDFContext";

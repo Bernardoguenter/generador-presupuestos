@@ -6,3 +6,4 @@ export { useGetAuthUser } from "./useGetAuthUser";
 export { useDebounce } from "./useDebounce";
 export { useIsSubmitting } from "./useIsSubmitting";
 export { useSearchableTable } from "./useSearchableTable";
+export { useBudgetCounts } from "./useBudgetCounts";

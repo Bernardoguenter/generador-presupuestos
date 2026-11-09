@@ -1,6 +1,7 @@
 import { Outlet, useLocation, useNavigate } from "react-router";
 import { CustomLink } from "@/components";
 import { BudgetViewButtons } from "../calculator/BudgetViewButtons";
+import { MyBudgetCount } from "./MyBudgetCount";
 
 export default function BudgetHistory() {
   const location = useLocation();
@@ -26,6 +27,7 @@ export default function BudgetHistory() {
           Nuevo presupuesto
         </CustomLink>
       </div>
+      <MyBudgetCount />
       <aside className="flex justify-end items-center">
         <BudgetViewButtons
           budgetType={budgetType}
