@@ -7,7 +7,7 @@ import { supabase } from "@/utils/supabase";
  */
 
 /** Desde cuándo se numeran los presupuestos (el N° 1 es el primero desde acá). */
-export const BUDGET_NUMBER_START = "2026-11-09T00:00:00-03:00";
+export const BUDGET_NUMBER_START = "2026-11-09T10:05:00-03:00";
 
 const TABLES = ["budgets_structures", "budgets_silo"] as const;
 
